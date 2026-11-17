@@ -1,4 +1,5 @@
 using System.Linq;
+using ScaffolderForOptimizely.Core.Catalog;
 using ScaffolderForOptimizely.Core.Context;
 using ScaffolderForOptimizely.Tests.Shared;
 using Xunit;
@@ -61,6 +62,65 @@ public class CompilationAnalyzerTests
 
         Assert.True(context.HasViewLocationExpander);
         Assert.Equal("Models/ViewModels", context.ViewModelsFolder);
+    }
+
+    [Fact]
+    public void Detects_where_existing_infrastructure_and_editor_classes_live()
+    {
+        string InProject(string relative) => System.IO.Path.Combine(Scenarios.ProjectDirectory, relative);
+
+        var compilation = TestCompiler.Create(
+            new[]
+            {
+                (InProject(@"Infrastructure\Jobs\ImportJob.cs"), "namespace Contoso.Web.Infrastructure.Jobs;\npublic class ImportJob : EPiServer.Scheduler.ScheduledJobBase { public override string Execute() => string.Empty; }"),
+                (InProject(@"Infrastructure\Jobs\ExportJob.cs"), "namespace Contoso.Web.Infrastructure.Jobs;\npublic class ExportJob : EPiServer.Scheduler.ScheduledJobBase { public override string Execute() => string.Empty; }"),
+                (InProject(@"Old\LegacyJob.cs"), "namespace Contoso.Web.Old;\npublic class LegacyJob : EPiServer.Scheduler.ScheduledJobBase { public override string Execute() => string.Empty; }"),
+                (InProject(@"Startup\Modules\SiteInit.cs"), """
+                    namespace Contoso.Web.Startup.Modules;
+                    public class SiteInit : EPiServer.Framework.IInitializableModule
+                    {
+                        public void Initialize(EPiServer.Framework.Initialization.InitializationEngine context) { }
+                        public void Uninitialize(EPiServer.Framework.Initialization.InitializationEngine context) { }
+                    }
+                    """),
+                (InProject(@"Startup\Filters\WarmupFilter.cs"), """
+                    using System;
+                    using Microsoft.AspNetCore.Builder;
+                    using Microsoft.AspNetCore.Hosting;
+                    namespace Contoso.Web.Startup.Filters;
+                    public class WarmupFilter : IStartupFilter { public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => next; }
+                    """),
+                (InProject(@"Startup\Services.cs"), """
+                    using Microsoft.Extensions.DependencyInjection;
+                    namespace Contoso.Web.Startup;
+                    public static class Services { public static IServiceCollection AddSite(this IServiceCollection services) => services; }
+                    """),
+                (InProject(@"Editing\Colours.cs"), """
+                    using System.Collections.Generic;
+                    using EPiServer.Shell.ObjectEditing;
+                    namespace Contoso.Web.Editing;
+                    public class Colours : ISelectionFactory { public IEnumerable<ISelectItem> GetSelections(ExtendedMetadata metadata) => new ISelectItem[0]; }
+                    """),
+                (InProject(@"Rules\PageRules.cs"), """
+                    using System.Collections.Generic;
+                    using EPiServer.Core;
+                    using EPiServer.Validation;
+                    namespace Contoso.Web.Rules;
+                    public class PageRules : IValidate<PageData> { public IEnumerable<ValidationError> Validate(PageData instance) { yield break; } }
+                    """),
+            },
+            nullable: true);
+        var context = new ProjectContext(Scenarios.ProjectDirectory, Scenarios.RootNamespace);
+
+        CompilationAnalyzer.Apply(compilation, context);
+
+        Assert.Equal("Infrastructure/Jobs", context.DetectedFolders[FolderKeys.ScheduledJobs]);
+        Assert.Equal("Startup/Modules", context.DetectedFolders[FolderKeys.Initialization]);
+        Assert.Equal("Startup/Filters", context.DetectedFolders[FolderKeys.StartupFilters]);
+        Assert.Equal("Startup", context.DetectedFolders[FolderKeys.ServiceExtensions]);
+        Assert.Equal("Editing", context.DetectedFolders[FolderKeys.SelectionFactories]);
+        Assert.Equal("Rules", context.DetectedFolders[FolderKeys.Validators]);
+        Assert.False(context.DetectedFolders.ContainsKey(FolderKeys.EditorDescriptors));
     }
 
     [Fact]

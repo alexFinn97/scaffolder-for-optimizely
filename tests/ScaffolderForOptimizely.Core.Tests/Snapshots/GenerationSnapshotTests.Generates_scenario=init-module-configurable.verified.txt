@@ -1,0 +1,28 @@
+﻿=== Business/Initialization/ServicesInitialization.cs (embedded, primary)
+using EPiServer.Framework;
+using EPiServer.Framework.Initialization;
+using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Contoso.Web.Business.Initialization;
+
+[InitializableModule]
+[ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
+public class ServicesInitialization : IConfigurableModule
+{
+    public void ConfigureContainer(ServiceConfigurationContext context)
+    {
+        // Register services here, e.g. context.Services.AddSingleton<IMyService, MyService>();
+    }
+
+    public void Initialize(InitializationEngine context)
+    {
+        // Runs once after the CMS has started.
+    }
+
+    public void Uninitialize(InitializationEngine context)
+    {
+        // Undo anything Initialize did, e.g. unsubscribe from events.
+    }
+}
+

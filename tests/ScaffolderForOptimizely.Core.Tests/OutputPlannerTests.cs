@@ -109,6 +109,45 @@ public class OutputPlannerTests
         Assert.Contains("return View(currentPage);", result.Files.Single(f => f.OutputId == "controller").Content);
     }
 
+    [Fact]
+    public async System.Threading.Tasks.Task Content_events_handler_needs_at_least_one_event()
+    {
+        var request = Scenarios.CreateRequest(Scenarios.Get("content-events-default"));
+        foreach (var key in request.Options.Keys.Where(k => k.StartsWith(OptionKeys.EventPrefix, System.StringComparison.Ordinal)).ToList())
+        {
+            request.Options[key] = "false";
+        }
+
+        var result = await new ScaffoldGenerator().GenerateAsync(request);
+
+        Assert.Equal("Choose at least one event.", result.Error);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task Configured_folder_beats_detected_folder_for_infrastructure_items()
+    {
+        var request = Scenarios.CreateRequest(Scenarios.Get("scheduled-job-detected-folder"));
+        request.Config.Config.Folders.ScheduledJobs = "Jobs";
+
+        var result = await new ScaffoldGenerator().GenerateAsync(request);
+
+        Assert.Equal("Jobs/ReindexJob.cs", Assert.Single(result.Files).RelativePath);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task Derived_names_follow_the_item_name_until_typed()
+    {
+        var scenario = Scenarios.Get("service-collection-extension");
+        var request = Scenarios.CreateRequest(scenario);
+        Assert.Equal("AddSite", (await new ScaffoldGenerator().GenerateAsync(request)).ResolvedOptions[OptionKeys.MethodName]);
+
+        request.Options[OptionKeys.MethodName] = "Add Site Services!";
+        var result = await new ScaffoldGenerator().GenerateAsync(request);
+
+        Assert.Equal("AddSiteServices", result.ResolvedOptions[OptionKeys.MethodName]);
+        Assert.Contains("public static IServiceCollection AddSiteServices(this IServiceCollection services)", Assert.Single(result.Files).Content);
+    }
+
     [Theory]
     [InlineData("ArticlePage", "Article Page")]
     [InlineData("FAQPage", "FAQ Page")]

@@ -1,0 +1,63 @@
+﻿=== Startup/Filters/WarmupStartupFilter.cs (embedded, primary)
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+namespace Contoso.Web.Startup.Filters;
+
+/// <summary>
+/// Runs once at startup, when ASP.NET Core builds the request pipeline.
+/// Registered by <see cref="WarmupStartupFilterExtensions.AddWarmupStartupFilter"/>.
+/// </summary>
+public class WarmupStartupFilter : IStartupFilter
+{
+    private readonly ILogger<WarmupStartupFilter> _logger;
+
+    public WarmupStartupFilter(ILogger<WarmupStartupFilter> logger)
+    {
+        _logger = logger;
+    }
+
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
+        {
+            _logger.LogInformation("{Filter} running.", nameof(WarmupStartupFilter));
+
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                // Run startup work here, resolving services with scope.ServiceProvider.GetRequiredService<T>().
+            }
+
+            app.Use(async (context, nextMiddleware) =>
+            {
+                // Runs on every request, before the rest of the pipeline.
+                await nextMiddleware();
+            });
+
+            next(app);
+        };
+    }
+}
+
+=== Startup/Filters/WarmupStartupFilterExtensions.cs (embedded)
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace Contoso.Web.Startup.Filters;
+
+public static class WarmupStartupFilterExtensions
+{
+    /// <summary>
+    /// Call from Startup.ConfigureServices: <c>services.AddWarmupStartupFilter();</c>
+    /// </summary>
+    public static IServiceCollection AddWarmupStartupFilter(this IServiceCollection services)
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, WarmupStartupFilter>());
+        return services;
+    }
+}
+

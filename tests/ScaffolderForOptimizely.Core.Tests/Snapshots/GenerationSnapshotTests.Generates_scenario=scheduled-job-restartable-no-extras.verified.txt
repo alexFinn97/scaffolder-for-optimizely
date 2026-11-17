@@ -1,0 +1,25 @@
+﻿=== Business/ScheduledJobs/CleanupJob.cs (embedded, primary)
+using EPiServer.PlugIn;
+using EPiServer.Scheduler;
+
+namespace Contoso.Web.Business.ScheduledJobs;
+
+[ScheduledPlugIn(
+    DisplayName = "Cleanup",
+    Description = "",
+    Restartable = true,
+    GUID = "11111111-2222-3333-4444-555555555555")]
+public class CleanupJob : ScheduledJobBase
+{
+    public override string Execute()
+    {
+        var processed = 0;
+
+        // Do the work here. For long-running work, loop over the items and:
+        //   - count processed items for the result message
+
+        var message = $"Processed {processed} items.";
+        return message;
+    }
+}
+

@@ -1,0 +1,35 @@
+﻿=== Business/VisitorGroups/CountryCriterion.cs (embedded, primary)
+using System.Security.Principal;
+using EPiServer.Personalization.VisitorGroups;
+using Microsoft.AspNetCore.Http;
+
+namespace Contoso.Web.Business.VisitorGroups;
+
+[VisitorGroupCriterion(
+    Category = "Custom",
+    DisplayName = "Country",
+    Description = "Matches the visitor's country.")]
+public class CountryCriterion : CriterionBase<CountryCriterionModel>
+{
+    public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
+    {
+        // Compare Model.Value with the current request, e.g. a header, cookie or query string.
+        return false;
+    }
+}
+
+=== Business/VisitorGroups/CountryCriterionModel.cs (embedded)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Personalization.VisitorGroups;
+
+namespace Contoso.Web.Business.VisitorGroups;
+
+/// <summary>Settings an editor enters for <see cref="CountryCriterion"/>.</summary>
+public class CountryCriterionModel : CriterionModelBase
+{
+    [Required]
+    public string? Value { get; set; }
+
+    public override ICriterionModel Copy() => ShallowCopy();
+}
+

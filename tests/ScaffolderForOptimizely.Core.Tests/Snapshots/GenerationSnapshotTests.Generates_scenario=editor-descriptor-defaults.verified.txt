@@ -1,0 +1,30 @@
+﻿=== Business/EditorDescriptors/ColourEditorDescriptor.cs (embedded, primary)
+using System;
+using System.Collections.Generic;
+using EPiServer.Core;
+using EPiServer.Shell.ObjectEditing;
+using EPiServer.Shell.ObjectEditing.EditorDescriptors;
+
+namespace Contoso.Web.Business.EditorDescriptors;
+
+/// <summary>
+/// Applies to string properties marked <c>[UIHint(ColourEditorDescriptor.UIHintName)]</c>.
+/// </summary>
+[EditorDescriptorRegistration(TargetType = typeof(string), UIHint = UIHintName)]
+public class ColourEditorDescriptor : EditorDescriptor
+{
+    public const string UIHintName = "Colour";
+
+    public ColourEditorDescriptor()
+    {
+        // Set ClientEditingClass to use a custom Dojo editor, e.g. "app/editors/Colour".
+    }
+
+    public override void ModifyMetadata(ExtendedMetadata metadata, IEnumerable<Attribute> attributes)
+    {
+        base.ModifyMetadata(metadata, attributes);
+
+        // Adjust the metadata here, e.g. metadata.EditorConfiguration["key"] = value;
+    }
+}
+

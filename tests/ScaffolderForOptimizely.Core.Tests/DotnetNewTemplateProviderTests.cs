@@ -75,6 +75,19 @@ public class DotnetNewTemplateProviderTests
     }
 
     [Fact]
+    public async Task Passes_the_configurable_switch_to_the_initialization_module_template()
+    {
+        var runner = new FakeRunner(installed: true);
+        var request = Scenarios.CreateRequest(Scenarios.Get("init-module-configurable"), TemplateSources.DotnetNew);
+
+        var result = await Generate(runner, request);
+
+        Assert.Equal(TemplateSources.DotnetNew, Assert.Single(result.Files).Source);
+        Assert.Contains(runner.Calls, c => c.StartsWith("new epi-cms-initializationmodule -n ServicesInitialization ", StringComparison.Ordinal)
+            && c.Contains("--namespace Contoso.Web.Business.Initialization") && c.EndsWith("--configurable true", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task Never_runs_dotnet_new_for_the_preview()
     {
         var runner = new FakeRunner(installed: true);

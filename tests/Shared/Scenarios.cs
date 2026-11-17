@@ -51,6 +51,9 @@ public sealed class Scenario
     /// <summary>Simulates a custom IViewLocationExpander in the project.</summary>
     public bool HasViewLocationExpander { get; set; }
 
+    /// <summary>Simulates folders detected from existing implementations (FolderKeys → folder).</summary>
+    public Dictionary<string, string> DetectedFolders { get; set; } = new();
+
     public override string ToString() => Name;
 }
 
@@ -190,6 +193,92 @@ public static class Scenarios
         {
             Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage", [OptionKeys.ViewPath] = "Views/Shared/Partials/StandardPage" },
         },
+        // v0.2: infrastructure and editor items.
+        new("init-module-plain", ItemCatalog.Ids.InitializationModule, "DisplayRegistryInitialization"),
+        new("init-module-configurable", ItemCatalog.Ids.InitializationModule, "ServicesInitialization")
+        {
+            Options = { [OptionKeys.Configurable] = "true" },
+        },
+        new("startup-filter-defaults", ItemCatalog.Ids.StartupFilter, "Site"),
+        new("startup-filter-middleware-only", ItemCatalog.Ids.StartupFilter, "SecurityHeadersStartupFilter")
+        {
+            Options =
+            {
+                [OptionKeys.Scope] = "false",
+                [OptionKeys.Logger] = "false",
+                [OptionKeys.Middleware] = "true",
+                [OptionKeys.Registration] = "false",
+            },
+        },
+        new("startup-filter-detected-folder", ItemCatalog.Ids.StartupFilter, "Warmup")
+        {
+            DetectedFolders = { [FolderKeys.StartupFilters] = "Startup/Filters" },
+            Options = { [OptionKeys.Middleware] = "true" },
+        },
+        new("scheduled-job-defaults", ItemCatalog.Ids.ScheduledJob, "ImportProducts")
+        {
+            Options = { [OptionKeys.Description] = "Imports products from the \"PIM\"." },
+        },
+        new("scheduled-job-restartable-no-extras", ItemCatalog.Ids.ScheduledJob, "CleanupJob")
+        {
+            Nullable = false,
+            Options =
+            {
+                [OptionKeys.Stoppable] = "false",
+                [OptionKeys.StatusProgress] = "false",
+                [OptionKeys.Logger] = "false",
+                [OptionKeys.Restartable] = "true",
+            },
+        },
+        new("scheduled-job-detected-folder", ItemCatalog.Ids.ScheduledJob, "ReindexJob")
+        {
+            DetectedFolders = { [FolderKeys.ScheduledJobs] = "Infrastructure/Jobs" },
+            Options = { [OptionKeys.Logger] = "false" },
+        },
+        new("service-collection-extension", ItemCatalog.Ids.ServiceCollectionExtension, "Site"),
+        new("selection-factory-list", ItemCatalog.Ids.SelectionFactory, "ColourSelectionFactory"),
+        new("selection-factory-autosuggest", ItemCatalog.Ids.SelectionFactory, "CountrySelectionQuery")
+        {
+            Options = { [OptionKeys.Autosuggest] = "true" },
+        },
+        new("selection-factory-autosuggest-not-nullable", ItemCatalog.Ids.SelectionFactory, "CitySelectionQuery")
+        {
+            Nullable = false,
+            Options = { [OptionKeys.Autosuggest] = "true" },
+        },
+        new("editor-descriptor-defaults", ItemCatalog.Ids.EditorDescriptor, "Colour"),
+        new("editor-descriptor-custom", ItemCatalog.Ids.EditorDescriptor, "LinkPickerEditorDescriptor")
+        {
+            Options =
+            {
+                [OptionKeys.TargetType] = "ContentReference",
+                [OptionKeys.UiHint] = "link-picker",
+                [OptionKeys.ClientEditingClass] = "app/editors/LinkPicker",
+            },
+        },
+        new("visitor-group-criterion", ItemCatalog.Ids.VisitorGroupCriterion, "Country")
+        {
+            Options = { [OptionKeys.Description] = "Matches the visitor's country." },
+        },
+        new("content-events-default", ItemCatalog.Ids.ContentEventsHandler, "ContentPublishing"),
+        new("content-events-all-not-nullable", ItemCatalog.Ids.ContentEventsHandler, "AuditTrail")
+        {
+            Nullable = false,
+            FileScopedNamespaces = false,
+            Options =
+            {
+                [OptionKeys.EventPrefix + "SavingContent"] = "true",
+                [OptionKeys.EventPrefix + "SavedContent"] = "true",
+                [OptionKeys.EventPrefix + "MovingContent"] = "true",
+                [OptionKeys.EventPrefix + "MovedContent"] = "true",
+                [OptionKeys.EventPrefix + "DeletingContent"] = "true",
+                [OptionKeys.EventPrefix + "DeletedContent"] = "true",
+            },
+        },
+        new("content-validator", ItemCatalog.Ids.ContentValidator, "StandardPage")
+        {
+            Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage" },
+        },
         new("view-component-sync-no-view", ItemCatalog.Ids.ViewComponent, "Breadcrumbs")
         {
             Options = { [OptionKeys.Async] = "false", [OptionKeys.View] = "false" },
@@ -213,6 +302,11 @@ public static class Scenarios
             BlockViewPattern = scenario.BlockViewPattern,
             HasViewLocationExpander = scenario.HasViewLocationExpander,
         };
+        foreach (var pair in scenario.DetectedFolders)
+        {
+            context.DetectedFolders[pair.Key] = pair.Value;
+        }
+
         context.PageBaseClasses.Add("Contoso.Web.Models.Pages.SitePageData");
         context.BlockBaseClasses.Add("Contoso.Web.Models.Blocks.SiteBlockData");
         context.PageTypes.Add("Contoso.Web.Models.Pages.StandardPage");

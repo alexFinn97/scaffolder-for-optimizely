@@ -1,0 +1,109 @@
+﻿=== Business/ContentEvents/AuditTrailHandler.cs (embedded, primary)
+using EPiServer;
+using Microsoft.Extensions.Logging;
+
+namespace Contoso.Web.Business.ContentEvents
+{
+    /// <summary>
+    /// Handles content events. Registered and subscribed by <see cref="AuditTrailInitialization"/>.
+    /// </summary>
+    public class AuditTrailHandler
+    {
+        private readonly ILogger<AuditTrailHandler> _logger;
+
+        public AuditTrailHandler(ILogger<AuditTrailHandler> logger)
+        {
+            _logger = logger;
+        }
+
+        public void OnSavingContent(object sender, ContentEventArgs args)
+        {
+            _logger.LogDebug("{Event}: {ContentLink}", "SavingContent", args.ContentLink);
+        }
+
+        public void OnSavedContent(object sender, ContentEventArgs args)
+        {
+            _logger.LogDebug("{Event}: {ContentLink}", "SavedContent", args.ContentLink);
+        }
+
+        public void OnPublishingContent(object sender, ContentEventArgs args)
+        {
+            _logger.LogDebug("{Event}: {ContentLink}", "PublishingContent", args.ContentLink);
+        }
+
+        public void OnPublishedContent(object sender, ContentEventArgs args)
+        {
+            _logger.LogDebug("{Event}: {ContentLink}", "PublishedContent", args.ContentLink);
+        }
+
+        public void OnMovingContent(object sender, ContentEventArgs args)
+        {
+            _logger.LogDebug("{Event}: {ContentLink}", "MovingContent", args.ContentLink);
+        }
+
+        public void OnMovedContent(object sender, ContentEventArgs args)
+        {
+            _logger.LogDebug("{Event}: {ContentLink}", "MovedContent", args.ContentLink);
+        }
+
+        public void OnDeletingContent(object sender, ContentEventArgs args)
+        {
+            _logger.LogDebug("{Event}: {ContentLink}", "DeletingContent", args.ContentLink);
+        }
+
+        public void OnDeletedContent(object sender, ContentEventArgs args)
+        {
+            _logger.LogDebug("{Event}: {ContentLink}", "DeletedContent", args.ContentLink);
+        }
+    }
+}
+
+=== Business/ContentEvents/AuditTrailInitialization.cs (embedded)
+using EPiServer.Core;
+using EPiServer.Framework;
+using EPiServer.Framework.Initialization;
+using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Contoso.Web.Business.ContentEvents
+{
+    /// <summary>Registers <see cref="AuditTrailHandler"/> and subscribes it to content events.</summary>
+    [InitializableModule]
+    [ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
+    public class AuditTrailInitialization : IConfigurableModule
+    {
+        public void ConfigureContainer(ServiceConfigurationContext context)
+        {
+            context.Services.AddSingleton<AuditTrailHandler>();
+        }
+
+        public void Initialize(InitializationEngine context)
+        {
+            var contentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
+            var handler = context.Locate.Advanced.GetInstance<AuditTrailHandler>();
+            contentEvents.SavingContent += handler.OnSavingContent;
+            contentEvents.SavedContent += handler.OnSavedContent;
+            contentEvents.PublishingContent += handler.OnPublishingContent;
+            contentEvents.PublishedContent += handler.OnPublishedContent;
+            contentEvents.MovingContent += handler.OnMovingContent;
+            contentEvents.MovedContent += handler.OnMovedContent;
+            contentEvents.DeletingContent += handler.OnDeletingContent;
+            contentEvents.DeletedContent += handler.OnDeletedContent;
+        }
+
+        public void Uninitialize(InitializationEngine context)
+        {
+            var contentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
+            var handler = context.Locate.Advanced.GetInstance<AuditTrailHandler>();
+            contentEvents.SavingContent -= handler.OnSavingContent;
+            contentEvents.SavedContent -= handler.OnSavedContent;
+            contentEvents.PublishingContent -= handler.OnPublishingContent;
+            contentEvents.PublishedContent -= handler.OnPublishedContent;
+            contentEvents.MovingContent -= handler.OnMovingContent;
+            contentEvents.MovedContent -= handler.OnMovedContent;
+            contentEvents.DeletingContent -= handler.OnDeletingContent;
+            contentEvents.DeletedContent -= handler.OnDeletedContent;
+        }
+    }
+}
+
