@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="ScaffolderForOptimizely.0766a9ca-0833-4f20-a61c-abe0790c391b" Version="0.9.2" Language="en-US" Publisher="Alex Finnigan" />
+    <Identity Id="ScaffolderForOptimizely.0766a9ca-0833-4f20-a61c-abe0790c391b" Version="0.9.3" Language="en-US" Publisher="Alex Finnigan" />
     <DisplayName>Scaffolder for Optimizely</DisplayName>
-    <Description xml:space="preserve">Right-click scaffolding for Optimizely CMS 12: content types, controllers and components, initialization modules, startup filters, scheduled jobs, selection factories, editor descriptors, visitor group criteria, content event handlers and validators, with project-aware defaults. For Optimizely Commerce, add the Scaffolder for Optimizely Commerce extension.</Description>
+    <Description xml:space="preserve">Right-click scaffolding for Optimizely CMS 12: page, block and media types, controllers, view components, initialization modules, scheduled jobs, editor extensions and more, with defaults taken from your project. Commerce items come in a separate add-on.</Description>
     <MoreInfo>https://github.com/alexFinn97/scaffolder-for-optimizely</MoreInfo>
     <License>LICENSE</License>
     <GettingStartedGuide>https://github.com/alexFinn97/scaffolder-for-optimizely#readme</GettingStartedGuide>
