@@ -1,8 +1,19 @@
 # Scaffolder for Optimizely
 
+<img src="branding/logo-cms.svg" width="64" height="64" alt="Scaffolder for Optimizely logo"> <img src="branding/logo-commerce.svg" width="64" height="64" alt="Scaffolder for Optimizely Commerce logo">
+
 A Visual Studio 2022/2026 extension that brings back right-click scaffolding for Optimizely CMS 12 and Commerce 14: content types, controllers and components, infrastructure such as initialization modules and scheduled jobs, editor extensions, and Commerce catalog, promotion, payment, shipping and order items, with defaults taken from your project.
 
-> **Status: v0.4 preview.** CMS items are in, with Commerce items in a separate add-on extension. v1.0 brings the Marketplace release.
+> **Status: preview (0.9).** Everything below works and is compile-tested, but few teams have used it yet. Please [report](https://github.com/alexFinn97/scaffolder-for-optimizely/issues) anything that generates the wrong code. 1.0 follows once it has had wider use.
+
+## Install
+
+From the Visual Studio Marketplace, or **Extensions > Manage Extensions** in Visual Studio:
+
+- **Scaffolder for Optimizely**: the CMS items.
+- **Scaffolder for Optimizely Commerce**: the Commerce items. It's an add-on, so install Scaffolder for Optimizely first.
+
+Each [GitHub release](https://github.com/alexFinn97/scaffolder-for-optimizely/releases) also has both `.vsix` files; double-click one to install it. See the [changelog](CHANGELOG.md) for what's new.
 
 ## What it does
 
@@ -63,7 +74,7 @@ Put this file next to your solution (or in any folder above the project) to pin 
 ```json
 {
   "$schema": "https://raw.githubusercontent.com/alexFinn97/scaffolder-for-optimizely/master/schema/optimizely-scaffolder.schema.json",
-  "templateSource": "dotnet-new",
+  "templateSource": "embedded",
   "layout": "conventional",
   "folders": { "pages": "Models/Pages", "blocks": "Models/Blocks", "controllers": "Controllers" },
   "baseClasses": { "page": "MySite.Models.Pages.SitePageData" },
@@ -82,10 +93,8 @@ See [schema/optimizely-scaffolder.schema.json](schema/optimizely-scaffolder.sche
 For each file, the first source that can produce it wins:
 
 1. **Your overrides:** `.optimizely/templates/cms12/<Template>.sbn` next to the settings file (or the solution). Copy any file from [src/ScaffolderForOptimizely.Core/Templates/cms12](src/ScaffolderForOptimizely.Core/Templates/cms12) and edit it. Templates use [Scriban](https://github.com/scriban/scriban).
-2. **Optimizely's own templates** (`templateSource: "dotnet-new"`, the default): content types, page controllers and partial components use `dotnet new` from `EPiServer.Templates`. If the pack isn't installed, the extension offers to install it.
-3. **Built-in templates** for everything else: views, view models, block components and media types, plus anything option 2 can't express (e.g. a controller that uses a view model).
-
-The dialog preview always shows the built-in or override templates, so it stays instant.
+2. **Built-in templates** (`templateSource: "embedded"`, the default): every item, compile-tested against CMS 12 and Commerce 14. What the dialog previews is exactly what gets written.
+3. **Optimizely's own templates**, only with `templateSource: "dotnet-new"`: content types, page controllers, partial components and initialization modules use `dotnet new` from `EPiServer.Templates` when the dialog's options allow it, and the built-in templates otherwise. If the pack isn't installed, the extension offers to install it. Note that `EPiServer.Templates` 2.x targets CMS 13, and the preview still shows the built-in templates.
 
 ## Building
 
@@ -121,6 +130,10 @@ schema/                                   JSON schema for .optimizely-scaffolder
 
 Test folders mirror the Core folders (`Catalog`, `Config`, `Context`, `Generation`, `Providers`). Snapshots live in `ScaffolderForOptimizely.Core.Tests/Generation/Snapshots`.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for tests, adding an item and pull requests, and [docs/publishing.md](docs/publishing.md) for releases.
+
 ## Licence
 
-[MIT](LICENSE)
+[MIT](LICENSE). Not affiliated with or endorsed by Optimizely. Optimizely and Episerver are trademarks of Optimizely.
