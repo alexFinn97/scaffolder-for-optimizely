@@ -1,0 +1,30 @@
+using EPiServer.Framework;
+using EPiServer.Framework.Initialization;
+{{~ if options.configurable ~}}
+using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+{{~ end ~}}
+
+namespace {{ namespace }};
+
+[InitializableModule]
+[ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
+public class {{ class_name }} : {{ if options.configurable }}IConfigurableModule{{ else }}IInitializableModule{{ end }}
+{
+{{~ if options.configurable ~}}
+    public void ConfigureContainer(ServiceConfigurationContext context)
+    {
+        // Register services here, e.g. context.Services.AddSingleton<IMyService, MyService>();
+    }
+
+{{~ end ~}}
+    public void Initialize(InitializationEngine context)
+    {
+        // Runs once after the CMS has started.
+    }
+
+    public void Uninitialize(InitializationEngine context)
+    {
+        // Undo anything Initialize did, e.g. unsubscribe from events.
+    }
+}

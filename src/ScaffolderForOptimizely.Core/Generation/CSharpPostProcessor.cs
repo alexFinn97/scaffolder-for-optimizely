@@ -24,7 +24,29 @@ public static class CSharpPostProcessor
             lines = ToBlockScoped(lines);
         }
 
-        return Join(lines, newLine);
+        return Join(RemoveBlankLinesInsideBraces(lines), newLine);
+    }
+
+    /// <summary>Drops blank lines straight after "{" or straight before "}" left by optional template sections.</summary>
+    private static List<string> RemoveBlankLinesInsideBraces(List<string> lines)
+    {
+        var result = new List<string>(lines.Count);
+        for (var i = 0; i < lines.Count; i++)
+        {
+            if (lines[i].Trim().Length == 0)
+            {
+                var previous = result.Count > 0 ? result[result.Count - 1].Trim() : string.Empty;
+                var next = lines.Skip(i + 1).FirstOrDefault(l => l.Trim().Length > 0)?.Trim() ?? string.Empty;
+                if (previous == "{" || next.StartsWith("}", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+            }
+
+            result.Add(lines[i]);
+        }
+
+        return result;
     }
 
     /// <summary>Normalises line endings for non-C# files (views).</summary>

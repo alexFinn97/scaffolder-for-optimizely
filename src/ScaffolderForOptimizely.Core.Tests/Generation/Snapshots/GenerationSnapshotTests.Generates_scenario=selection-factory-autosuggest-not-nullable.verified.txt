@@ -1,0 +1,29 @@
+﻿=== Business/SelectionFactories/CitySelectionQuery.cs (embedded, primary)
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using EPiServer.ServiceLocation;
+using EPiServer.Shell.ObjectEditing;
+
+namespace Contoso.Web.Business.SelectionFactories;
+
+/// <summary>
+/// Autosuggest options. Use on a string property:
+/// <c>[AutoSuggestSelection(typeof(CitySelectionQuery))]</c>
+/// </summary>
+[ServiceConfiguration(typeof(ISelectionQuery))]
+public class CitySelectionQuery : ISelectionQuery
+{
+    private static readonly ISelectItem[] Items =
+    {
+        new SelectItem { Text = "First option", Value = "first" },
+        new SelectItem { Text = "Second option", Value = "second" },
+    };
+
+    public IEnumerable<ISelectItem> GetItems(string query) =>
+        Items.Where(i => i.Text.StartsWith(query ?? string.Empty, StringComparison.OrdinalIgnoreCase));
+
+    public ISelectItem GetItemByValue(string value) =>
+        Items.FirstOrDefault(i => string.Equals(i.Value as string, value, StringComparison.Ordinal));
+}
+

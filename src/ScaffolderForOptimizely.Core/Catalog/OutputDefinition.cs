@@ -8,6 +8,12 @@ public enum OutputRole
     Component,
     ViewModel,
     View,
+
+    /// <summary>A standalone class such as an initialization module or scheduled job.</summary>
+    Class,
+
+    /// <summary>A second class that lives next to the primary file (e.g. a criterion's model).</summary>
+    Companion,
 }
 
 /// <summary>What kind of content a model represents; decides the model folder and base classes offered.</summary>
@@ -49,6 +55,12 @@ public sealed class OutputDefinition
     /// <summary>Embedded/override Scriban template name, e.g. <c>PageType.cs.sbn</c>.</summary>
     public string TemplateName { get; }
 
+    /// <summary>
+    /// For companions: appended to the item name minus its suffix, e.g. criterion "GeoCriterion"
+    /// + "CriterionModel" → "GeoCriterionModel".
+    /// </summary>
+    public string ClassNameSuffix { get; set; } = string.Empty;
+
     /// <summary>Bool option that switches this output on. Null means always generated.</summary>
     public string? EnabledByOption { get; set; }
 
@@ -88,6 +100,9 @@ public sealed class DotnetNewMapping
     /// Pass the rendered content type as <c>--contentType</c> (pagecontroller / contentcomponent).
     /// </summary>
     public bool PassContentType { get; set; }
+
+    /// <summary>Bool options passed straight through as "--name true|false", keyed by option key.</summary>
+    public System.Collections.Generic.Dictionary<string, string> BoolArguments { get; set; } = new();
 
     /// <summary>
     /// Options the Optimizely template can't express. When any is set (a non-empty value other

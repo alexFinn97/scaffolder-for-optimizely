@@ -43,8 +43,11 @@ public sealed class ScribanTemplateProvider : ITemplateProvider
         var globals = new ScriptObject();
         foreach (var pair in output.Model)
         {
-            globals.Add(pair.Key, pair.Value);
+            globals.Add(pair.Key, ToScriptValue(pair.Value));
         }
+
+        // {{ some_text | cs_string }} escapes text for use inside a C# string literal.
+        globals.Import("cs_string", new Func<string, string>(value => (value ?? string.Empty).Replace("\\", "\\\\").Replace("\"", "\\\"")));
 
         var context = new TemplateContext
         {
@@ -62,6 +65,27 @@ public sealed class ScribanTemplateProvider : ITemplateProvider
             throw new TemplateRenderException(templatePath, ex.Message);
         }
     }
+
+    /// <summary>Nested dictionaries (e.g. <c>options</c>) become script objects so templates can use <c>options.stoppable</c>.</summary>
+    private static object ToScriptValue(object value)
+    {
+        if (value is System.Collections.Generic.IDictionary<string, object> dictionary)
+        {
+            var nested = new ScriptObject();
+            foreach (var pair in dictionary)
+            {
+                nested.Add(pair.Key, ToScriptValue(pair.Value));
+            }
+
+            return nested;
+        }
+
+        return value;
+    }
+}
+
+internal static class ScriptValues
+{
 }
 
 public sealed class TemplateRenderException : Exception

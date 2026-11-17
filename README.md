@@ -1,8 +1,8 @@
 # Scaffolder for Optimizely
 
-A Visual Studio 2022/2026 extension that brings back right-click scaffolding for Optimizely CMS 12: page and block types, media types, page controllers, block components and view components, with defaults taken from your project.
+A Visual Studio 2022/2026 extension that brings back right-click scaffolding for Optimizely CMS 12: content types, controllers and components, infrastructure such as initialization modules and scheduled jobs, and editor extensions, with defaults taken from your project.
 
-> **Status: v0.1 preview.** CMS content types and rendering are in. Infrastructure and editor items come in v0.2 and Commerce in v0.3.
+> **Status: v0.2 preview.** CMS content types, rendering, infrastructure and editor items are in. Commerce comes in v0.3.
 
 ## What it does
 
@@ -14,6 +14,14 @@ In Solution Explorer, right-click a project or folder and choose **Add > Optimiz
 | Block Type (+ block component, view model, Razor view) | Block Component (`AsyncBlockComponent<T>`, `BlockComponent<T>` or plain `ViewComponent`) |
 | Media Type (image, video or generic file) | Partial Content Component |
 | | View Component |
+
+| Infrastructure | Editor |
+|---|---|
+| Initialization Module (plain or `IConfigurableModule`) | Selection Factory (`ISelectionFactory` or autosuggest `ISelectionQuery`) |
+| Startup Filter (`IStartupFilter`, optional middleware, + `services.AddX()` registration) | Editor Descriptor (UI hint, optional Dojo editor) |
+| Scheduled Job (stoppable, progress, `ILogger`, restartable) | Visitor Group Criterion (+ settings model) |
+| Service Collection Extension (`services.AddX()`) | Content Events Handler (DI-registered handler + initialization module that subscribes it) |
+| | Content Validator (`IValidate<T>`) |
 
 Each command opens a dialog with the item's options and a live preview of every file it will create. The menu only appears in projects that reference Optimizely CMS.
 
@@ -31,8 +39,9 @@ When the dialog opens, the extension reads the project with Roslyn and offers:
 - view path patterns learnt from existing views' `@model` (e.g. `Views/Shared/Blocks/{name}.cshtml`)
 - the folder holding most existing `*ViewModel` classes (or a folder named `ViewModels`)
 - whether a custom `IViewLocationExpander` exists, which decides whether to pass the view path to `View()`
+- where your existing initialization modules, startup filters, scheduled jobs, selection factories, editor descriptors, criteria, content event handlers and validators live
 
-Content type pickers start blank. The view path and view model path fill in from the above, and stay editable. Right-clicking a folder puts the main file there. Right-clicking the project uses the conventional folder for it (e.g. `Models/Pages`). Existing files are never overwritten.
+Content type pickers start blank. The view path and view model path fill in from the above, and stay editable. Right-clicking a folder puts the main file there. Right-clicking the project uses the configured or detected folder, else a conventional one (e.g. `Models/Pages`, `Business/ScheduledJobs`). Existing files are never overwritten.
 
 ## Settings: `.optimizely-scaffolder.json`
 
@@ -70,8 +79,8 @@ The dialog preview always shows the built-in or override templates, so it stays 
 Requirements: Visual Studio 2022 17.x or 2026 with the **Visual Studio extension development** workload (needed for F5 debugging; command-line builds work without it), and the .NET 8 SDK.
 
 ```bash
-dotnet test tests/ScaffolderForOptimizely.Core.Tests
-dotnet test tests/ScaffolderForOptimizely.Compile.Tests
+dotnet test src/ScaffolderForOptimizely.Core.Tests
+dotnet test src/ScaffolderForOptimizely.Compile.Tests
 msbuild src/ScaffolderForOptimizely.Vsix/ScaffolderForOptimizely.Vsix.csproj /restore
 ```
 
@@ -79,17 +88,24 @@ The VSIX project uses the classic project format, so build it with `msbuild` (or
 
 ### Tests
 
-- **Core.Tests:** unit tests plus [Verify](https://github.com/VerifyTests/Verify) snapshot tests of every scenario in [tests/Shared/Scenarios.cs](tests/Shared/Scenarios.cs). After an intended template change, review the `.received.txt` files and rename them to `.verified.txt`.
-- **Compile.Tests:** compiles every scenario's generated C# against the real `EPiServer.CMS` 12 packages and fails on any error or warning. It also checks project detection against an Alloy-style project.
+- **Core.Tests:** unit tests plus [Verify](https://github.com/VerifyTests/Verify) snapshot tests of every scenario in [src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs](src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs). After an intended template change, review the `.received.txt` files and rename them to `.verified.txt`.
+- **Compile.Tests:** compiles every scenario's generated C# (it links the same `Scenarios.cs`) against the real `EPiServer.CMS` 12 packages and fails on any error or warning. It also checks project detection against an Alloy-style project.
 
 ### Layout
 
 ```
-src/ScaffolderForOptimizely.Core   netstandard2.0: item catalogue, config, detection, generation, templates
-src/ScaffolderForOptimizely.Vsix   net48 VSIX: commands, dialog, Roslyn workspace access, file writing
-tests/                             unit, snapshot and compile tests
-schema/                            JSON schema for .optimizely-scaffolder.json
+src/
+  ScaffolderForOptimizely.sln
+  Directory.Build.props                   version and package metadata shared by every project
+  nuget.config                            nuget.org plus Optimizely's feed
+  ScaffolderForOptimizely.Core            netstandard2.0: item catalogue, config, detection, generation, templates
+  ScaffolderForOptimizely.Vsix            net48 VSIX: commands, dialog, Roslyn workspace access, file writing
+  ScaffolderForOptimizely.Core.Tests      unit and snapshot tests, plus the shared test scenarios
+  ScaffolderForOptimizely.Compile.Tests   compile tests against the real Optimizely packages
+schema/                                   JSON schema for .optimizely-scaffolder.json
 ```
+
+Test folders mirror the Core folders (`Catalog`, `Config`, `Context`, `Generation`, `Providers`). Snapshots live in `ScaffolderForOptimizely.Core.Tests/Generation/Snapshots`.
 
 ## Licence
 

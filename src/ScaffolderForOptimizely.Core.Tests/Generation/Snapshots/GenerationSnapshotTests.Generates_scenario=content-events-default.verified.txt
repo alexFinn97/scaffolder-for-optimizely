@@ -1,0 +1,65 @@
+﻿=== Business/ContentEvents/ContentPublishingHandler.cs (embedded, primary)
+using EPiServer;
+using Microsoft.Extensions.Logging;
+
+namespace Contoso.Web.Business.ContentEvents;
+
+/// <summary>
+/// Handles content events. Registered and subscribed by <see cref="ContentPublishingInitialization"/>.
+/// </summary>
+public class ContentPublishingHandler
+{
+    private readonly ILogger<ContentPublishingHandler> _logger;
+
+    public ContentPublishingHandler(ILogger<ContentPublishingHandler> logger)
+    {
+        _logger = logger;
+    }
+
+    public void OnPublishingContent(object? sender, ContentEventArgs args)
+    {
+        _logger.LogDebug("{Event}: {ContentLink}", "PublishingContent", args.ContentLink);
+    }
+
+    public void OnPublishedContent(object? sender, ContentEventArgs args)
+    {
+        _logger.LogDebug("{Event}: {ContentLink}", "PublishedContent", args.ContentLink);
+    }
+}
+
+=== Business/ContentEvents/ContentPublishingInitialization.cs (embedded)
+using EPiServer.Core;
+using EPiServer.Framework;
+using EPiServer.Framework.Initialization;
+using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Contoso.Web.Business.ContentEvents;
+
+/// <summary>Registers <see cref="ContentPublishingHandler"/> and subscribes it to content events.</summary>
+[InitializableModule]
+[ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
+public class ContentPublishingInitialization : IConfigurableModule
+{
+    public void ConfigureContainer(ServiceConfigurationContext context)
+    {
+        context.Services.AddSingleton<ContentPublishingHandler>();
+    }
+
+    public void Initialize(InitializationEngine context)
+    {
+        var contentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
+        var handler = context.Locate.Advanced.GetInstance<ContentPublishingHandler>();
+        contentEvents.PublishingContent += handler.OnPublishingContent;
+        contentEvents.PublishedContent += handler.OnPublishedContent;
+    }
+
+    public void Uninitialize(InitializationEngine context)
+    {
+        var contentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
+        var handler = context.Locate.Advanced.GetInstance<ContentPublishingHandler>();
+        contentEvents.PublishingContent -= handler.OnPublishingContent;
+        contentEvents.PublishedContent -= handler.OnPublishedContent;
+    }
+}
+

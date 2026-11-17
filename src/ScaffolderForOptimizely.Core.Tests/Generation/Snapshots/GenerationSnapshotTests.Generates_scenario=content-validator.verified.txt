@@ -1,0 +1,27 @@
+﻿=== Business/Validation/StandardPageValidator.cs (embedded, primary)
+using System.Collections.Generic;
+using Contoso.Web.Models.Pages;
+using EPiServer.Validation;
+
+namespace Contoso.Web.Business.Validation;
+
+/// <summary>Runs when StandardPage content is saved. Picked up automatically; no registration needed.</summary>
+public class StandardPageValidator : IValidate<StandardPage>
+{
+    public IEnumerable<ValidationError> Validate(StandardPage instance)
+    {
+        // Example:
+        // if (string.IsNullOrWhiteSpace(instance.Name))
+        // {
+        //     yield return new ValidationError
+        //     {
+        //         ErrorMessage = "A name is required.",
+        //         PropertyName = nameof(instance.Name),
+        //         Severity = ValidationErrorSeverity.Error,
+        //         ValidationType = ValidationErrorType.AttributeMatched,
+        //     };
+        // }
+        yield break;
+    }
+}
+

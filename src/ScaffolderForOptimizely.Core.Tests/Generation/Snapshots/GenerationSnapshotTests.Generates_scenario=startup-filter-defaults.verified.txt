@@ -1,0 +1,57 @@
+﻿=== Business/Initialization/SiteStartupFilter.cs (embedded, primary)
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+namespace Contoso.Web.Business.Initialization;
+
+/// <summary>
+/// Runs once at startup, when ASP.NET Core builds the request pipeline.
+/// Registered by <see cref="SiteStartupFilterExtensions.AddSiteStartupFilter"/>.
+/// </summary>
+public class SiteStartupFilter : IStartupFilter
+{
+    private readonly ILogger<SiteStartupFilter> _logger;
+
+    public SiteStartupFilter(ILogger<SiteStartupFilter> logger)
+    {
+        _logger = logger;
+    }
+
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
+        {
+            _logger.LogInformation("{Filter} running.", nameof(SiteStartupFilter));
+
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                // Run startup work here, resolving services with scope.ServiceProvider.GetRequiredService<T>().
+            }
+
+            next(app);
+        };
+    }
+}
+
+=== Business/Initialization/SiteStartupFilterExtensions.cs (embedded)
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace Contoso.Web.Business.Initialization;
+
+public static class SiteStartupFilterExtensions
+{
+    /// <summary>
+    /// Call from Startup.ConfigureServices: <c>services.AddSiteStartupFilter();</c>
+    /// </summary>
+    public static IServiceCollection AddSiteStartupFilter(this IServiceCollection services)
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, SiteStartupFilter>());
+        return services;
+    }
+}
+

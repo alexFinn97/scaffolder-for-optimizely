@@ -44,6 +44,12 @@ public static class OutputPlanner
             return "Choose a content type.";
         }
 
+        var eventOptions = request.Item.Options.Where(o => o.Key.StartsWith(OptionKeys.EventPrefix, StringComparison.Ordinal)).ToList();
+        if (eventOptions.Count > 0 && !eventOptions.Any(o => IsTrue(request.Options, o.Key)))
+        {
+            return "Choose at least one event.";
+        }
+
         return null;
     }
 
@@ -62,7 +68,7 @@ public static class OutputPlanner
         var primaryDirectory = PrimaryDirectory(request, item, config);
 
         string DirectoryFor(OutputRole role) =>
-            role == item.PrimaryRole || feature
+            role == item.PrimaryRole || role == OutputRole.Companion || feature
                 ? primaryDirectory
                 : Path.Combine(projectDirectory, ToOsPath(ConventionalFolder(role, item.ContentKind, config, context)));
 
@@ -155,6 +161,42 @@ public static class OutputPlanner
             plan.ResolvedOptions[OptionKeys.PassViewPath] = passViewPath ? "true" : "false";
         }
 
+        // Infrastructure/editor names derived from the item name until the user edits them.
+        var baseName = StripSuffix(name, item.NameSuffix);
+        ResolveAuto(OptionKeys.MethodName, "Add" + StripSuffix(baseName, "ServiceCollection"), identifier: true);
+        ResolveAuto(OptionKeys.UiHint, baseName, identifier: false);
+
+        void ResolveAuto(string key, string derived, bool identifier)
+        {
+            if (item.Options.Any(o => o.Key == key))
+            {
+                var typed = Get(options, key);
+                plan.ResolvedOptions[key] = typed.Length > 0 ? (identifier ? SanitizeIdentifier(typed) : typed) : derived;
+            }
+        }
+
+        // Every item option, for templates: bools as bools, everything else as trimmed text.
+        var optionValues = new Dictionary<string, object>(StringComparer.Ordinal);
+        foreach (var option in item.Options.Where(o => !o.Key.StartsWith(OptionKeys.EventPrefix, StringComparison.Ordinal)))
+        {
+            optionValues[option.Key] = option.Kind == OptionKind.Bool
+                ? IsTrue(options, option.Key)
+                : plan.ResolvedOptions.TryGetValue(option.Key, out var resolved) ? resolved : Get(options, option.Key);
+        }
+
+        var events = item.Options
+            .Where(o => o.Key.StartsWith(OptionKeys.EventPrefix, StringComparison.Ordinal) && IsTrue(options, o.Key))
+            .Select(o => o.Key.Substring(OptionKeys.EventPrefix.Length))
+            .ToList();
+
+        // Class name of every enabled output, so templates can refer to each other (class_model, class_handler...).
+        var classNames = enabled.ToDictionary(o => o.Id, o => o.Role switch
+        {
+            OutputRole.Class => name,
+            OutputRole.Companion => baseName + o.ClassNameSuffix,
+            _ => string.Empty,
+        });
+
         var baseClass = Get(options, OptionKeys.BaseClass);
         var group = Get(options, OptionKeys.Group);
         var groupNamespace = context.GroupNames.FirstOrDefault(g => g.Expression == group)?.Namespace ?? string.Empty;
@@ -179,7 +221,7 @@ public static class OutputPlanner
             ["view_path"] = explicitViewPath,
             ["base_class"] = baseClass.Length == 0 ? string.Empty : NamespaceHelper.ShortName(baseClass),
             ["base_class_namespace"] = NamespaceHelper.NamespaceOf(baseClass),
-            ["display_name"] = EscapeString(displayName.Length == 0 ? Humanize(name) : displayName),
+            ["display_name"] = EscapeString(displayName.Length == 0 ? Humanize(baseName) : displayName),
             ["description"] = EscapeString(Get(options, OptionKeys.Description)),
             ["guid"] = Get(options, OptionKeys.Guid).Length == 0 ? Guid.NewGuid().ToString("D").ToUpperInvariant() : Get(options, OptionKeys.Guid),
             ["group"] = group,
@@ -188,7 +230,14 @@ public static class OutputPlanner
             ["async"] = IsTrue(options, OptionKeys.Async),
             ["nullable"] = context.NullableEnabled,
             ["q"] = context.NullableEnabled ? "?" : string.Empty,
+            ["options"] = optionValues,
+            ["events"] = events,
         };
+
+        foreach (var pair in classNames.Where(p => p.Value.Length > 0))
+        {
+            common["class_" + pair.Key] = pair.Value;
+        }
 
         foreach (var output in enabled)
         {
@@ -219,6 +268,12 @@ public static class OutputPlanner
                     className = string.Empty;
                     ns = string.Empty;
                     fullPath = viewFullPath!;
+                    break;
+                case OutputRole.Class:
+                case OutputRole.Companion:
+                    className = classNames[output.Id];
+                    fullPath = Path.Combine(primaryDirectory, className + ".cs");
+                    ns = NamespaceForDirectory(primaryDirectory);
                     break;
                 default:
                     throw new InvalidOperationException($"Unknown role {output.Role}.");
@@ -253,6 +308,8 @@ public static class OutputPlanner
 
                     break;
                 case OutputRole.ViewModel:
+                case OutputRole.Class:
+                case OutputRole.Companion:
                     planned.RequiredUsings.Add(modelNamespace);
                     break;
             }
@@ -332,9 +389,21 @@ public static class OutputPlanner
             return target;
         }
 
-        // Right-clicked the project itself: use the conventional folder for the primary file.
-        return Path.Combine(request.Context.ProjectDirectory, ToOsPath(ConventionalFolder(item.PrimaryRole, item.ContentKind, config, request.Context)));
+        // Right-clicked the project itself: use the configured, detected or conventional folder.
+        var folder = item.FolderKey is null
+            ? ConventionalFolder(item.PrimaryRole, item.ContentKind, config, request.Context)
+            : config.Folders.ForKey(item.FolderKey)
+                ?? (request.Context.DetectedFolders.TryGetValue(item.FolderKey, out var detected) ? detected : item.DefaultFolder);
+        return Path.Combine(request.Context.ProjectDirectory, ToOsPath(folder));
     }
+
+    private static string StripSuffix(string value, string suffix) =>
+        suffix.Length > 0 && value.Length > suffix.Length && value.EndsWith(suffix, StringComparison.Ordinal)
+            ? value.Substring(0, value.Length - suffix.Length)
+            : value;
+
+    private static string SanitizeIdentifier(string value) =>
+        new string(value.Where(c => char.IsLetterOrDigit(c) || c == '_').ToArray());
 
     private static string ConventionalFolder(OutputRole role, ContentKind kind, ScaffolderConfig config, ProjectContext context) => role switch
     {

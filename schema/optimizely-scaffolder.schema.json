@@ -34,8 +34,17 @@
         "media": { "type": "string", "default": "Models/Media" },
         "controllers": { "type": "string", "default": "Controllers" },
         "components": { "type": "string", "default": "Components" },
-        "viewModels": { "type": "string", "description": "Leave out to use an existing ViewModels folder in the project (the shallowest one), or Models/ViewModels if there is none." },
-        "views": { "type": "string", "default": "Views" }
+        "viewModels": { "type": "string", "description": "Leave out to use the folder holding most existing *ViewModel classes, else a folder named ViewModels, else Models/ViewModels." },
+        "views": { "type": "string", "default": "Views" },
+        "initialization": { "type": "string", "description": "Initialization modules. Leave out to use where existing ones live, else Business/Initialization." },
+        "startupFilters": { "type": "string", "description": "IStartupFilter classes. Leave out to use where existing ones live, else Business/Initialization." },
+        "scheduledJobs": { "type": "string", "description": "Scheduled jobs. Leave out to use where existing ones live, else Business/ScheduledJobs." },
+        "serviceExtensions": { "type": "string", "description": "IServiceCollection extensions. Leave out to use where existing ones live, else Extensions." },
+        "selectionFactories": { "type": "string", "description": "Selection factories and queries. Leave out to use where existing ones live, else Business/SelectionFactories." },
+        "editorDescriptors": { "type": "string", "description": "Editor descriptors. Leave out to use where existing ones live, else Business/EditorDescriptors." },
+        "visitorGroups": { "type": "string", "description": "Visitor group criteria. Leave out to use where existing ones live, else Business/VisitorGroups." },
+        "contentEvents": { "type": "string", "description": "Content events handlers. Leave out to use where existing ones live, else Business/ContentEvents." },
+        "validators": { "type": "string", "description": "IValidate<T> validators. Leave out to use where existing ones live, else Business/Validation." }
       }
     },
     "baseClasses": {

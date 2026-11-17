@@ -22,10 +22,10 @@ jobs:
       # The VSIX project uses the classic project format, so tests run per project
       # rather than through the solution.
       - name: Unit and snapshot tests
-        run: dotnet test tests/ScaffolderForOptimizely.Core.Tests -c Release
+        run: dotnet test src/ScaffolderForOptimizely.Core.Tests -c Release
 
       - name: Compile tests (generated code vs Optimizely CMS 12)
-        run: dotnet test tests/ScaffolderForOptimizely.Compile.Tests -c Release
+        run: dotnet test src/ScaffolderForOptimizely.Compile.Tests -c Release
 
       - uses: microsoft/setup-msbuild@v2
 

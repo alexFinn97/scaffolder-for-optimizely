@@ -1,0 +1,30 @@
+﻿=== Business/Initialization/SecurityHeadersStartupFilter.cs (embedded, primary)
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+
+namespace Contoso.Web.Business.Initialization;
+
+/// <summary>
+/// Runs once at startup, when ASP.NET Core builds the request pipeline.
+/// Register it in Startup.ConfigureServices: <c>services.AddTransient&lt;IStartupFilter, SecurityHeadersStartupFilter&gt;();</c>
+/// </summary>
+public class SecurityHeadersStartupFilter : IStartupFilter
+{
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
+        {
+            // Run startup work here. Resolve singletons with app.ApplicationServices.
+
+            app.Use(async (context, nextMiddleware) =>
+            {
+                // Runs on every request, before the rest of the pipeline.
+                await nextMiddleware();
+            });
+
+            next(app);
+        };
+    }
+}
+

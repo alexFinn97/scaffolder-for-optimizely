@@ -1,0 +1,17 @@
+﻿=== Extensions/SiteServiceCollectionExtensions.cs (embedded, primary)
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Contoso.Web.Extensions;
+
+public static class SiteServiceCollectionExtensions
+{
+    /// <summary>
+    /// Call from Startup.ConfigureServices: <c>services.AddSite();</c>
+    /// </summary>
+    public static IServiceCollection AddSite(this IServiceCollection services)
+    {
+        // Register services here, e.g. services.AddSingleton<IMyService, MyService>();
+        return services;
+    }
+}
+

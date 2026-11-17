@@ -103,6 +103,49 @@ public sealed class FolderConfig
 
     [JsonProperty("views")]
     public string Views { get; set; } = "Views";
+
+    // Infrastructure and editor items: null = where existing implementations live, else Alloy-style.
+    [JsonProperty("initialization")]
+    public string? Initialization { get; set; }
+
+    [JsonProperty("startupFilters")]
+    public string? StartupFilters { get; set; }
+
+    [JsonProperty("scheduledJobs")]
+    public string? ScheduledJobs { get; set; }
+
+    [JsonProperty("serviceExtensions")]
+    public string? ServiceExtensions { get; set; }
+
+    [JsonProperty("selectionFactories")]
+    public string? SelectionFactories { get; set; }
+
+    [JsonProperty("editorDescriptors")]
+    public string? EditorDescriptors { get; set; }
+
+    [JsonProperty("visitorGroups")]
+    public string? VisitorGroups { get; set; }
+
+    [JsonProperty("contentEvents")]
+    public string? ContentEvents { get; set; }
+
+    [JsonProperty("validators")]
+    public string? Validators { get; set; }
+
+    /// <summary>The configured folder for a <see cref="Catalog.FolderKeys"/> key, or null.</summary>
+    public string? ForKey(string key) => key switch
+    {
+        Catalog.FolderKeys.Initialization => Initialization,
+        Catalog.FolderKeys.StartupFilters => StartupFilters,
+        Catalog.FolderKeys.ScheduledJobs => ScheduledJobs,
+        Catalog.FolderKeys.ServiceExtensions => ServiceExtensions,
+        Catalog.FolderKeys.SelectionFactories => SelectionFactories,
+        Catalog.FolderKeys.EditorDescriptors => EditorDescriptors,
+        Catalog.FolderKeys.VisitorGroups => VisitorGroups,
+        Catalog.FolderKeys.ContentEvents => ContentEvents,
+        Catalog.FolderKeys.Validators => Validators,
+        _ => null,
+    };
 }
 
 /// <summary>Default base classes (full type names). Null = pick from detection.</summary>

@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Shell;
 using ScaffolderForOptimizely.Core.Catalog;
 using ScaffolderForOptimizely.Core.Config;
 using ScaffolderForOptimizely.Core.Generation;
+using ScaffolderForOptimizely.Extension;
 using ScaffolderForOptimizely.Services;
 using ScaffolderForOptimizely.UI;
 using Task = System.Threading.Tasks.Task;

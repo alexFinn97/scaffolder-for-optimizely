@@ -5,7 +5,7 @@ using System.Linq;
 namespace ScaffolderForOptimizely.Core.Catalog;
 
 /// <summary>Every item the extension can scaffold.</summary>
-public static class ItemCatalog
+public static partial class ItemCatalog
 {
     public static class Ids
     {
@@ -16,12 +16,23 @@ public static class ItemCatalog
         public const string BlockComponent = "cms-block-component";
         public const string PartialComponent = "cms-partial-component";
         public const string ViewComponent = "cms-view-component";
+        public const string InitializationModule = "cms-initialization-module";
+        public const string StartupFilter = "cms-startup-filter";
+        public const string ScheduledJob = "cms-scheduled-job";
+        public const string ServiceCollectionExtension = "cms-service-collection-extension";
+        public const string SelectionFactory = "cms-selection-factory";
+        public const string EditorDescriptor = "cms-editor-descriptor";
+        public const string VisitorGroupCriterion = "cms-visitor-group-criterion";
+        public const string ContentEventsHandler = "cms-content-events-handler";
+        public const string ContentValidator = "cms-content-validator";
     }
 
     public static class Categories
     {
         public const string CmsContentTypes = "CMS/Content types";
         public const string CmsRendering = "CMS/Rendering";
+        public const string CmsInfrastructure = "CMS/Infrastructure";
+        public const string CmsEditor = "CMS/Editor";
     }
 
     private static readonly Lazy<IReadOnlyList<ItemDefinition>> LazyAll = new(Build);
@@ -40,6 +51,15 @@ public static class ItemCatalog
         BlockComponent(),
         PartialComponent(),
         ViewComponent(),
+        InitializationModule(),
+        StartupFilter(),
+        ScheduledJob(),
+        ServiceCollectionExtension(),
+        SelectionFactory(),
+        EditorDescriptor(),
+        VisitorGroupCriterion(),
+        ContentEventsHandler(),
+        ContentValidator(),
     };
 
     private static ItemDefinition PageType() => new(

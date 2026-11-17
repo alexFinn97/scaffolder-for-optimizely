@@ -25,6 +25,25 @@ public static class OptionKeys
     /// <summary>"true"/"false" to force passing the view path to View(); empty means decide automatically.</summary>
     public const string PassViewPath = "passViewPath";
 
+    // Infrastructure and editor items.
+    public const string Configurable = "configurable";
+    public const string Stoppable = "stoppable";
+    public const string StatusProgress = "statusProgress";
+    public const string Logger = "logger";
+    public const string Restartable = "restartable";
+    public const string MethodName = "methodName";
+    public const string Autosuggest = "autosuggest";
+    public const string TargetType = "targetType";
+    public const string UiHint = "uiHint";
+    public const string ClientEditingClass = "clientEditingClass";
+    public const string Category = "category";
+    public const string Scope = "scope";
+    public const string Middleware = "middleware";
+    public const string Registration = "registration";
+
+    /// <summary>Prefix for content event switches, e.g. <c>event:PublishingContent</c>.</summary>
+    public const string EventPrefix = "event:";
+
     /// <summary>Not shown in the dialog: fixed per dialog session so the preview keeps the same GUID.</summary>
     public const string Guid = "guid";
 }
