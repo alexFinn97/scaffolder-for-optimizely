@@ -1,0 +1,52 @@
+﻿=== Business/Orders/VatTaxCalculator.cs (embedded, primary)
+using EPiServer.Commerce.Order;
+using Mediachase.Commerce;
+
+namespace Contoso.Web.Business.Orders;
+
+/// <summary>
+/// Wraps Commerce's default <see cref="ITaxCalculator"/>: everything goes to it unless you change it here.
+/// Registered by <see cref="VatTaxCalculatorExtensions.AddVatTaxCalculator"/>.
+/// </summary>
+public class VatTaxCalculator : ITaxCalculator
+{
+    private readonly ITaxCalculator _inner;
+
+    public VatTaxCalculator(ITaxCalculator inner)
+    {
+        _inner = inner;
+    }
+
+    public Money GetSalesTax(ILineItem lineItem, IMarket market, IOrderAddress shippingAddress, Money basePrice)
+    {
+        // Change how sales tax is worked out here, e.g. call a tax service for the shipping address.
+        return _inner.GetSalesTax(lineItem, market, shippingAddress, basePrice);
+    }
+
+    public Money GetSalesTax(System.Collections.Generic.IEnumerable<ILineItem> lineItems, IMarket market, IOrderAddress shippingAddress, Currency currency) =>
+        _inner.GetSalesTax(lineItems, market, shippingAddress, currency);
+
+    public Money GetShippingTax(ILineItem lineItem, IMarket market, IOrderAddress shippingAddress, Money basePrice) =>
+        _inner.GetShippingTax(lineItem, market, shippingAddress, basePrice);
+}
+
+=== Business/Orders/VatTaxCalculatorExtensions.cs (embedded)
+using EPiServer.Commerce.Order;
+using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Contoso.Web.Business.Orders;
+
+public static class VatTaxCalculatorExtensions
+{
+    /// <summary>
+    /// Call from Startup.ConfigureServices, after <c>services.AddCommerce()</c>: <c>services.AddVatTaxCalculator();</c>
+    /// </summary>
+    public static IServiceCollection AddVatTaxCalculator(this IServiceCollection services)
+    {
+        // Wraps the registered ITaxCalculator, so the default stays available inside VatTaxCalculator.
+        services.Intercept<ITaxCalculator>((provider, inner) => ActivatorUtilities.CreateInstance<VatTaxCalculator>(provider, inner));
+        return services;
+    }
+}
+

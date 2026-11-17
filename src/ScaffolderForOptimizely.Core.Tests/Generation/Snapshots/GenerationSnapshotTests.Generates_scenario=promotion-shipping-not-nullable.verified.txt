@@ -1,0 +1,72 @@
+﻿=== Business/Promotions/CheaperShippingPromotion.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Marketing;
+using EPiServer.Commerce.Marketing.DataAnnotations;
+using EPiServer.Commerce.Marketing.Promotions;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Business.Promotions;
+
+/// <summary>
+/// Shown in the Marketing UI's promotion list. Evaluated by <see cref="CheaperShippingPromotionProcessor"/>.
+/// </summary>
+[ContentType(
+    DisplayName = "Cheaper Shipping",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    GroupName = "shippingpromotion",
+    Description = "")]
+public class CheaperShippingPromotion : ShippingPromotion
+{
+    /// <summary>How much the order must be worth, per currency.</summary>
+    [PromotionRegion(PromotionRegionName.Condition)]
+    [Display(Order = 10)]
+    public virtual PurchaseAmount Condition { get; set; }
+
+    /// <summary>A fixed amount per currency, or a percentage.</summary>
+    [PromotionRegion(PromotionRegionName.Discount)]
+    [Display(Order = 30)]
+    public virtual MonetaryReward Discount { get; set; }
+}
+
+=== Business/Promotions/CheaperShippingPromotionProcessor.cs (embedded)
+using System.Collections.Generic;
+using System.Linq;
+using EPiServer.Commerce.Marketing;
+using EPiServer.Commerce.Marketing.Extensions;
+using EPiServer.Core;
+
+namespace Contoso.Web.Business.Promotions;
+
+/// <summary>
+/// Decides whether a cart qualifies for <see cref="CheaperShippingPromotion"/> and what it saves.
+/// Found by the promotion engine automatically.
+/// </summary>
+public class CheaperShippingPromotionProcessor : ShippingPromotionProcessorBase<CheaperShippingPromotion>
+{
+    private readonly FulfillmentEvaluator _fulfillmentEvaluator;
+
+    public CheaperShippingPromotionProcessor(FulfillmentEvaluator fulfillmentEvaluator)
+    {
+        _fulfillmentEvaluator = fulfillmentEvaluator;
+    }
+
+    protected override FulfillmentStatus GetFulfillmentStatus(CheaperShippingPromotion promotionData, PromotionProcessorContext context) =>
+        promotionData.Condition is null
+            ? FulfillmentStatus.NotFulfilled
+            : promotionData.Condition.GetFulfillmentStatus(context, _fulfillmentEvaluator);
+
+    protected override RewardDescription CreateRewardDescription(
+        CheaperShippingPromotion promotionData,
+        FulfillmentStatus fulfillmentStatus,
+        IEnumerable<RedemptionDescription> redemptions,
+        PromotionProcessorContext context) =>
+        RewardDescription.CreateMoneyOrPercentageRewardDescription(
+            fulfillmentStatus, redemptions, promotionData, promotionData.Discount, context.OrderGroup.Currency, promotionData.Description);
+
+    protected override PromotionItems GetPromotionItems(CheaperShippingPromotion promotionData) =>
+        new PromotionItems(promotionData, AllItems(), AllItems());
+
+    private static CatalogItemSelection AllItems() =>
+        new CatalogItemSelection(Enumerable.Empty<ContentReference>(), CatalogItemSelectionType.All, true);
+}
+

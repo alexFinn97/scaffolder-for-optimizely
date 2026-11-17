@@ -1,0 +1,73 @@
+﻿=== Business/Orders/FreightShippingCalculator.cs (embedded, primary)
+using EPiServer.Commerce.Order;
+using Mediachase.Commerce;
+
+namespace Contoso.Web.Business.Orders;
+
+/// <summary>
+/// Wraps Commerce's default <see cref="IShippingCalculator"/>: everything goes to it unless you change it here.
+/// Registered by <see cref="FreightShippingCalculatorExtensions.AddFreightShippingCalculator"/>.
+/// </summary>
+public class FreightShippingCalculator : IShippingCalculator
+{
+    private readonly IShippingCalculator _inner;
+
+    public FreightShippingCalculator(IShippingCalculator inner)
+    {
+        _inner = inner;
+    }
+
+    public Money GetShippingCost(IShipment shipment, IMarket market, Currency currency)
+    {
+        // Change how a shipment's cost is worked out here.
+        return _inner.GetShippingCost(shipment, market, currency);
+    }
+
+    public Money GetDiscountedShippingAmount(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetDiscountedShippingAmount(shipment, market, currency);
+
+    public Money GetShippingItemsTotal(IShipment shipment, Currency currency) =>
+        _inner.GetShippingItemsTotal(shipment, currency);
+
+    public Money GetShippingReturnItemsTotal(IShipment shipment, Currency currency) =>
+        _inner.GetShippingReturnItemsTotal(shipment, currency);
+
+    public ShippingTotals GetShippingTotals(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetShippingTotals(shipment, market, currency);
+
+    public ShippingTotals GetReturnShippingTotals(IShipment shipment, Currency currency) =>
+        _inner.GetReturnShippingTotals(shipment, currency);
+
+    public Money GetSalesTax(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetSalesTax(shipment, market, currency);
+
+    public Money GetShippingTax(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetShippingTax(shipment, market, currency);
+
+    public Money GetReturnSalesTax(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetReturnSalesTax(shipment, market, currency);
+
+    public Money GetReturnShippingTax(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetReturnShippingTax(shipment, market, currency);
+}
+
+=== Business/Orders/FreightShippingCalculatorExtensions.cs (embedded)
+using EPiServer.Commerce.Order;
+using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Contoso.Web.Business.Orders;
+
+public static class FreightShippingCalculatorExtensions
+{
+    /// <summary>
+    /// Call from Startup.ConfigureServices, after <c>services.AddCommerce()</c>: <c>services.AddFreightShippingCalculator();</c>
+    /// </summary>
+    public static IServiceCollection AddFreightShippingCalculator(this IServiceCollection services)
+    {
+        // Wraps the registered IShippingCalculator, so the default stays available inside FreightShippingCalculator.
+        services.Intercept<IShippingCalculator>((provider, inner) => ActivatorUtilities.CreateInstance<FreightShippingCalculator>(provider, inner));
+        return services;
+    }
+}
+

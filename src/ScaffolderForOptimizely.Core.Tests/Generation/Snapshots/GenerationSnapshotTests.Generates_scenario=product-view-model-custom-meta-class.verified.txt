@@ -1,0 +1,66 @@
+﻿=== Controllers/ShoeProductController.cs (embedded)
+using Contoso.Web.Models.Catalog;
+using Contoso.Web.Models.ViewModels;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers;
+
+public class ShoeProductController : ContentController<ShoeProduct>
+{
+    public IActionResult Index(ShoeProduct currentContent)
+    {
+        var model = new ShoeProductViewModel(currentContent);
+
+        return View(model);
+    }
+}
+
+=== Models/Catalog/ShoeProduct.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Catalog.ContentTypes;
+using EPiServer.Commerce.Catalog.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Models.Catalog;
+
+[CatalogContentType(
+    DisplayName = "Shoe Product",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    MetaClassName = "ShoeProduct",
+    Description = "")]
+public class ShoeProduct : ProductContent
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Description",
+        Description = "Shown on the storefront.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual XhtmlString? Description { get; set; }
+}
+
+=== Models/ViewModels/ShoeProductViewModel.cs (embedded)
+using Contoso.Web.Models.Catalog;
+
+namespace Contoso.Web.Models.ViewModels;
+
+public class ShoeProductViewModel
+{
+    public ShoeProductViewModel(ShoeProduct currentContent)
+    {
+        CurrentContent = currentContent;
+    }
+
+    public ShoeProduct CurrentContent { get; }
+}
+
+=== Views/ShoeProduct/Index.cshtml (embedded)
+@model Contoso.Web.Models.ViewModels.ShoeProductViewModel
+
+<article>
+    <h1>@Model.CurrentContent.DisplayName</h1>
+</article>
+

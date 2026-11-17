@@ -1,0 +1,22 @@
+﻿=== Controllers/FashionProductController.cs (embedded, primary)
+using Contoso.Web.Models.Catalog;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers;
+
+public class FashionProductController : ContentController<FashionProduct>
+{
+    public IActionResult Index(FashionProduct currentContent)
+    {
+        return View(currentContent);
+    }
+}
+
+=== Views/FashionProduct/Index.cshtml (embedded)
+@model Contoso.Web.Models.Catalog.FashionProduct
+
+<article>
+    <h1>@Model.DisplayName</h1>
+</article>
+

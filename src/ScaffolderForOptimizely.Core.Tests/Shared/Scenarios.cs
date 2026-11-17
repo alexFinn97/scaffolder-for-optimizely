@@ -283,6 +283,95 @@ public static class Scenarios
         {
             Options = { [OptionKeys.Async] = "false", [OptionKeys.View] = "false" },
         },
+
+        // Commerce: catalog content types.
+        new("product-defaults", ItemCatalog.Ids.Product, "ShirtProduct")
+        {
+            Options = { [OptionKeys.Description] = "A shirt with sizes and colours." },
+        },
+        new("product-view-model-custom-meta-class", ItemCatalog.Ids.Product, "ShoeProduct")
+        {
+            Options = { [OptionKeys.ViewModel] = "true", [OptionKeys.MetaClassName] = "Shoe Product!" },
+        },
+        new("variation-block-scoped-not-nullable", ItemCatalog.Ids.Variation, "ShirtVariation")
+        {
+            FileScopedNamespaces = false,
+            Nullable = false,
+        },
+        new("bundle-model-only", ItemCatalog.Ids.Bundle, "OutfitBundle")
+        {
+            Options = { [OptionKeys.Controller] = "false", [OptionKeys.View] = "false" },
+        },
+        new("package-model-only", ItemCatalog.Ids.Package, "StarterPackage")
+        {
+            Options = { [OptionKeys.Controller] = "false", [OptionKeys.View] = "false" },
+        },
+        new("category-defaults", ItemCatalog.Ids.CatalogCategory, "SeasonCategory"),
+        new("product-controller-path", ItemCatalog.Ids.Product, "BootProduct")
+        {
+            Options = { [OptionKeys.ControllerPath] = "Controllers/Commerce/BootController" },
+        },
+        new("product-detected-controller-folder", ItemCatalog.Ids.Product, "HatProduct")
+        {
+            DetectedFolders = { [FolderKeys.CatalogControllers] = "Features/Commerce/Controllers" },
+        },
+        new("content-controller-detected-folder", ItemCatalog.Ids.ContentController, "FashionProduct")
+        {
+            DetectedFolders = { [FolderKeys.CatalogControllers] = "Features/Commerce/Controllers" },
+            Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Catalog.FashionProduct" },
+        },
+        new("content-controller", ItemCatalog.Ids.ContentController, "FashionProduct")
+        {
+            Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Catalog.FashionProduct" },
+        },
+        new("content-controller-view-model", ItemCatalog.Ids.ContentController, "FashionProduct")
+        {
+            Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Catalog.FashionProduct", [OptionKeys.ViewModel] = "true" },
+        },
+
+        // Commerce: marketing, payment, shipping and order services.
+        new("promotion-entry", ItemCatalog.Ids.Promotion, "BuyThreeGetDiscount")
+        {
+            Options = { [OptionKeys.Description] = "Buy three, get a discount on selected items." },
+        },
+        new("promotion-order", ItemCatalog.Ids.Promotion, "SpendOverPromotion")
+        {
+            Options = { [OptionKeys.Kind] = ItemCatalog.PromotionKinds.Order },
+        },
+        new("promotion-shipping-not-nullable", ItemCatalog.Ids.Promotion, "CheaperShippingPromotion")
+        {
+            Nullable = false,
+            Options = { [OptionKeys.Kind] = ItemCatalog.PromotionKinds.Shipping },
+        },
+        new("payment-provider-defaults", ItemCatalog.Ids.PaymentProvider, "Invoice"),
+        new("payment-provider-gateway-only-not-nullable", ItemCatalog.Ids.PaymentProvider, "GiftCardPaymentGateway")
+        {
+            Nullable = false,
+            Options = { [OptionKeys.PaymentMethod] = "false" },
+        },
+        new("shipping-provider", ItemCatalog.Ids.ShippingProvider, "Courier"),
+        new("shipping-provider-not-nullable", ItemCatalog.Ids.ShippingProvider, "PalletShippingGateway")
+        {
+            Nullable = false,
+        },
+        new("order-service-line-item-validator", ItemCatalog.Ids.OrderServiceDecorator, "MarketLineItemValidator"),
+        new("order-service-placed-price-no-registration", ItemCatalog.Ids.OrderServiceDecorator, "ContractPriceProcessor")
+        {
+            Options = { [OptionKeys.Kind] = ItemCatalog.OrderServiceKinds.PlacedPriceProcessor, [OptionKeys.Registration] = "false" },
+        },
+        new("order-service-tax-calculator", ItemCatalog.Ids.OrderServiceDecorator, "VatTaxCalculator")
+        {
+            Options = { [OptionKeys.Kind] = ItemCatalog.OrderServiceKinds.TaxCalculator },
+        },
+        new("order-service-shipping-calculator-not-nullable", ItemCatalog.Ids.OrderServiceDecorator, "FreightShippingCalculator")
+        {
+            Nullable = false,
+            Options = { [OptionKeys.Kind] = ItemCatalog.OrderServiceKinds.ShippingCalculator },
+        },
+        new("promotion-detected-folder", ItemCatalog.Ids.Promotion, "LoyaltyPromotion")
+        {
+            DetectedFolders = { [FolderKeys.Promotions] = "Features/Marketing" },
+        },
     };
 
     public static Scenario Get(string name) => All.Single(s => s.Name == name);
@@ -311,6 +400,8 @@ public static class Scenarios
         context.BlockBaseClasses.Add("Contoso.Web.Models.Blocks.SiteBlockData");
         context.PageTypes.Add("Contoso.Web.Models.Pages.StandardPage");
         context.BlockTypes.Add("Contoso.Web.Models.Blocks.TeaserBlock");
+        context.CommerceMajorVersion = 14;
+        context.CatalogTypes.Add("Contoso.Web.Models.Catalog.FashionProduct");
         context.GroupNames.Add(new GroupNameCandidate("Contoso.Web", "Globals.GroupNames.Specialized"));
         context.GroupNames.Add(new GroupNameCandidate("Contoso.Web", "Globals.GroupNames.Content"));
         return context;
@@ -393,6 +484,14 @@ public static class Scenarios
 
             [ContentType(GUID = "EB67A99A-E239-41B8-9C59-20EAA5936047")]
             public class TeaserBlock : SiteBlockData
+            {
+            }
+        }
+
+        namespace Contoso.Web.Models.Catalog
+        {
+            [EPiServer.Commerce.Catalog.DataAnnotations.CatalogContentType(GUID = "5B3C8E0A-3A43-4D7B-9E0B-2F6C1D4A8E11", MetaClassName = "FashionProduct")]
+            public class FashionProduct : EPiServer.Commerce.Catalog.ContentTypes.ProductContent
             {
             }
         }

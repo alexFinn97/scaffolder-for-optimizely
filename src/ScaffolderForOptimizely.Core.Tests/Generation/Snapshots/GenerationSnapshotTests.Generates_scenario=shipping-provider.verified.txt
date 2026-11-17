@@ -1,0 +1,35 @@
+﻿=== Business/Shipping/CourierShippingGateway.cs (embedded, primary)
+using System;
+using EPiServer.Commerce.Order;
+using Mediachase.Commerce;
+using Mediachase.Commerce.Orders;
+using Mediachase.Commerce.Orders.Managers;
+
+namespace Contoso.Web.Business.Shipping;
+
+/// <summary>
+/// Calculates shipping rates for a shipping method whose provider is set to this class in Commerce admin > Shipping.
+/// Implements the order API (<see cref="IShippingPlugin"/>) and the legacy gateway, so both code paths work.
+/// </summary>
+public class CourierShippingGateway : IShippingPlugin, IShippingGateway
+{
+    public ShippingRate? GetRate(IMarket market, Guid methodId, IShipment shipment, ref string message)
+    {
+        var methods = ShippingManager.GetShippingMethod(methodId);
+        if (methods.ShippingMethod.Count == 0)
+        {
+            message = $"Shipping method {methodId} was not found.";
+            return null;
+        }
+
+        // Starts from the base price set in Commerce admin. Calculate the real rate here
+        // (weight, destination, a carrier's API...) from the shipment's line items and address.
+        var method = methods.ShippingMethod[0];
+        return new ShippingRate(methodId, method.DisplayName, new Money(method.BasePrice, new Currency(method.Currency)));
+    }
+
+    /// <summary>Legacy entry point; forwards to the order API version.</summary>
+    public ShippingRate? GetRate(IMarket market, Guid methodId, Shipment shipment, ref string message) =>
+        GetRate(market, methodId, (IShipment)shipment, ref message);
+}
+

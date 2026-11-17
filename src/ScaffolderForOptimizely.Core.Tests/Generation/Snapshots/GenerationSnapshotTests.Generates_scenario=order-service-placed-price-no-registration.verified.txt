@@ -1,0 +1,32 @@
+﻿=== Business/Orders/ContractPriceProcessor.cs (embedded, primary)
+using System;
+using EPiServer.Commerce.Catalog.ContentTypes;
+using EPiServer.Commerce.Order;
+using Mediachase.Commerce;
+using Mediachase.Commerce.Customers;
+
+namespace Contoso.Web.Business.Orders;
+
+/// <summary>
+/// Wraps Commerce's default <see cref="IPlacedPriceProcessor"/>: everything goes to it unless you change it here.
+/// Register it after AddCommerce(): <c>services.Intercept&lt;IPlacedPriceProcessor&gt;((provider, inner) => new ContractPriceProcessor(inner));</c>
+/// </summary>
+public class ContractPriceProcessor : IPlacedPriceProcessor
+{
+    private readonly IPlacedPriceProcessor _inner;
+
+    public ContractPriceProcessor(IPlacedPriceProcessor inner)
+    {
+        _inner = inner;
+    }
+
+    public Money? GetPlacedPrice(EntryContentBase entry, decimal quantity, CustomerContact customerContact, MarketId marketId, Currency currency)
+    {
+        // Return a different price here, e.g. for a customer group or a negotiated contract.
+        return _inner.GetPlacedPrice(entry, quantity, customerContact, marketId, currency);
+    }
+
+    public bool UpdatePlacedPrice(ILineItem lineItem, CustomerContact customerContact, MarketId marketId, Currency currency, Action<ILineItem, ValidationIssue> onValidationError) =>
+        _inner.UpdatePlacedPrice(lineItem, customerContact, marketId, currency, onValidationError);
+}
+

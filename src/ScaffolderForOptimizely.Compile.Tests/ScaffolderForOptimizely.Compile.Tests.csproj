@@ -21,6 +21,8 @@
     <PackageReference Include="EPiServer.CMS.Core" Version="12.24.3" />
     <!-- EPiServer.Shell: editor descriptors, selection factories, visitor group criteria. -->
     <PackageReference Include="EPiServer.CMS.UI.Core" Version="12.34.9" />
+    <!-- Commerce 14: catalog content, promotions, payment, shipping and order services. -->
+    <PackageReference Include="EPiServer.Commerce.Core" Version="14.46.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
   </ItemGroup>
 

@@ -27,11 +27,51 @@ public class CompilationAnalyzerTests
         Assert.All(context.GroupNames, g => Assert.Equal("Contoso.Web", g.Namespace));
         Assert.Equal(12, context.CmsMajorVersion);
         Assert.Equal(Profiles.Cms12, context.CmsProfile);
-        Assert.Null(context.CommerceMajorVersion);
+        // The test host references Commerce 14 for the Commerce scenarios.
+        Assert.Equal(14, context.CommerceMajorVersion);
+        Assert.Equal(new[] { "Contoso.Web.Models.Catalog.FashionProduct" }, context.CatalogTypes);
+        Assert.Empty(context.CatalogBaseClasses);
         Assert.True(context.NullableEnabled);
 
         // The support source uses block-scoped namespaces.
         Assert.False(context.FileScopedNamespaces);
+    }
+
+    [Fact]
+    public void Detects_catalog_base_classes_and_where_commerce_classes_live()
+    {
+        string InProject(string relative) => System.IO.Path.Combine(Scenarios.ProjectDirectory, relative);
+
+        var compilation = TestCompiler.Create(
+            new[]
+            {
+                (InProject(@"Models\Catalog\BaseProduct.cs"), "namespace Contoso.Web.Models.Catalog;\npublic abstract class BaseProduct : EPiServer.Commerce.Catalog.ContentTypes.ProductContent { }"),
+                (InProject(@"Models\Catalog\Shirt.cs"), "namespace Contoso.Web.Models.Catalog;\npublic class Shirt : BaseProduct { }"),
+                (InProject(@"Models\Catalog\BaseVariant.cs"), "namespace Contoso.Web.Models.Catalog;\npublic abstract class BaseVariant : EPiServer.Commerce.Catalog.ContentTypes.VariationContent { }"),
+                (InProject(@"Models\Catalog\Season.cs"), "namespace Contoso.Web.Models.Catalog;\npublic class Season : EPiServer.Commerce.Catalog.ContentTypes.NodeContent { }"),
+                (InProject(@"Features\Commerce\Controllers\ShirtController.cs"), "namespace Contoso.Web.Features.Commerce.Controllers;\npublic class ShirtController : EPiServer.Web.Mvc.ContentController<Contoso.Web.Models.Catalog.Shirt> { }"),
+                (InProject(@"Controllers\StartController.cs"), "namespace Contoso.Web.Controllers;\npublic class StartController : EPiServer.Web.Mvc.PageController<EPiServer.Core.PageData> { }"),
+                (InProject(@"Features\Marketing\Loyalty.cs"),"namespace Contoso.Web.Features.Marketing;\npublic class Loyalty : EPiServer.Commerce.Marketing.OrderPromotion { }"),
+                (InProject(@"Checkout\Payments\Invoice.cs"), """
+                    namespace Contoso.Web.Checkout.Payments;
+                    public class Invoice : Mediachase.Commerce.Plugins.Payment.AbstractPaymentGateway
+                    {
+                        public override bool ProcessPayment(Mediachase.Commerce.Orders.Payment payment, ref string message) => true;
+                    }
+                    """),
+            },
+            nullable: false);
+        var context = new ProjectContext(Scenarios.ProjectDirectory, Scenarios.RootNamespace);
+
+        CompilationAnalyzer.Apply(compilation, context);
+
+        Assert.Equal(new[] { "Contoso.Web.Models.Catalog.Season", "Contoso.Web.Models.Catalog.Shirt" }, context.CatalogTypes);
+        Assert.Equal(new[] { "Contoso.Web.Models.Catalog.BaseProduct" }, context.CatalogBaseClasses[CatalogRoots.Product]);
+        Assert.Equal(new[] { "Contoso.Web.Models.Catalog.BaseVariant" }, context.CatalogBaseClasses[CatalogRoots.Variation]);
+        Assert.Equal("Features/Commerce/Controllers", context.DetectedFolders[FolderKeys.CatalogControllers]);
+        Assert.Equal("Features/Marketing", context.DetectedFolders[FolderKeys.Promotions]);
+        Assert.Equal("Checkout/Payments", context.DetectedFolders[FolderKeys.Payments]);
+        Assert.False(context.DetectedFolders.ContainsKey(FolderKeys.Shipping));
     }
 
     [Fact]

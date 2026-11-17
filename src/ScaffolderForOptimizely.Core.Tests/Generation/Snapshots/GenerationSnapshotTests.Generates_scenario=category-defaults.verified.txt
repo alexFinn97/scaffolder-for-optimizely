@@ -1,0 +1,48 @@
+﻿=== Controllers/SeasonCategoryController.cs (embedded)
+using Contoso.Web.Models.Catalog;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers;
+
+public class SeasonCategoryController : ContentController<SeasonCategory>
+{
+    public IActionResult Index(SeasonCategory currentContent)
+    {
+        return View(currentContent);
+    }
+}
+
+=== Models/Catalog/SeasonCategory.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Catalog.ContentTypes;
+using EPiServer.Commerce.Catalog.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Models.Catalog;
+
+[CatalogContentType(
+    DisplayName = "Season Category",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    MetaClassName = "SeasonCategory",
+    Description = "")]
+public class SeasonCategory : NodeContent
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Description",
+        Description = "Shown on the storefront.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual XhtmlString? Description { get; set; }
+}
+
+=== Views/SeasonCategory/Index.cshtml (embedded)
+@model Contoso.Web.Models.Catalog.SeasonCategory
+
+<article>
+    <h1>@Model.DisplayName</h1>
+</article>
+

@@ -1,0 +1,52 @@
+﻿=== Business/Orders/MarketLineItemValidator.cs (embedded, primary)
+using System;
+using EPiServer.Commerce.Order;
+using Mediachase.Commerce;
+
+namespace Contoso.Web.Business.Orders;
+
+/// <summary>
+/// Wraps Commerce's default <see cref="ILineItemValidator"/>: everything goes to it unless you change it here.
+/// Registered by <see cref="MarketLineItemValidatorExtensions.AddMarketLineItemValidator"/>.
+/// </summary>
+public class MarketLineItemValidator : ILineItemValidator
+{
+    private readonly ILineItemValidator _inner;
+
+    public MarketLineItemValidator(ILineItemValidator inner)
+    {
+        _inner = inner;
+    }
+
+    public bool Validate(ILineItem lineItem, MarketId marketId, Action<ILineItem, ValidationIssue> onValidationError)
+    {
+        if (!_inner.Validate(lineItem, marketId, onValidationError))
+        {
+            return false;
+        }
+
+        // Add your own checks here. To reject the item, call onValidationError and return false.
+        return true;
+    }
+}
+
+=== Business/Orders/MarketLineItemValidatorExtensions.cs (embedded)
+using EPiServer.Commerce.Order;
+using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Contoso.Web.Business.Orders;
+
+public static class MarketLineItemValidatorExtensions
+{
+    /// <summary>
+    /// Call from Startup.ConfigureServices, after <c>services.AddCommerce()</c>: <c>services.AddMarketLineItemValidator();</c>
+    /// </summary>
+    public static IServiceCollection AddMarketLineItemValidator(this IServiceCollection services)
+    {
+        // Wraps the registered ILineItemValidator, so the default stays available inside MarketLineItemValidator.
+        services.Intercept<ILineItemValidator>((provider, inner) => ActivatorUtilities.CreateInstance<MarketLineItemValidator>(provider, inner));
+        return services;
+    }
+}
+
