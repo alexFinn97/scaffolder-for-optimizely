@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Scaffolder for Optimizely")]
@@ -7,5 +8,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Scaffolder for Optimizely")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 Alex Finnigan")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("0.3.1.0")]
-[assembly: AssemblyFileVersion("0.3.1.0")]
+
+// The Commerce add-on derives its commands from ScaffoldCommand<T> and reuses the dialog and services.
+[assembly: InternalsVisibleTo("ScaffolderForOptimizely.Commerce")]
+[assembly: AssemblyVersion("0.4.0.0")]
+[assembly: AssemblyFileVersion("0.4.0.0")]

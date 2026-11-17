@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaffolderForOptimizely.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaffolderForOptimizely.Vsix", "ScaffolderForOptimizely.Vsix\ScaffolderForOptimizely.Vsix.csproj", "{090CB5D6-5115-4C47-B711-F4512B4F7450}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaffolderForOptimizely.Commerce.Vsix", "ScaffolderForOptimizely.Commerce.Vsix\ScaffolderForOptimizely.Commerce.Vsix.csproj", "{29156AA4-F8CE-45EE-9382-08D3409B6951}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaffolderForOptimizely.Core.Tests", "ScaffolderForOptimizely.Core.Tests\ScaffolderForOptimizely.Core.Tests.csproj", "{764BAD23-1763-4089-B22C-C8466011B94D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScaffolderForOptimizely.Compile.Tests", "ScaffolderForOptimizely.Compile.Tests\ScaffolderForOptimizely.Compile.Tests.csproj", "{3FE57E7A-9207-45F9-9444-5F8469694361}"
@@ -45,6 +47,18 @@ Global
 		{090CB5D6-5115-4C47-B711-F4512B4F7450}.Release|x64.Build.0 = Release|Any CPU
 		{090CB5D6-5115-4C47-B711-F4512B4F7450}.Release|x86.ActiveCfg = Release|Any CPU
 		{090CB5D6-5115-4C47-B711-F4512B4F7450}.Release|x86.Build.0 = Release|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Debug|x64.Build.0 = Debug|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Debug|x86.Build.0 = Debug|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Release|x64.ActiveCfg = Release|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Release|x64.Build.0 = Release|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Release|x86.ActiveCfg = Release|Any CPU
+		{29156AA4-F8CE-45EE-9382-08D3409B6951}.Release|x86.Build.0 = Release|Any CPU
 		{764BAD23-1763-4089-B22C-C8466011B94D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{764BAD23-1763-4089-B22C-C8466011B94D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{764BAD23-1763-4089-B22C-C8466011B94D}.Debug|x64.ActiveCfg = Debug|Any CPU

@@ -15,6 +15,9 @@ namespace ScaffolderForOptimizely.Extension;
 // Load in the background once a solution is open, so the hidden-by-default commands can decide
 // whether to show for the selected project.
 [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
+// Lets add-on extensions (Scaffolder for Optimizely Commerce) load this extension's assemblies
+// (the dialog, Core and Scriban) instead of shipping their own copies.
+[ProvideBindingPath]
 public sealed class ScaffolderPackage : ToolkitPackage
 {
     protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
