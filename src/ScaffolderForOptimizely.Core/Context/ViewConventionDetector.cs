@@ -27,6 +27,7 @@ public static class ViewConventionDetector
 
         context.PageViewPattern = Detect(context.RazorViews, context.PageTypes);
         context.BlockViewPattern = Detect(context.RazorViews, context.BlockTypes);
+        context.CatalogViewPattern = Detect(context.RazorViews, context.CatalogTypes);
     }
 
     /// <summary>

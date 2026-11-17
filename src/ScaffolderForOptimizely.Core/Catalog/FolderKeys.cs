@@ -15,4 +15,9 @@ public static class FolderKeys
     public const string VisitorGroups = "visitorGroups";
     public const string ContentEvents = "contentEvents";
     public const string Validators = "validators";
+    public const string CatalogControllers = "catalogControllers";
+    public const string Promotions = "promotions";
+    public const string Payments = "payments";
+    public const string Shipping = "shipping";
+    public const string OrderServices = "orderServices";
 }

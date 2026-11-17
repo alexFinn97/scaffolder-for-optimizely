@@ -32,6 +32,7 @@
         "pages": { "type": "string", "default": "Models/Pages" },
         "blocks": { "type": "string", "default": "Models/Blocks" },
         "media": { "type": "string", "default": "Models/Media" },
+        "catalog": { "type": "string", "default": "Models/Catalog", "description": "Commerce catalog content types (products, variations, bundles, packages, categories)." },
         "controllers": { "type": "string", "default": "Controllers" },
         "components": { "type": "string", "default": "Components" },
         "viewModels": { "type": "string", "description": "Leave out to use the folder holding most existing *ViewModel classes, else a folder named ViewModels, else Models/ViewModels." },
@@ -44,7 +45,12 @@
         "editorDescriptors": { "type": "string", "description": "Editor descriptors. Leave out to use where existing ones live, else Business/EditorDescriptors." },
         "visitorGroups": { "type": "string", "description": "Visitor group criteria. Leave out to use where existing ones live, else Business/VisitorGroups." },
         "contentEvents": { "type": "string", "description": "Content events handlers. Leave out to use where existing ones live, else Business/ContentEvents." },
-        "validators": { "type": "string", "description": "IValidate<T> validators. Leave out to use where existing ones live, else Business/Validation." }
+        "validators": { "type": "string", "description": "IValidate<T> validators. Leave out to use where existing ones live, else Business/Validation." },
+        "catalogControllers": { "type": "string", "description": "Controllers for Commerce catalog content. Leave out to use where existing ones live, else the controllers folder." },
+        "promotions": { "type": "string", "description": "Commerce promotions and their processors. Leave out to use where existing ones live, else Business/Promotions." },
+        "payments": { "type": "string", "description": "Commerce payment gateways and payment methods. Leave out to use where existing ones live, else Business/Payments." },
+        "shipping": { "type": "string", "description": "Commerce shipping gateways. Leave out to use where existing ones live, else Business/Shipping." },
+        "orderServices": { "type": "string", "description": "Commerce order service decorators (validators, calculators, price processors). Leave out to use where existing ones live, else Business/Orders." }
       }
     },
     "baseClasses": {
@@ -54,7 +60,12 @@
       "properties": {
         "page": { "type": "string" },
         "block": { "type": "string" },
-        "media": { "type": "string" }
+        "media": { "type": "string" },
+        "product": { "type": "string", "description": "Commerce: a ProductContent base class." },
+        "variation": { "type": "string", "description": "Commerce: a VariationContent base class." },
+        "bundle": { "type": "string", "description": "Commerce: a BundleContent base class." },
+        "package": { "type": "string", "description": "Commerce: a PackageContent base class." },
+        "category": { "type": "string", "description": "Commerce: a NodeContent base class." }
       }
     },
     "contentTypeGroup": {
@@ -72,7 +83,8 @@
       "additionalProperties": false,
       "properties": {
         "page": { "type": "string", "examples": ["Views/{name}/Index.cshtml", "Views/Pages/{name}.cshtml"] },
-        "block": { "type": "string", "examples": ["Views/Shared/Blocks/{name}.cshtml", "Views/Shared/Components/{name}/Default.cshtml"] }
+        "block": { "type": "string", "examples": ["Views/Shared/Blocks/{name}.cshtml", "Views/Shared/Components/{name}/Default.cshtml"] },
+        "catalog": { "type": "string", "description": "Commerce catalog content.", "examples": ["Views/{name}/Index.cshtml", "Views/Catalog/{name}.cshtml"] }
       }
     },
     "passViewPath": {
