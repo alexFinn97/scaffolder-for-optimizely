@@ -1,8 +1,8 @@
 # Scaffolder for Optimizely
 
-A Visual Studio 2022/2026 extension that brings back right-click scaffolding for Optimizely CMS 12: page and block types, media types, page controllers, block components and view components, with defaults taken from your project.
+A Visual Studio 2022/2026 extension that brings back right-click scaffolding for Optimizely CMS 12: content types, controllers and components, infrastructure such as initialization modules and scheduled jobs, and editor extensions, with defaults taken from your project.
 
-> **Status: v0.1 preview.** CMS content types and rendering are in. Infrastructure and editor items come in v0.2 and Commerce in v0.3.
+> **Status: v0.2 preview.** CMS content types, rendering, infrastructure and editor items are in. Commerce comes in v0.3.
 
 ## What it does
 
@@ -14,6 +14,14 @@ In Solution Explorer, right-click a project or folder and choose **Add > Optimiz
 | Block Type (+ block component, view model, Razor view) | Block Component (`AsyncBlockComponent<T>`, `BlockComponent<T>` or plain `ViewComponent`) |
 | Media Type (image, video or generic file) | Partial Content Component |
 | | View Component |
+
+| Infrastructure | Editor |
+|---|---|
+| Initialization Module (plain or `IConfigurableModule`) | Selection Factory (`ISelectionFactory` or autosuggest `ISelectionQuery`) |
+| Startup Filter (`IStartupFilter`, optional middleware, + `services.AddX()` registration) | Editor Descriptor (UI hint, optional Dojo editor) |
+| Scheduled Job (stoppable, progress, `ILogger`, restartable) | Visitor Group Criterion (+ settings model) |
+| Service Collection Extension (`services.AddX()`) | Content Events Handler (DI-registered handler + initialization module that subscribes it) |
+| | Content Validator (`IValidate<T>`) |
 
 Each command opens a dialog with the item's options and a live preview of every file it will create. The menu only appears in projects that reference Optimizely CMS.
 
@@ -31,8 +39,9 @@ When the dialog opens, the extension reads the project with Roslyn and offers:
 - view path patterns learnt from existing views' `@model` (e.g. `Views/Shared/Blocks/{name}.cshtml`)
 - the folder holding most existing `*ViewModel` classes (or a folder named `ViewModels`)
 - whether a custom `IViewLocationExpander` exists, which decides whether to pass the view path to `View()`
+- where your existing initialization modules, startup filters, scheduled jobs, selection factories, editor descriptors, criteria, content event handlers and validators live
 
-Content type pickers start blank. The view path and view model path fill in from the above, and stay editable. Right-clicking a folder puts the main file there. Right-clicking the project uses the conventional folder for it (e.g. `Models/Pages`). Existing files are never overwritten.
+Content type pickers start blank. The view path and view model path fill in from the above, and stay editable. Right-clicking a folder puts the main file there. Right-clicking the project uses the configured or detected folder, else a conventional one (e.g. `Models/Pages`, `Business/ScheduledJobs`). Existing files are never overwritten.
 
 ## Settings: `.optimizely-scaffolder.json`
 
