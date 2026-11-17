@@ -47,6 +47,17 @@ Without the `VS_MARKETPLACE_PAT` secret, the release workflow skips publishing. 
 
 GitHub uses the workflow as it is in the tagged commit, so changes to the release workflow only take effect for tags on commits that include them.
 
+## Publishing one extension by hand
+
+If the workflow published one extension but not the other, publish the missing one from your machine with the same tool, using the `.vsix` from the GitHub release. Run this from the repository root in PowerShell, with your token:
+
+```powershell
+gh release download 0.9.3 -p ScaffolderForOptimizely.Commerce.vsix -D release
+& "$env:USERPROFILE\.nuget\packages\microsoft.vssdk.buildtools\17.14.2094\tools\vssdk\bin\VsixPublisher.exe" publish -payload "$PWD\release\ScaffolderForOptimizely.Commerce.vsix" -publishManifest "$PWD\marketplace\scaffolder-for-optimizely-commerce.json" -personalAccessToken "<your token>"
+```
+
+Look for `VsixPub0038: Uploaded ... to the marketplace`. The tool can print an `Unhandled Exception` from its own telemetry, before or after that line. It doesn't affect the upload.
+
 ## Changing the version
 
 The version appears in several files, and the release tests fail if any disagree:
