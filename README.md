@@ -2,7 +2,7 @@
 
 A Visual Studio 2022/2026 extension that brings back right-click scaffolding for Optimizely CMS 12 and Commerce 14: content types, controllers and components, infrastructure such as initialization modules and scheduled jobs, editor extensions, and Commerce catalog, promotion, payment, shipping and order items, with defaults taken from your project.
 
-> **Status: v0.3 preview.** CMS and Commerce items are in. v1.0 brings the Marketplace release.
+> **Status: v0.4 preview.** CMS items are in, with Commerce items in a separate add-on extension. v1.0 brings the Marketplace release.
 
 ## What it does
 
@@ -23,7 +23,9 @@ In Solution Explorer, right-click a project or folder and choose **Add > Optimiz
 | Service Collection Extension (`services.AddX()`) | Content Events Handler (DI-registered handler + initialization module that subscribes it) |
 | | Content Validator (`IValidate<T>`) |
 
-In projects that reference Optimizely Commerce, **Add > Optimizely Commerce** adds:
+### Optimizely Commerce add-on
+
+Commerce items come in a separate extension, **Scaffolder for Optimizely Commerce**, so CMS-only developers don't get a Commerce menu. It needs Scaffolder for Optimizely installed first (same version line), and uses its dialog, detection and templates. In projects that reference Optimizely Commerce, **Add > Optimizely Commerce** adds:
 
 | Catalog | Marketing and orders |
 |---|---|
@@ -92,10 +94,10 @@ Requirements: Visual Studio 2022 17.x or 2026 with the **Visual Studio extension
 ```bash
 dotnet test src/ScaffolderForOptimizely.Core.Tests
 dotnet test src/ScaffolderForOptimizely.Compile.Tests
-msbuild src/ScaffolderForOptimizely.Vsix/ScaffolderForOptimizely.Vsix.csproj /restore
+msbuild src/ScaffolderForOptimizely.Commerce.Vsix/ScaffolderForOptimizely.Commerce.Vsix.csproj /restore
 ```
 
-The VSIX project uses the classic project format, so build it with `msbuild` (or Visual Studio), not `dotnet build`. To debug, set **ScaffolderForOptimizely.Vsix** as the startup project and press F5. It starts an experimental instance of Visual Studio.
+Building the Commerce add-on also builds the main extension, so that one command produces both `.vsix` files. The VSIX projects use the classic project format, so build them with `msbuild` (or Visual Studio), not `dotnet build`. To debug, set **ScaffolderForOptimizely.Commerce.Vsix** (both extensions) or **ScaffolderForOptimizely.Vsix** (CMS only) as the startup project and press F5. It starts an experimental instance of Visual Studio.
 
 ### Tests
 
@@ -110,7 +112,8 @@ src/
   Directory.Build.props                   version and package metadata shared by every project
   nuget.config                            nuget.org plus Optimizely's feed
   ScaffolderForOptimizely.Core            netstandard2.0: item catalogue, config, detection, generation, templates
-  ScaffolderForOptimizely.Vsix            net48 VSIX: commands, dialog, Roslyn workspace access, file writing
+  ScaffolderForOptimizely.Vsix            net48 VSIX: CMS commands, dialog, Roslyn workspace access, file writing
+  ScaffolderForOptimizely.Commerce.Vsix   net48 VSIX add-on: the Optimizely Commerce menu; depends on the main extension
   ScaffolderForOptimizely.Core.Tests      unit and snapshot tests, plus the shared test scenarios
   ScaffolderForOptimizely.Compile.Tests   compile tests against the real Optimizely packages
 schema/                                   JSON schema for .optimizely-scaffolder.json
