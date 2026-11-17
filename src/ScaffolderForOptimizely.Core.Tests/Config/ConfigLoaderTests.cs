@@ -20,13 +20,13 @@ public sealed class ConfigLoaderTests : IDisposable
     public void Finds_config_in_a_parent_folder()
     {
         File.WriteAllText(Path.Combine(_root, ScaffolderConfig.FileName),
-            """{ "templateSource": "embedded", "layout": "feature", "folders": { "pages": "Features/Pages" }, "companions": { "view": false } }""");
+            """{ "templateSource": "dotnet-new", "layout": "feature", "folders": { "pages": "Features/Pages" }, "companions": { "view": false } }""");
 
         var loaded = ConfigLoader.Load(Path.Combine(_root, "src", "Web"), _root);
 
         Assert.Equal(Path.Combine(_root, ScaffolderConfig.FileName), loaded.FilePath);
         Assert.Equal(_root, loaded.RootDirectory);
-        Assert.Equal(TemplateSources.Embedded, loaded.Config.TemplateSource);
+        Assert.Equal(TemplateSources.DotnetNew, loaded.Config.TemplateSource);
         Assert.Equal(Layouts.Feature, loaded.Config.Layout);
         Assert.Equal("Features/Pages", loaded.Config.Folders.Pages);
         Assert.Equal("Controllers", loaded.Config.Folders.Controllers);
@@ -39,7 +39,7 @@ public sealed class ConfigLoaderTests : IDisposable
         var loaded = ConfigLoader.Load(Path.Combine(_root, "src", "Web"), _root);
 
         Assert.Null(loaded.FilePath);
-        Assert.Equal(TemplateSources.DotnetNew, loaded.Config.TemplateSource);
+        Assert.Equal(TemplateSources.Embedded, loaded.Config.TemplateSource);
         Assert.Equal(_root, loaded.RootDirectory);
     }
 
@@ -51,6 +51,6 @@ public sealed class ConfigLoaderTests : IDisposable
         var loaded = ConfigLoader.Load(Path.Combine(_root, "src", "Web"), _root);
 
         Assert.NotNull(loaded.Error);
-        Assert.Equal(TemplateSources.DotnetNew, loaded.Config.TemplateSource);
+        Assert.Equal(TemplateSources.Embedded, loaded.Config.TemplateSource);
     }
 }
