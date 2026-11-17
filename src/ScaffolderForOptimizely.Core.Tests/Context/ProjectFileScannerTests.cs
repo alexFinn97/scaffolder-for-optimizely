@@ -3,7 +3,7 @@ using System.IO;
 using ScaffolderForOptimizely.Core.Context;
 using Xunit;
 
-namespace ScaffolderForOptimizely.Core.Tests;
+namespace ScaffolderForOptimizely.Core.Tests.Context;
 
 public sealed class ProjectFileScannerTests : IDisposable
 {

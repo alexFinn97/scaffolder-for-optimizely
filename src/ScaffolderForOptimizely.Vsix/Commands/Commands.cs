@@ -1,5 +1,6 @@
 using Community.VisualStudio.Toolkit;
 using ScaffolderForOptimizely.Core.Catalog;
+using ScaffolderForOptimizely.Extension;
 
 namespace ScaffolderForOptimizely.Commands;
 

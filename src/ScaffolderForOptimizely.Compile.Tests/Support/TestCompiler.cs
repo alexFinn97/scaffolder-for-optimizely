@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace ScaffolderForOptimizely.Compile.Tests;
+namespace ScaffolderForOptimizely.Compile.Tests.Support;
 
 /// <summary>Compiles C# in memory against everything this test host has loaded, Optimizely included.</summary>
 internal static class TestCompiler

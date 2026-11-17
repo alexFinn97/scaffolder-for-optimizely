@@ -3,11 +3,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ScaffolderForOptimizely.Core.Generation;
-using ScaffolderForOptimizely.Tests.Shared;
+using ScaffolderForOptimizely.Core.Tests.Shared;
 using VerifyXunit;
 using Xunit;
 
-namespace ScaffolderForOptimizely.Core.Tests;
+namespace ScaffolderForOptimizely.Core.Tests.Generation;
 
 public class GenerationSnapshotTests
 {

@@ -2,7 +2,7 @@ using System;
 using ScaffolderForOptimizely.Core.Generation;
 using Xunit;
 
-namespace ScaffolderForOptimizely.Core.Tests;
+namespace ScaffolderForOptimizely.Core.Tests.Generation;
 
 public class CSharpPostProcessorTests
 {

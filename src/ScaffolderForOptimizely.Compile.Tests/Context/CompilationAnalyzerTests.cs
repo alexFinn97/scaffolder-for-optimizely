@@ -1,10 +1,11 @@
 using System.Linq;
+using ScaffolderForOptimizely.Compile.Tests.Support;
 using ScaffolderForOptimizely.Core.Catalog;
 using ScaffolderForOptimizely.Core.Context;
-using ScaffolderForOptimizely.Tests.Shared;
+using ScaffolderForOptimizely.Core.Tests.Shared;
 using Xunit;
 
-namespace ScaffolderForOptimizely.Compile.Tests;
+namespace ScaffolderForOptimizely.Compile.Tests.Context;
 
 public class CompilationAnalyzerTests
 {

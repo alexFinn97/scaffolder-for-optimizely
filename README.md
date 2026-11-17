@@ -79,8 +79,8 @@ The dialog preview always shows the built-in or override templates, so it stays 
 Requirements: Visual Studio 2022 17.x or 2026 with the **Visual Studio extension development** workload (needed for F5 debugging; command-line builds work without it), and the .NET 8 SDK.
 
 ```bash
-dotnet test tests/ScaffolderForOptimizely.Core.Tests
-dotnet test tests/ScaffolderForOptimizely.Compile.Tests
+dotnet test src/ScaffolderForOptimizely.Core.Tests
+dotnet test src/ScaffolderForOptimizely.Compile.Tests
 msbuild src/ScaffolderForOptimizely.Vsix/ScaffolderForOptimizely.Vsix.csproj /restore
 ```
 
@@ -88,17 +88,24 @@ The VSIX project uses the classic project format, so build it with `msbuild` (or
 
 ### Tests
 
-- **Core.Tests:** unit tests plus [Verify](https://github.com/VerifyTests/Verify) snapshot tests of every scenario in [tests/Shared/Scenarios.cs](tests/Shared/Scenarios.cs). After an intended template change, review the `.received.txt` files and rename them to `.verified.txt`.
-- **Compile.Tests:** compiles every scenario's generated C# against the real `EPiServer.CMS` 12 packages and fails on any error or warning. It also checks project detection against an Alloy-style project.
+- **Core.Tests:** unit tests plus [Verify](https://github.com/VerifyTests/Verify) snapshot tests of every scenario in [src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs](src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs). After an intended template change, review the `.received.txt` files and rename them to `.verified.txt`.
+- **Compile.Tests:** compiles every scenario's generated C# (it links the same `Scenarios.cs`) against the real `EPiServer.CMS` 12 packages and fails on any error or warning. It also checks project detection against an Alloy-style project.
 
 ### Layout
 
 ```
-src/ScaffolderForOptimizely.Core   netstandard2.0: item catalogue, config, detection, generation, templates
-src/ScaffolderForOptimizely.Vsix   net48 VSIX: commands, dialog, Roslyn workspace access, file writing
-tests/                             unit, snapshot and compile tests
-schema/                            JSON schema for .optimizely-scaffolder.json
+src/
+  ScaffolderForOptimizely.sln
+  Directory.Build.props                   version and package metadata shared by every project
+  nuget.config                            nuget.org plus Optimizely's feed
+  ScaffolderForOptimizely.Core            netstandard2.0: item catalogue, config, detection, generation, templates
+  ScaffolderForOptimizely.Vsix            net48 VSIX: commands, dialog, Roslyn workspace access, file writing
+  ScaffolderForOptimizely.Core.Tests      unit and snapshot tests, plus the shared test scenarios
+  ScaffolderForOptimizely.Compile.Tests   compile tests against the real Optimizely packages
+schema/                                   JSON schema for .optimizely-scaffolder.json
 ```
+
+Test folders mirror the Core folders (`Catalog`, `Config`, `Context`, `Generation`, `Providers`). Snapshots live in `ScaffolderForOptimizely.Core.Tests/Generation/Snapshots`.
 
 ## Licence
 

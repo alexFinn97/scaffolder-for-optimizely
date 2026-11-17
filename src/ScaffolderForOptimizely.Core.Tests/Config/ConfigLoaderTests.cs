@@ -3,7 +3,7 @@ using System.IO;
 using ScaffolderForOptimizely.Core.Config;
 using Xunit;
 
-namespace ScaffolderForOptimizely.Core.Tests;
+namespace ScaffolderForOptimizely.Core.Tests.Config;
 
 public sealed class ConfigLoaderTests : IDisposable
 {

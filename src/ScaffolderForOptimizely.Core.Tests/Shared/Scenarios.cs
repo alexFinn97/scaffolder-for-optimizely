@@ -8,7 +8,7 @@ using ScaffolderForOptimizely.Core.Config;
 using ScaffolderForOptimizely.Core.Context;
 using ScaffolderForOptimizely.Core.Generation;
 
-namespace ScaffolderForOptimizely.Tests.Shared;
+namespace ScaffolderForOptimizely.Core.Tests.Shared;
 
 /// <summary>
 /// One scaffolding run used by both the snapshot tests and the compile tests, so every

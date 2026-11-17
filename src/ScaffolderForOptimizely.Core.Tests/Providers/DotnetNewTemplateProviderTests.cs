@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 using ScaffolderForOptimizely.Core.Config;
 using ScaffolderForOptimizely.Core.Generation;
 using ScaffolderForOptimizely.Core.Providers;
-using ScaffolderForOptimizely.Tests.Shared;
+using ScaffolderForOptimizely.Core.Tests.Shared;
 using Xunit;
 
-namespace ScaffolderForOptimizely.Core.Tests;
+namespace ScaffolderForOptimizely.Core.Tests.Providers;
 
 /// <summary>Runs one test at a time: the "is the pack installed" answer is cached process-wide.</summary>
 [Collection(nameof(DotnetNewTemplateProviderTests))]

@@ -1,6 +1,6 @@
 using System;
 
-namespace ScaffolderForOptimizely;
+namespace ScaffolderForOptimizely.Extension;
 
 /// <summary>Mirrors the symbols in VSCommandTable.vsct. Keep both in sync.</summary>
 internal static class PackageGuids

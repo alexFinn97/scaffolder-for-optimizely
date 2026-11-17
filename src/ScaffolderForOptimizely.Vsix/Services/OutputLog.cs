@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Community.VisualStudio.Toolkit;
+using ScaffolderForOptimizely.Extension;
 
 namespace ScaffolderForOptimizely.Services;
 

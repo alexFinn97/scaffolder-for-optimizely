@@ -1,9 +1,10 @@
 using System.Linq;
 using System.Threading.Tasks;
-using ScaffolderForOptimizely.Tests.Shared;
+using ScaffolderForOptimizely.Compile.Tests.Support;
+using ScaffolderForOptimizely.Core.Tests.Shared;
 using Xunit;
 
-namespace ScaffolderForOptimizely.Compile.Tests;
+namespace ScaffolderForOptimizely.Compile.Tests.Generation;
 
 /// <summary>
 /// Every snapshot scenario's C# must compile against EPiServer.CMS 12 with no errors or warnings.

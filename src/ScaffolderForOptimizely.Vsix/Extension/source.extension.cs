@@ -1,4 +1,4 @@
-namespace ScaffolderForOptimizely;
+namespace ScaffolderForOptimizely.Extension;
 
 /// <summary>Values from source.extension.vsixmanifest. Keep in sync when the manifest changes.</summary>
 internal static class Vsix

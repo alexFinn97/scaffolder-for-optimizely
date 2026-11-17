@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using ScaffolderForOptimizely.Core.Catalog;
+using ScaffolderForOptimizely.Core.Config;
 using ScaffolderForOptimizely.Core.Generation;
-using ScaffolderForOptimizely.Tests.Shared;
+using ScaffolderForOptimizely.Core.Tests.Shared;
 using Xunit;
 
-namespace ScaffolderForOptimizely.Core.Tests;
+namespace ScaffolderForOptimizely.Core.Tests.Generation;
 
 public class OutputPlannerTests
 {
@@ -78,7 +79,7 @@ public class OutputPlannerTests
         Assert.Equal("Choose a content type.", result.Error);
         Assert.Empty(result.Files);
 
-        var defaults = OptionDefaults.For(ItemCatalog.Get(ItemCatalog.Ids.PageController), Scenarios.CreateContext(Scenarios.Get("page-controller")), new Config.ScaffolderConfig());
+        var defaults = OptionDefaults.For(ItemCatalog.Get(ItemCatalog.Ids.PageController), Scenarios.CreateContext(Scenarios.Get("page-controller")), new ScaffolderConfig());
         Assert.Equal(string.Empty, defaults[OptionKeys.ContentType]);
     }
 

@@ -4,7 +4,7 @@ using ScaffolderForOptimizely.Core.Context;
 using ScaffolderForOptimizely.Core.Providers;
 using Xunit;
 
-namespace ScaffolderForOptimizely.Core.Tests;
+namespace ScaffolderForOptimizely.Core.Tests.Catalog;
 
 public class CatalogTests
 {
