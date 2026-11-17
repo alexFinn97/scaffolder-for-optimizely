@@ -11,5 +11,5 @@ using System.Runtime.InteropServices;
 
 // The Commerce add-on derives its commands from ScaffoldCommand<T> and reuses the dialog and services.
 [assembly: InternalsVisibleTo("ScaffolderForOptimizely.Commerce")]
-[assembly: AssemblyVersion("0.9.2.0")]
-[assembly: AssemblyFileVersion("0.9.2.0")]
+[assembly: AssemblyVersion("0.9.3.0")]
+[assembly: AssemblyFileVersion("0.9.3.0")]
