@@ -1,0 +1,11 @@
+{{~ if view_model_type != "" ~}}
+@model {{ view_model_type }}
+
+<div class="{{ component_name | string.downcase }}">
+    @* Render properties here, e.g. @Html.PropertyFor(x => x{{ if has_view_model }}.CurrentBlock{{ end }}.Heading) *@
+</div>
+{{~ else ~}}
+<div class="{{ component_name | string.downcase }}">
+    @* Component markup goes here. *@
+</div>
+{{~ end ~}}

@@ -1,0 +1,5 @@
+@model {{ view_model_type }}
+
+<article>
+    <h1>@Model{{ if has_view_model }}.CurrentPage{{ end }}.Name</h1>
+</article>

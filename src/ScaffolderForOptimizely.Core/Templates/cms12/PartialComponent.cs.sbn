@@ -1,0 +1,34 @@
+{{~
+  view_args = "currentContent"
+  if view_path != ""
+    view_args = "\"" + view_path + "\", currentContent"
+  end
+~}}
+{{~ if async ~}}
+using System.Threading.Tasks;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace {{ namespace }};
+
+public class {{ class_name }} : AsyncPartialContentComponent<{{ model_class }}>
+{
+    protected override async Task<IViewComponentResult> InvokeComponentAsync({{ model_class }} currentContent)
+    {
+        return await Task.FromResult(View({{ view_args }}));
+    }
+}
+{{~ else ~}}
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace {{ namespace }};
+
+public class {{ class_name }} : PartialContentComponent<{{ model_class }}>
+{
+    protected override IViewComponentResult InvokeComponent({{ model_class }} currentContent)
+    {
+        return View({{ view_args }});
+    }
+}
+{{~ end ~}}

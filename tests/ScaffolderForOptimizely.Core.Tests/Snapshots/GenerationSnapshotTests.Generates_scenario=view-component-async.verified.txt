@@ -1,0 +1,19 @@
+﻿=== Components/SiteFooterViewComponent.cs (embedded, primary)
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Components;
+
+public class SiteFooterViewComponent : ViewComponent
+{
+    public async Task<IViewComponentResult> InvokeAsync()
+    {
+        return await Task.FromResult(View());
+    }
+}
+
+=== Views/Shared/Components/SiteFooter/Default.cshtml (embedded)
+<div class="sitefooter">
+    @* Component markup goes here. *@
+</div>
+

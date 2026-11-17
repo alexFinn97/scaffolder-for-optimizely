@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>Optimizely Block Type</Name>
+    <Description>An Optimizely CMS block content type. For project-aware options use Add &gt; Optimizely.</Description>
+    <TemplateID>ScaffolderForOptimizely.OptimizelyBlockType</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <SortOrder>20</SortOrder>
+    <DefaultName>TeaserBlock.cs</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <AppendDefaultFileExtension>true</AppendDefaultFileExtension>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.cs">BlockType.cs</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

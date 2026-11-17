@@ -1,0 +1,13 @@
+﻿=== Components/BreadcrumbsViewComponent.cs (embedded, primary)
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Components;
+
+public class BreadcrumbsViewComponent : ViewComponent
+{
+    public IViewComponentResult Invoke()
+    {
+        return View();
+    }
+}
+

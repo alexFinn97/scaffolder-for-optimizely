@@ -1,0 +1,21 @@
+﻿=== Models/Media/VideoFile.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAnnotations;
+using EPiServer.Framework.DataAnnotations;
+
+namespace Contoso.Web.Models.Media;
+
+[ContentType(
+    DisplayName = "Video File",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    Description = "")]
+[MediaDescriptor(ExtensionString = "mp4,webm")]
+public class VideoFile : VideoData
+{
+    [Display(
+        Name = "Copyright",
+        Order = 10)]
+    public virtual string? Copyright { get; set; }
+}
+

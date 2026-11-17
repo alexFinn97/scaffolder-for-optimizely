@@ -1,0 +1,54 @@
+{{~
+  result_expr = "currentBlock"
+  if has_view_model
+    result_expr = "new " + view_model_class + "(currentBlock)"
+  end
+  view_args = result_expr
+  if view_path != ""
+    view_args = "\"" + view_path + "\", " + result_expr
+  end
+~}}
+{{~ if block_style == "viewComponent" ~}}
+using Microsoft.AspNetCore.Mvc;
+
+namespace {{ namespace }};
+
+/// <summary>
+/// A plain view component. It isn't registered as a block template, so call it explicitly:
+/// <c>@await Component.InvokeAsync("{{ component_name }}", new { currentBlock = Model })</c>.
+/// </summary>
+public class {{ class_name }} : ViewComponent
+{
+    public IViewComponentResult Invoke({{ model_class }} currentBlock)
+    {
+        return View({{ view_args }});
+    }
+}
+{{~ else if block_style == "sync" ~}}
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace {{ namespace }};
+
+public class {{ class_name }} : BlockComponent<{{ model_class }}>
+{
+    protected override IViewComponentResult InvokeComponent({{ model_class }} currentBlock)
+    {
+        return View({{ view_args }});
+    }
+}
+{{~ else ~}}
+using System.Threading.Tasks;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace {{ namespace }};
+
+public class {{ class_name }} : AsyncBlockComponent<{{ model_class }}>
+{
+    protected override async Task<IViewComponentResult> InvokeComponentAsync({{ model_class }} currentBlock)
+    {
+        return await Task.FromResult(View({{ view_args }}));
+    }
+}
+{{~ end ~}}
