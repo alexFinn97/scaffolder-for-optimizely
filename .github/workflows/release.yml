@@ -94,8 +94,12 @@ jobs:
             @{ Payload = "src/ScaffolderForOptimizely.Commerce.Vsix/bin/Release/ScaffolderForOptimizely.Commerce.vsix"; Manifest = "marketplace/scaffolder-for-optimizely-commerce.json" }
           )
           foreach ($package in $packages) {
-            & $publisher.FullName publish -payload $package.Payload -publishManifest $package.Manifest -personalAccessToken $env:VS_MARKETPLACE_PAT
-            if ($LASTEXITCODE -ne 0) { throw "Publishing $($package.Payload) failed." }
+            $output = & $publisher.FullName publish -payload $package.Payload -publishManifest $package.Manifest -personalAccessToken $env:VS_MARKETPLACE_PAT 2>&1 | Out-String
+            Write-Host $output
+            # Judge by the output, not the exit code: VsixPublisher's own telemetry can crash with an
+            # unhandled exception (an assembly version mismatch inside the tool) and exit non-zero
+            # after a successful upload. VsixPub0038 is its "Uploaded ... to the marketplace" message.
+            if ($output -notmatch 'VsixPub0038') { throw "Publishing $($package.Payload) failed." }
           }
 
       - name: Marketplace publishing skipped
