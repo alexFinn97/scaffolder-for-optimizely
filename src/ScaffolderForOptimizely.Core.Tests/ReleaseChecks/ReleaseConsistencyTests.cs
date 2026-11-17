@@ -90,6 +90,45 @@ public class ReleaseConsistencyTests
         Assert.Matches(new Regex($@"(?m)^## \[{Regex.Escape(CurrentVersion)}\]"), changelog);
     }
 
+    /// <summary>
+    /// The Marketplace publisher's own validation (VsixPublisher), which otherwise only shows up
+    /// when a release is already being published. Some of it runs after sign-in, so a local run
+    /// with a dummy token doesn't catch it.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(VsixProjects))]
+    public void Manifests_pass_the_Marketplace_publishers_rules(string project)
+    {
+        var manifest = Manifest(project);
+        string Value(string element) => manifest.Descendants(Vsx + element).Single().Value;
+
+        var description = Value("Description");
+        Assert.True(description.Length is > 0 and < 280, $"Description is {description.Length} characters; the Marketplace needs 1 to 279.");
+
+        var displayName = Value("DisplayName");
+        Assert.True(displayName.Length is > 0 and < 100, $"Display name is {displayName.Length} characters.");
+
+        // Separated by semicolons: the publisher doesn't split on commas, so "a, b" is one long tag.
+        foreach (var tag in Value("Tags").Split(';'))
+        {
+            Assert.DoesNotContain(",", tag);
+            Assert.InRange(tag.Trim().Length, 1, 50);
+        }
+
+        Assert.False(string.IsNullOrEmpty(Identity(project).Attribute("Language")?.Value));
+    }
+
+    [Fact]
+    public void Marketplace_internal_names_are_valid_and_unique()
+    {
+        var names = Directory.GetFiles(Path.Combine(Root, "marketplace"), "*.json")
+            .Select(f => (string)JObject.Parse(File.ReadAllText(f))["identity"]!["internalName"]!)
+            .ToList();
+
+        Assert.All(names, name => Assert.Matches("^[A-Za-z0-9-]{1,62}$", name));
+        Assert.Equal(names.Count, names.Distinct(StringComparer.OrdinalIgnoreCase).Count());
+    }
+
     private static XDocument Manifest(string project) =>
         XDocument.Load(Path.Combine(Root, "src", project, "source.extension.vsixmanifest"));
 
