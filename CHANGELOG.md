@@ -4,7 +4,15 @@ Both extensions, Scaffolder for Optimizely and Scaffolder for Optimizely Commerc
 
 ## [Unreleased]
 
-## [0.9.0] - 2026-11-17
+## [0.9.1] - 2026-11-17
+
+First Visual Studio Marketplace release, as a preview. 0.9.0 was tagged but never published, because its release workflow failed; everything listed under 0.9.0 ships in this release.
+
+### Fixed
+- The release workflow failed to create the GitHub release.
+- The release workflow ignored version tags without a `v` prefix, such as the ones `git flow release finish` creates.
+
+## [0.9.0] - 2026-11-17 (not published)
 
 First Visual Studio Marketplace release, as a preview.
 
