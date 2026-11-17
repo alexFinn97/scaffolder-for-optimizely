@@ -1,12 +1,15 @@
 name: Release
 
-# Push a tag matching src/Directory.Build.props, e.g. `git tag v0.9.0 && git push origin v0.9.0`.
+# Push a tag matching src/Directory.Build.props, with or without a "v": `git flow release finish`
+# tags 1.0.0 by default, `git tag v1.0.0` works too. Push only one of the two for a release.
 # Builds and tests, creates a GitHub release with both .vsix files, then publishes both to the
 # Visual Studio Marketplace when the VS_MARKETPLACE_PAT secret is set (see docs/publishing.md).
 
 on:
   push:
-    tags: ['v*']
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 permissions:
   contents: write
@@ -27,7 +30,7 @@ jobs:
         shell: pwsh
         run: |
           $version = ([xml](Get-Content src/Directory.Build.props)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
-          if ("v$version" -ne "${{ github.ref_name }}") {
+          if ("${{ github.ref_name }}".TrimStart('v') -ne $version) {
             throw "Tag ${{ github.ref_name }} doesn't match <Version>$version</Version> in src/Directory.Build.props."
           }
           "version=$version" >> $env:GITHUB_OUTPUT
