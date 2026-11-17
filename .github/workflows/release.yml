@@ -1,0 +1,99 @@
+name: Release
+
+# Push a tag matching src/Directory.Build.props, e.g. `git tag v0.9.0 && git push origin v0.9.0`.
+# Builds and tests, creates a GitHub release with both .vsix files, then publishes both to the
+# Visual Studio Marketplace when the VS_MARKETPLACE_PAT secret is set (see docs/publishing.md).
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: true
+      DiffEngine_Disabled: true
+      VS_MARKETPLACE_PAT: ${{ secrets.VS_MARKETPLACE_PAT }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag matches the version
+        id: version
+        shell: pwsh
+        run: |
+          $version = ([xml](Get-Content src/Directory.Build.props)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+          if ("v$version" -ne "${{ github.ref_name }}") {
+            throw "Tag ${{ github.ref_name }} doesn't match <Version>$version</Version> in src/Directory.Build.props."
+          }
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # Also checks every version number, the add-on's dependency range and the changelog agree.
+      - name: Unit, snapshot and release tests
+        run: dotnet test src/ScaffolderForOptimizely.Core.Tests -c Release
+
+      - name: Compile tests (generated code vs Optimizely CMS 12 and Commerce 14)
+        run: dotnet test src/ScaffolderForOptimizely.Compile.Tests -c Release
+
+      - uses: microsoft/setup-msbuild@v2
+
+      # Building the Commerce add-on builds the main extension first.
+      - name: Build VSIXs
+        run: msbuild src/ScaffolderForOptimizely.Commerce.Vsix/ScaffolderForOptimizely.Commerce.Vsix.csproj /restore /p:Configuration=Release /v:minimal
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          # Release notes: this version's section of CHANGELOG.md.
+          $changelog = Get-Content CHANGELOG.md -Raw
+          $match = [regex]::Match($changelog, "(?ms)^## \[$([regex]::Escape($version))\][^\n]*\n(.*?)(?=^## \[|\z)")
+          if (-not $match.Success) { throw "CHANGELOG.md has no '## [$version]' section." }
+          Set-Content release-notes.md $match.Groups[1].Value.Trim()
+
+          # 0.x releases are marked as pre-releases, like the Marketplace's Preview badge.
+          $prerelease = if ($version.StartsWith("0.")) { @("--prerelease") } else { @() }
+          gh release create "${{ github.ref_name }}" `
+            src/ScaffolderForOptimizely.Vsix/bin/Release/ScaffolderForOptimizely.vsix `
+            src/ScaffolderForOptimizely.Commerce.Vsix/bin/Release/ScaffolderForOptimizely.Commerce.vsix `
+            --title "Scaffolder for Optimizely $version" --notes-file release-notes.md @prerelease
+
+      - name: Publish to the Visual Studio Marketplace
+        if: env.VS_MARKETPLACE_PAT != ''
+        shell: pwsh
+        run: |
+          foreach ($manifest in Get-ChildItem marketplace/*.json) {
+            if ((Get-Content $manifest -Raw) -match 'YOUR-PUBLISHER-ID') {
+              throw "Set your Marketplace publisher ID in $($manifest.Name) (see docs/publishing.md)."
+            }
+          }
+
+          # VsixPublisher ships in the Microsoft.VSSDK.BuildTools package restored by the build.
+          $publisher = Get-ChildItem "$env:USERPROFILE\.nuget\packages\microsoft.vssdk.buildtools\*\tools\vssdk\bin\VsixPublisher.exe" |
+            Sort-Object FullName | Select-Object -Last 1
+          if (-not $publisher) { throw "VsixPublisher.exe wasn't found in the NuGet cache." }
+
+          # The main extension first: the add-on depends on it.
+          $packages = @(
+            @{ Payload = "src/ScaffolderForOptimizely.Vsix/bin/Release/ScaffolderForOptimizely.vsix"; Manifest = "marketplace/scaffolder-for-optimizely.json" },
+            @{ Payload = "src/ScaffolderForOptimizely.Commerce.Vsix/bin/Release/ScaffolderForOptimizely.Commerce.vsix"; Manifest = "marketplace/scaffolder-for-optimizely-commerce.json" }
+          )
+          foreach ($package in $packages) {
+            & $publisher.FullName publish -payload $package.Payload -publishManifest $package.Manifest -personalAccessToken $env:VS_MARKETPLACE_PAT
+            if ($LASTEXITCODE -ne 0) { throw "Publishing $($package.Payload) failed." }
+          }
+
+      - name: Marketplace publishing skipped
+        if: env.VS_MARKETPLACE_PAT == ''
+        shell: pwsh
+        run: Write-Host "::notice::No VS_MARKETPLACE_PAT secret, so nothing was published. Upload the .vsix files from the GitHub release at marketplace.visualstudio.com/manage, or see docs/publishing.md."

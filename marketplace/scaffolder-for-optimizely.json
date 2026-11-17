@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [ "coding" ],
+  "identity": {
+    "internalName": "ScaffolderForOptimizely"
+  },
+  "overview": "scaffolder-for-optimizely.md",
+  "priceCategory": "free",
+  "publisher": "alexFinn97",
+  "private": false,
+  "qna": true,
+  "repo": "https://github.com/alexFinn97/scaffolder-for-optimizely"
+}
