@@ -29,11 +29,14 @@ jobs:
 
       - uses: microsoft/setup-msbuild@v2
 
-      - name: Build VSIX
-        run: msbuild src/ScaffolderForOptimizely.Vsix/ScaffolderForOptimizely.Vsix.csproj /restore /p:Configuration=Release /v:minimal
+      # Building the Commerce add-on builds the main extension first (project reference).
+      - name: Build VSIXs
+        run: msbuild src/ScaffolderForOptimizely.Commerce.Vsix/ScaffolderForOptimizely.Commerce.Vsix.csproj /restore /p:Configuration=Release /v:minimal
 
       - uses: actions/upload-artifact@v4
         with:
           name: ScaffolderForOptimizely-vsix
-          path: src/ScaffolderForOptimizely.Vsix/bin/Release/*.vsix
+          path: |
+            src/ScaffolderForOptimizely.Vsix/bin/Release/*.vsix
+            src/ScaffolderForOptimizely.Commerce.Vsix/bin/Release/*.vsix
           if-no-files-found: error
