@@ -15,7 +15,7 @@ using Task = System.Threading.Tasks.Task;
 namespace ScaffolderForOptimizely.Commands;
 
 /// <summary>
-/// Shared behaviour for every "Add > Optimizely > ..." command: only visible in Optimizely
+/// Shared behaviour for every "Add > Optimizely CMS/Commerce > ..." command: only visible in Optimizely
 /// projects; opens the scaffold dialog for its item and writes the result into the project.
 /// </summary>
 internal abstract class ScaffoldCommand<T> : BaseCommand<T>
@@ -25,10 +25,13 @@ internal abstract class ScaffoldCommand<T> : BaseCommand<T>
 
     protected override void BeforeQueryStatus(EventArgs e)
     {
+        // Commerce items live in their own submenu, which disappears when none of its commands are visible.
+        var commerce = ItemCatalog.Categories.IsCommerce(ItemCatalog.Get(ItemId).Category);
         var visible = ThreadHelper.JoinableTaskFactory.Run(async () =>
         {
             var project = await VS.Solutions.GetActiveProjectAsync();
-            return project?.FullPath is { } path && OptimizelyProjectDetector.IsOptimizelyProject(path);
+            return project?.FullPath is { } path
+                && (commerce ? OptimizelyProjectDetector.IsCommerceProject(path) : OptimizelyProjectDetector.IsOptimizelyProject(path));
         });
 
         Command.Visible = visible;

@@ -1,0 +1,16 @@
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace {{ namespace }};
+
+public class {{ class_name }} : ContentController<{{ model_class }}>
+{
+    public IActionResult Index({{ model_class }} currentContent)
+    {
+{{~ if has_view_model ~}}
+        var model = new {{ view_model_class }}(currentContent);
+
+{{~ end ~}}
+        return View({{ if view_path != "" }}"{{ view_path }}", {{ end }}{{ if has_view_model }}model{{ else }}currentContent{{ end }});
+    }
+}

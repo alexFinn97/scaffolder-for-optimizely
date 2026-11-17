@@ -1,0 +1,52 @@
+using System;
+using EPiServer.Commerce.Order;
+using EPiServer.Globalization;
+using Mediachase.Commerce.Orders;
+using Mediachase.Commerce.Orders.Dto;
+using Mediachase.Commerce.Orders.Managers;
+
+namespace {{ namespace }};
+
+/// <summary>
+/// The checkout side of the payment method with system keyword <c>{{ options.systemKeyword }}</c>:
+/// creates the payment that <see cref="{{ class_gateway }}"/> processes.
+/// </summary>
+public class {{ class_name }} : IPaymentMethod
+{
+    public const string Keyword = "{{ options.systemKeyword }}";
+
+    private readonly IOrderGroupFactory _orderGroupFactory;
+    private readonly Lazy<PaymentMethodDto.PaymentMethodRow{{ q }}> _method;
+
+    public {{ class_name }}(IOrderGroupFactory orderGroupFactory)
+    {
+        _orderGroupFactory = orderGroupFactory;
+        _method = new Lazy<PaymentMethodDto.PaymentMethodRow{{ q }}>(() =>
+        {
+            var methods = PaymentManager.GetPaymentMethodBySystemName(Keyword, ContentLanguage.PreferredCulture.Name);
+            return methods.PaymentMethod.Count > 0 ? methods.PaymentMethod[0] : null;
+        });
+    }
+
+    public Guid PaymentMethodId => _method.Value?.PaymentMethodId ?? Guid.Empty;
+
+    public string SystemKeyword => Keyword;
+
+    public string Name => _method.Value?.Name ?? Keyword;
+
+    public string Description => _method.Value?.Description ?? string.Empty;
+
+    public IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)
+    {
+        var payment = orderGroup.CreatePayment(_orderGroupFactory);
+        payment.PaymentMethodId = PaymentMethodId;
+        payment.PaymentMethodName = SystemKeyword;
+        payment.Amount = amount;
+        payment.Status = PaymentStatus.Pending.ToString();
+        payment.TransactionType = TransactionType.Authorization.ToString();
+        return payment;
+    }
+
+    /// <summary>Validate checkout form data (card details, references...) before the payment is created.</summary>
+    public bool ValidateData() => true;
+}

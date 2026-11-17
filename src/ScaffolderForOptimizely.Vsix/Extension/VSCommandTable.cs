@@ -35,4 +35,19 @@ internal static class PackageIds
     public const int AddContentEventsHandler = 0x010E;
     public const int AddContentValidator = 0x010F;
     public const int AddStartupFilter = 0x0110;
+    public const int CommerceMenu = 0x2000;
+    public const int CommerceCatalogGroup = 0x2100;
+    public const int CommerceRenderingGroup = 0x2200;
+    public const int CommerceMarketingGroup = 0x2300;
+    public const int CommerceOrdersGroup = 0x2400;
+    public const int AddProduct = 0x0111;
+    public const int AddVariation = 0x0112;
+    public const int AddBundle = 0x0113;
+    public const int AddPackage = 0x0114;
+    public const int AddCatalogCategory = 0x0115;
+    public const int AddContentController = 0x0116;
+    public const int AddPromotion = 0x0117;
+    public const int AddPaymentProvider = 0x0118;
+    public const int AddShippingProvider = 0x0119;
+    public const int AddOrderServiceDecorator = 0x011A;
 }

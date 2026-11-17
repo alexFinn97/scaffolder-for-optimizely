@@ -1,0 +1,32 @@
+using EPiServer.Commerce.Order;
+using Mediachase.Commerce.Orders;
+using Mediachase.Commerce.Plugins.Payment;
+
+namespace {{ namespace }};
+
+/// <summary>
+/// Processes payments for a payment method whose gateway is set to this class in Commerce admin > Payments.
+/// Implements the order API (<see cref="IPaymentPlugin"/>) and the legacy gateway, so both code paths work.
+{{~ if class_method ~}}
+/// Checkout creates the payments through <see cref="{{ class_method }}"/>.
+{{~ end ~}}
+/// </summary>
+public class {{ class_name }} : AbstractPaymentGateway, IPaymentPlugin
+{
+    /// <summary>Legacy entry point (Mediachase order system); forwards to the order API version.</summary>
+    public override bool ProcessPayment(Payment payment, ref string message)
+    {
+        var result = ProcessPayment(payment.Parent.Parent, payment);
+        message = result.Message;
+        return result.IsSuccessful;
+    }
+
+    /// <summary>Called when the order is placed, e.g. through <c>IOrderGroup.ProcessPayments()</c>.</summary>
+    public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
+    {
+        // Settings holds the parameters set for this payment method in Commerce admin.
+        // Call the payment provider here and return CreateUnsuccessfulResult(...) if it declines.
+        payment.Status = PaymentStatus.Processed.ToString();
+        return PaymentProcessingResult.CreateSuccessfulResult($"Payment of {payment.Amount} processed.");
+    }
+}

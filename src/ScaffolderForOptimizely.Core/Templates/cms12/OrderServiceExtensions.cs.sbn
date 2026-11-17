@@ -1,0 +1,29 @@
+{{~
+  if options.kind == "placedPriceProcessor"
+    service = "IPlacedPriceProcessor"
+  else if options.kind == "taxCalculator"
+    service = "ITaxCalculator"
+  else if options.kind == "shippingCalculator"
+    service = "IShippingCalculator"
+  else
+    service = "ILineItemValidator"
+  end
+~}}
+using EPiServer.Commerce.Order;
+using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace {{ namespace }};
+
+public static class {{ class_name }}
+{
+    /// <summary>
+    /// Call from Startup.ConfigureServices, after <c>services.AddCommerce()</c>: <c>services.Add{{ class_decorator }}();</c>
+    /// </summary>
+    public static IServiceCollection Add{{ class_decorator }}(this IServiceCollection services)
+    {
+        // Wraps the registered {{ service }}, so the default stays available inside {{ class_decorator }}.
+        services.Intercept<{{ service }}>((provider, inner) => ActivatorUtilities.CreateInstance<{{ class_decorator }}>(provider, inner));
+        return services;
+    }
+}

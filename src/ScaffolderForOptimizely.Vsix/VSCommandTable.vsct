@@ -6,7 +6,7 @@
   <Include href="KnownImageIds.vsct" />
 
   <!--
-    Solution Explorer > right-click a project or folder > Add > Optimizely > ...
+    Solution Explorer > right-click a project or folder > Add > Optimizely CMS (or Optimizely Commerce) > ...
     Buttons are hidden until the package confirms the project references Optimizely.
   -->
   <Commands package="guidScaffolderPackage">
@@ -14,7 +14,14 @@
       <Menu guid="guidScaffolderCmdSet" id="OptimizelyMenu" priority="0x0100" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_ADD_ITEMS" />
         <Strings>
-          <ButtonText>Optimizely</ButtonText>
+          <ButtonText>Optimizely CMS</ButtonText>
+        </Strings>
+      </Menu>
+      <!-- Only Commerce projects: its commands are hidden elsewhere, and VS hides an empty submenu. -->
+      <Menu guid="guidScaffolderCmdSet" id="CommerceMenu" priority="0x0101" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_ADD_ITEMS" />
+        <Strings>
+          <ButtonText>Optimizely Commerce</ButtonText>
         </Strings>
       </Menu>
     </Menus>
@@ -31,6 +38,18 @@
       </Group>
       <Group guid="guidScaffolderCmdSet" id="EditorGroup" priority="0x0400">
         <Parent guid="guidScaffolderCmdSet" id="OptimizelyMenu" />
+      </Group>
+      <Group guid="guidScaffolderCmdSet" id="CommerceCatalogGroup" priority="0x0100">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceMenu" />
+      </Group>
+      <Group guid="guidScaffolderCmdSet" id="CommerceRenderingGroup" priority="0x0200">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceMenu" />
+      </Group>
+      <Group guid="guidScaffolderCmdSet" id="CommerceMarketingGroup" priority="0x0300">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceMenu" />
+      </Group>
+      <Group guid="guidScaffolderCmdSet" id="CommerceOrdersGroup" priority="0x0400">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceMenu" />
       </Group>
     </Groups>
 
@@ -195,6 +214,106 @@
           <ButtonText>Content Validator...</ButtonText>
         </Strings>
       </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddProduct" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="CatalogZone" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Product...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddVariation" priority="0x0200" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="Component" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Variation...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddBundle" priority="0x0300" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="Box" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Bundle...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddPackage" priority="0x0400" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="Package" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Package...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddCatalogCategory" priority="0x0500" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="FolderClosed" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Category...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddContentController" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceRenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="CSClassFile" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Content Controller...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddPromotion" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceMarketingGroup" />
+        <Icon guid="ImageCatalogGuid" id="Tag" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Promotion...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddPaymentProvider" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceOrdersGroup" />
+        <Icon guid="ImageCatalogGuid" id="Currency" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Payment Provider...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddShippingProvider" priority="0x0200" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceOrdersGroup" />
+        <Icon guid="ImageCatalogGuid" id="Send" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Shipping Provider...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddOrderServiceDecorator" priority="0x0300" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="CommerceOrdersGroup" />
+        <Icon guid="ImageCatalogGuid" id="Calculator" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Order Service Decorator...</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
   </Commands>
 
@@ -222,6 +341,21 @@
       <IDSymbol name="AddContentEventsHandler" value="0x010E" />
       <IDSymbol name="AddContentValidator" value="0x010F" />
       <IDSymbol name="AddStartupFilter" value="0x0110" />
+      <IDSymbol name="CommerceMenu" value="0x2000" />
+      <IDSymbol name="CommerceCatalogGroup" value="0x2100" />
+      <IDSymbol name="CommerceRenderingGroup" value="0x2200" />
+      <IDSymbol name="CommerceMarketingGroup" value="0x2300" />
+      <IDSymbol name="CommerceOrdersGroup" value="0x2400" />
+      <IDSymbol name="AddProduct" value="0x0111" />
+      <IDSymbol name="AddVariation" value="0x0112" />
+      <IDSymbol name="AddBundle" value="0x0113" />
+      <IDSymbol name="AddPackage" value="0x0114" />
+      <IDSymbol name="AddCatalogCategory" value="0x0115" />
+      <IDSymbol name="AddContentController" value="0x0116" />
+      <IDSymbol name="AddPromotion" value="0x0117" />
+      <IDSymbol name="AddPaymentProvider" value="0x0118" />
+      <IDSymbol name="AddShippingProvider" value="0x0119" />
+      <IDSymbol name="AddOrderServiceDecorator" value="0x011A" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
