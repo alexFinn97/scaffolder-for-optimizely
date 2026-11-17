@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <title>Scaffolder for Optimizely Commerce</title>
+  <defs>
+    <linearGradient id="brand" gradientUnits="userSpaceOnUse" x1="10" y1="0" x2="118" y2="0">
+      <stop offset="0" stop-color="#9E0B2C"/>
+      <stop offset="0.5" stop-color="#E4252C"/>
+      <stop offset="1" stop-color="#FF6A00"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="#050B24"/>
+  <!-- A shopping bag: handle, then a body built from three planks with cut lines between them. -->
+  <path d="M48 46V38C48 22 80 22 80 38V46" fill="none" stroke="url(#brand)" stroke-width="7"/>
+  <g fill="url(#brand)" stroke="#050B24" stroke-width="5" paint-order="stroke">
+    <path d="M34 44H94L96.67 64H31.33Z"/>
+    <path d="M31.33 64H96.67L99.33 84H28.67Z"/>
+    <path d="M28.67 84H99.33L102 104H26Z"/>
+  </g>
+</svg>

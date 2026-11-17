@@ -1,0 +1,77 @@
+﻿=== Business/Promotions/SpendOverPromotion.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Marketing;
+using EPiServer.Commerce.Marketing.DataAnnotations;
+using EPiServer.Commerce.Marketing.Promotions;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Business.Promotions;
+
+/// <summary>
+/// Shown in the Marketing UI's promotion list. Evaluated by <see cref="SpendOverPromotionProcessor"/>.
+/// </summary>
+[ContentType(
+    DisplayName = "Spend Over",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    GroupName = "orderpromotion",
+    Description = "")]
+public class SpendOverPromotion : OrderPromotion
+{
+    /// <summary>How much the order must be worth, per currency.</summary>
+    [PromotionRegion(PromotionRegionName.Condition)]
+    [Display(Order = 10)]
+    public virtual PurchaseAmount? Condition { get; set; }
+
+    /// <summary>A fixed amount per currency, or a percentage.</summary>
+    [PromotionRegion(PromotionRegionName.Discount)]
+    [Display(Order = 30)]
+    public virtual MonetaryReward? Discount { get; set; }
+}
+
+=== Business/Promotions/SpendOverPromotionProcessor.cs (embedded)
+using System.Collections.Generic;
+using System.Linq;
+using EPiServer.Commerce.Marketing;
+using EPiServer.Commerce.Marketing.Extensions;
+using EPiServer.Core;
+
+namespace Contoso.Web.Business.Promotions;
+
+/// <summary>
+/// Decides whether a cart qualifies for <see cref="SpendOverPromotion"/> and what it saves.
+/// Found by the promotion engine automatically.
+/// </summary>
+public class SpendOverPromotionProcessor : OrderPromotionProcessorBase<SpendOverPromotion>
+{
+    private readonly FulfillmentEvaluator _fulfillmentEvaluator;
+
+    public SpendOverPromotionProcessor(FulfillmentEvaluator fulfillmentEvaluator)
+    {
+        _fulfillmentEvaluator = fulfillmentEvaluator;
+    }
+
+    protected override RewardDescription Evaluate(SpendOverPromotion promotionData, PromotionProcessorContext context)
+    {
+        if (promotionData.Condition is null || promotionData.Discount is null)
+        {
+            return RewardDescription.CreateNotFulfilledDescription(promotionData, FulfillmentStatus.NotFulfilled);
+        }
+
+        var status = promotionData.Condition.GetFulfillmentStatus(context, _fulfillmentEvaluator);
+        if (status != FulfillmentStatus.Fulfilled)
+        {
+            return RewardDescription.CreateNotFulfilledDescription(promotionData, status);
+        }
+
+        var redemptions = new[] { CreateRedemptionDescription(context.OrderForm) };
+        return RewardDescription.CreateMoneyOrPercentageRewardDescription(
+            status, redemptions, promotionData, promotionData.Discount, context.OrderGroup.Currency, promotionData.Description);
+    }
+
+    protected override PromotionItems GetPromotionItems(SpendOverPromotion promotionData) =>
+        new PromotionItems(promotionData, AllItems(), AllItems());
+
+    private static CatalogItemSelection AllItems() =>
+        new CatalogItemSelection(Enumerable.Empty<ContentReference>(), CatalogItemSelectionType.All, true);
+}
+

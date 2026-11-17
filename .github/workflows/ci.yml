@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: true
+      DiffEngine_Disabled: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # The VSIX project uses the classic project format, so tests run per project
+      # rather than through the solution.
+      - name: Unit and snapshot tests
+        run: dotnet test src/ScaffolderForOptimizely.Core.Tests -c Release
+
+      - name: Compile tests (generated code vs Optimizely CMS 12)
+        run: dotnet test src/ScaffolderForOptimizely.Compile.Tests -c Release
+
+      - uses: microsoft/setup-msbuild@v2
+
+      # Building the Commerce add-on builds the main extension first (project reference).
+      - name: Build VSIXs
+        run: msbuild src/ScaffolderForOptimizely.Commerce.Vsix/ScaffolderForOptimizely.Commerce.Vsix.csproj /restore /p:Configuration=Release /v:minimal
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ScaffolderForOptimizely-vsix
+          path: |
+            src/ScaffolderForOptimizely.Vsix/bin/Release/*.vsix
+            src/ScaffolderForOptimizely.Commerce.Vsix/bin/Release/*.vsix
+          if-no-files-found: error

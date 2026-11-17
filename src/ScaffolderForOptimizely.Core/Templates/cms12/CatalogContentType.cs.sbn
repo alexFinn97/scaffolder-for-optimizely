@@ -1,0 +1,23 @@
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Catalog.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace {{ namespace }};
+
+[CatalogContentType(
+    DisplayName = "{{ display_name }}",
+    GUID = "{{ guid }}",
+    MetaClassName = "{{ options.metaClassName }}",
+    Description = "{{ description }}")]
+public class {{ class_name }} : {{ base_class }}
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Description",
+        Description = "Shown on the storefront.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual XhtmlString{{ q }} Description { get; set; }
+}

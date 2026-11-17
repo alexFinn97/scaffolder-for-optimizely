@@ -1,0 +1,48 @@
+﻿=== Controllers/Commerce/BootController.cs (embedded)
+using Contoso.Web.Models.Catalog;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers.Commerce;
+
+public class BootController : ContentController<BootProduct>
+{
+    public IActionResult Index(BootProduct currentContent)
+    {
+        return View(currentContent);
+    }
+}
+
+=== Models/Catalog/BootProduct.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Catalog.ContentTypes;
+using EPiServer.Commerce.Catalog.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Models.Catalog;
+
+[CatalogContentType(
+    DisplayName = "Boot Product",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    MetaClassName = "BootProduct",
+    Description = "")]
+public class BootProduct : ProductContent
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Description",
+        Description = "Shown on the storefront.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual XhtmlString? Description { get; set; }
+}
+
+=== Views/Boot/Index.cshtml (embedded)
+@model Contoso.Web.Models.Catalog.BootProduct
+
+<article>
+    <h1>@Model.DisplayName</h1>
+</article>
+

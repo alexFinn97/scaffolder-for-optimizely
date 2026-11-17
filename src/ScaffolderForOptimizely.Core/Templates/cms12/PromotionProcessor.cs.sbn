@@ -1,0 +1,124 @@
+using System.Collections.Generic;
+using System.Linq;
+using EPiServer.Commerce.Marketing;
+{{~ if options.kind != "entry" ~}}
+using EPiServer.Commerce.Marketing.Extensions;
+{{~ end ~}}
+using EPiServer.Core;
+
+namespace {{ namespace }};
+
+/// <summary>
+/// Decides whether a cart qualifies for <see cref="{{ class_promotion }}"/> and what it saves.
+/// Found by the promotion engine automatically.
+/// </summary>
+{{~ if options.kind == "order" ~}}
+public class {{ class_name }} : OrderPromotionProcessorBase<{{ class_promotion }}>
+{
+    private readonly FulfillmentEvaluator _fulfillmentEvaluator;
+
+    public {{ class_name }}(FulfillmentEvaluator fulfillmentEvaluator)
+    {
+        _fulfillmentEvaluator = fulfillmentEvaluator;
+    }
+
+    protected override RewardDescription Evaluate({{ class_promotion }} promotionData, PromotionProcessorContext context)
+    {
+        if (promotionData.Condition is null || promotionData.Discount is null)
+        {
+            return RewardDescription.CreateNotFulfilledDescription(promotionData, FulfillmentStatus.NotFulfilled);
+        }
+
+        var status = promotionData.Condition.GetFulfillmentStatus(context, _fulfillmentEvaluator);
+        if (status != FulfillmentStatus.Fulfilled)
+        {
+            return RewardDescription.CreateNotFulfilledDescription(promotionData, status);
+        }
+
+        var redemptions = new[] { CreateRedemptionDescription(context.OrderForm) };
+        return RewardDescription.CreateMoneyOrPercentageRewardDescription(
+            status, redemptions, promotionData, promotionData.Discount, context.OrderGroup.Currency, promotionData.Description);
+    }
+
+    protected override PromotionItems GetPromotionItems({{ class_promotion }} promotionData) =>
+        new PromotionItems(promotionData, AllItems(), AllItems());
+
+    private static CatalogItemSelection AllItems() =>
+        new CatalogItemSelection(Enumerable.Empty<ContentReference>(), CatalogItemSelectionType.All, true);
+}
+{{~ else if options.kind == "shipping" ~}}
+public class {{ class_name }} : ShippingPromotionProcessorBase<{{ class_promotion }}>
+{
+    private readonly FulfillmentEvaluator _fulfillmentEvaluator;
+
+    public {{ class_name }}(FulfillmentEvaluator fulfillmentEvaluator)
+    {
+        _fulfillmentEvaluator = fulfillmentEvaluator;
+    }
+
+    protected override FulfillmentStatus GetFulfillmentStatus({{ class_promotion }} promotionData, PromotionProcessorContext context) =>
+        promotionData.Condition is null
+            ? FulfillmentStatus.NotFulfilled
+            : promotionData.Condition.GetFulfillmentStatus(context, _fulfillmentEvaluator);
+
+    protected override RewardDescription CreateRewardDescription(
+        {{ class_promotion }} promotionData,
+        FulfillmentStatus fulfillmentStatus,
+        IEnumerable<RedemptionDescription> redemptions,
+        PromotionProcessorContext context) =>
+        RewardDescription.CreateMoneyOrPercentageRewardDescription(
+            fulfillmentStatus, redemptions, promotionData, promotionData.Discount, context.OrderGroup.Currency, promotionData.Description);
+
+    protected override PromotionItems GetPromotionItems({{ class_promotion }} promotionData) =>
+        new PromotionItems(promotionData, AllItems(), AllItems());
+
+    private static CatalogItemSelection AllItems() =>
+        new CatalogItemSelection(Enumerable.Empty<ContentReference>(), CatalogItemSelectionType.All, true);
+}
+{{~ else ~}}
+public class {{ class_name }} : EntryPromotionProcessorBase<{{ class_promotion }}>
+{
+    private readonly CollectionTargetEvaluator _targetEvaluator;
+    private readonly FulfillmentEvaluator _fulfillmentEvaluator;
+
+    public {{ class_name }}(
+        CollectionTargetEvaluator targetEvaluator,
+        FulfillmentEvaluator fulfillmentEvaluator,
+        RedemptionDescriptionFactory redemptionDescriptionFactory)
+        : base(redemptionDescriptionFactory)
+    {
+        _targetEvaluator = targetEvaluator;
+        _fulfillmentEvaluator = fulfillmentEvaluator;
+    }
+
+    protected override RewardDescription Evaluate({{ class_promotion }} promotionData, PromotionProcessorContext context)
+    {
+        if (promotionData.Condition is null || promotionData.DiscountTargets is null || promotionData.Discount is null)
+        {
+            return RewardDescription.CreateNotFulfilledDescription(promotionData, FulfillmentStatus.NotFulfilled);
+        }
+
+        var lineItems = GetLineItems(context.OrderForm).ToList();
+
+        // Does the cart hold enough of the condition items?
+        var conditionCodes = _targetEvaluator.GetApplicableCodes(lineItems, promotionData.Condition.Items, promotionData.Condition.MatchRecursive);
+        var status = _fulfillmentEvaluator.GetStatusForBuyQuantityPromotion(conditionCodes, lineItems, promotionData.Condition.RequiredQuantity, 0);
+        if (status != FulfillmentStatus.Fulfilled)
+        {
+            return RewardDescription.CreateNotFulfilledDescription(promotionData, status);
+        }
+
+        // Discount the target items in the cart.
+        var targetCodes = _targetEvaluator.GetApplicableCodes(lineItems, promotionData.DiscountTargets.Items, promotionData.DiscountTargets.MatchRecursive);
+        var redemptions = GetRedemptions(promotionData, context, targetCodes);
+        return RewardDescription.CreateMoneyOrPercentageRewardDescription(
+            status, redemptions, promotionData, promotionData.Discount, context.OrderGroup.Currency, promotionData.Description);
+    }
+
+    protected override PromotionItems GetPromotionItems({{ class_promotion }} promotionData) =>
+        new PromotionItems(
+            promotionData,
+            new CatalogItemSelection(promotionData.Condition?.Items ?? new List<ContentReference>(), CatalogItemSelectionType.Specific, promotionData.Condition?.MatchRecursive ?? true),
+            new CatalogItemSelection(promotionData.DiscountTargets?.Items ?? new List<ContentReference>(), CatalogItemSelectionType.Specific, promotionData.DiscountTargets?.MatchRecursive ?? true));
+}
+{{~ end ~}}

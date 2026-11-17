@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>Optimizely Media Type</Name>
+    <Description>An Optimizely CMS image media type. For project-aware options use Add &gt; Optimizely.</Description>
+    <TemplateID>ScaffolderForOptimizely.OptimizelyMediaType</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <SortOrder>30</SortOrder>
+    <DefaultName>ImageFile.cs</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <AppendDefaultFileExtension>true</AppendDefaultFileExtension>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.cs">MediaType.cs</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

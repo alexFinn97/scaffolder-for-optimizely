@@ -1,0 +1,24 @@
+using System.Collections.Generic;
+using EPiServer.Validation;
+
+namespace {{ namespace }};
+
+/// <summary>Runs when {{ model_class }} content is saved. Picked up automatically; no registration needed.</summary>
+public class {{ class_name }} : IValidate<{{ model_class }}>
+{
+    public IEnumerable<ValidationError> Validate({{ model_class }} instance)
+    {
+        // Example:
+        // if (string.IsNullOrWhiteSpace(instance.Name))
+        // {
+        //     yield return new ValidationError
+        //     {
+        //         ErrorMessage = "A name is required.",
+        //         PropertyName = nameof(instance.Name),
+        //         Severity = ValidationErrorSeverity.Error,
+        //         ValidationType = ValidationErrorType.AttributeMatched,
+        //     };
+        // }
+        yield break;
+    }
+}

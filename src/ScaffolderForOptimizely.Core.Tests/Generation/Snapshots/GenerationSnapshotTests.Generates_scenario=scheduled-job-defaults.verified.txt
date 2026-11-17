@@ -1,0 +1,49 @@
+﻿=== Business/ScheduledJobs/ImportProductsJob.cs (embedded, primary)
+using EPiServer.PlugIn;
+using EPiServer.Scheduler;
+using Microsoft.Extensions.Logging;
+
+namespace Contoso.Web.Business.ScheduledJobs;
+
+[ScheduledPlugIn(
+    DisplayName = "Import Products",
+    Description = "Imports products from the \"PIM\".",
+    GUID = "11111111-2222-3333-4444-555555555555")]
+public class ImportProductsJob : ScheduledJobBase
+{
+    private readonly ILogger<ImportProductsJob> _logger;
+    private bool _stopSignaled;
+
+    public ImportProductsJob(ILogger<ImportProductsJob> logger)
+    {
+        _logger = logger;
+        IsStoppable = true;
+    }
+
+    public override string Execute()
+    {
+        _logger.LogInformation("{Job} started.", nameof(ImportProductsJob));
+        OnStatusChanged("Starting...");
+        var processed = 0;
+
+        // Do the work here. For long-running work, loop over the items and:
+        //   - return early when _stopSignaled is true
+        //   - call OnStatusChanged($"Processed {processed} items") every so often
+        //   - count processed items for the result message
+
+        if (_stopSignaled)
+        {
+            return $"Stopped after {processed} items.";
+        }
+
+        var message = $"Processed {processed} items.";
+        _logger.LogInformation("{Job} finished: {Message}", nameof(ImportProductsJob), message);
+        return message;
+    }
+
+    public override void Stop()
+    {
+        _stopSignaled = true;
+    }
+}
+

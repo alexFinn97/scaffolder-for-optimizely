@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/alexFinn97/scaffolder-for-optimizely/master/schema/optimizely-scaffolder.schema.json",
+  "title": "Scaffolder for Optimizely settings",
+  "description": "Per-solution settings for the Scaffolder for Optimizely Visual Studio extension. Every value is optional; anything left out is detected from the project.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "templateSource": {
+      "description": "Where file content comes from. 'embedded' (default) always uses the built-in templates, so the output matches the dialog's preview. 'dotnet-new' uses Optimizely's EPiServer.Templates where it has a matching template (content types, page controllers, partial components, initialization modules) and falls back to the built-in templates. Per-solution overrides in .optimizely/templates/ win either way.",
+      "enum": ["embedded", "dotnet-new"],
+      "default": "embedded"
+    },
+    "layout": {
+      "description": "'conventional' puts models, controllers, components, view models and views in their own folders. 'feature' keeps everything next to the item. Leave out to detect from where existing views live.",
+      "enum": ["conventional", "feature"]
+    },
+    "rootNamespace": {
+      "description": "Overrides the project's root namespace.",
+      "type": "string"
+    },
+    "fileScopedNamespaces": {
+      "description": "Use file-scoped namespaces. Leave out to match existing code.",
+      "type": "boolean"
+    },
+    "folders": {
+      "description": "Folders (relative to the project) used by the conventional layout, and when scaffolding from the project node.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pages": { "type": "string", "default": "Models/Pages" },
+        "blocks": { "type": "string", "default": "Models/Blocks" },
+        "media": { "type": "string", "default": "Models/Media" },
+        "catalog": { "type": "string", "default": "Models/Catalog", "description": "Commerce catalog content types (products, variations, bundles, packages, categories)." },
+        "controllers": { "type": "string", "default": "Controllers" },
+        "components": { "type": "string", "default": "Components" },
+        "viewModels": { "type": "string", "description": "Leave out to use the folder holding most existing *ViewModel classes, else a folder named ViewModels, else Models/ViewModels." },
+        "views": { "type": "string", "default": "Views" },
+        "initialization": { "type": "string", "description": "Initialization modules. Leave out to use where existing ones live, else Business/Initialization." },
+        "startupFilters": { "type": "string", "description": "IStartupFilter classes. Leave out to use where existing ones live, else Business/Initialization." },
+        "scheduledJobs": { "type": "string", "description": "Scheduled jobs. Leave out to use where existing ones live, else Business/ScheduledJobs." },
+        "serviceExtensions": { "type": "string", "description": "IServiceCollection extensions. Leave out to use where existing ones live, else Extensions." },
+        "selectionFactories": { "type": "string", "description": "Selection factories and queries. Leave out to use where existing ones live, else Business/SelectionFactories." },
+        "editorDescriptors": { "type": "string", "description": "Editor descriptors. Leave out to use where existing ones live, else Business/EditorDescriptors." },
+        "visitorGroups": { "type": "string", "description": "Visitor group criteria. Leave out to use where existing ones live, else Business/VisitorGroups." },
+        "contentEvents": { "type": "string", "description": "Content events handlers. Leave out to use where existing ones live, else Business/ContentEvents." },
+        "validators": { "type": "string", "description": "IValidate<T> validators. Leave out to use where existing ones live, else Business/Validation." },
+        "catalogControllers": { "type": "string", "description": "Controllers for Commerce catalog content. Leave out to use where existing ones live, else the controllers folder." },
+        "promotions": { "type": "string", "description": "Commerce promotions and their processors. Leave out to use where existing ones live, else Business/Promotions." },
+        "payments": { "type": "string", "description": "Commerce payment gateways and payment methods. Leave out to use where existing ones live, else Business/Payments." },
+        "shipping": { "type": "string", "description": "Commerce shipping gateways. Leave out to use where existing ones live, else Business/Shipping." },
+        "orderServices": { "type": "string", "description": "Commerce order service decorators (validators, calculators, price processors). Leave out to use where existing ones live, else Business/Orders." }
+      }
+    },
+    "baseClasses": {
+      "description": "Default base classes as full type names, e.g. 'MySite.Models.Pages.SitePageData'. Leave out to pick from abstract base classes found in the project.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": { "type": "string" },
+        "block": { "type": "string" },
+        "media": { "type": "string" },
+        "product": { "type": "string", "description": "Commerce: a ProductContent base class." },
+        "variation": { "type": "string", "description": "Commerce: a VariationContent base class." },
+        "bundle": { "type": "string", "description": "Commerce: a BundleContent base class." },
+        "package": { "type": "string", "description": "Commerce: a PackageContent base class." },
+        "category": { "type": "string", "description": "Commerce: a NodeContent base class." }
+      }
+    },
+    "contentTypeGroup": {
+      "description": "Default content type group expression, e.g. 'Globals.GroupNames.Content'.",
+      "type": "string"
+    },
+    "blockRenderStyle": {
+      "description": "Default block component style.",
+      "enum": ["async", "sync", "viewComponent"],
+      "default": "async"
+    },
+    "viewPaths": {
+      "description": "Razor view path patterns relative to the project, where {name} is the content type's class name. Leave out to learn them from existing views (matched by @model), falling back to MVC's default locations.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": { "type": "string", "examples": ["Views/{name}/Index.cshtml", "Views/Pages/{name}.cshtml"] },
+        "block": { "type": "string", "examples": ["Views/Shared/Blocks/{name}.cshtml", "Views/Shared/Components/{name}/Default.cshtml"] },
+        "catalog": { "type": "string", "description": "Commerce catalog content.", "examples": ["Views/{name}/Index.cshtml", "Views/Catalog/{name}.cshtml"] }
+      }
+    },
+    "passViewPath": {
+      "description": "Default for 'Pass view path to View()'. Leave out to pass it only when the view isn't where MVC looks by default and the project has no IViewLocationExpander.",
+      "type": "boolean"
+    },
+    "companions": {
+      "description": "Default state of the companion-file checkboxes.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "controller": { "type": "boolean", "default": true },
+        "component": { "type": "boolean", "default": true },
+        "viewModel": { "type": "boolean", "default": false },
+        "view": { "type": "boolean", "default": true }
+      }
+    }
+  }
+}

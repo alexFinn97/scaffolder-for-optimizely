@@ -1,0 +1,30 @@
+﻿=== Business/EditorDescriptors/LinkPickerEditorDescriptor.cs (embedded, primary)
+using System;
+using System.Collections.Generic;
+using EPiServer.Core;
+using EPiServer.Shell.ObjectEditing;
+using EPiServer.Shell.ObjectEditing.EditorDescriptors;
+
+namespace Contoso.Web.Business.EditorDescriptors;
+
+/// <summary>
+/// Applies to ContentReference properties marked <c>[UIHint(LinkPickerEditorDescriptor.UIHintName)]</c>.
+/// </summary>
+[EditorDescriptorRegistration(TargetType = typeof(ContentReference), UIHint = UIHintName)]
+public class LinkPickerEditorDescriptor : EditorDescriptor
+{
+    public const string UIHintName = "link-picker";
+
+    public LinkPickerEditorDescriptor()
+    {
+        ClientEditingClass = "app/editors/LinkPicker";
+    }
+
+    public override void ModifyMetadata(ExtendedMetadata metadata, IEnumerable<Attribute> attributes)
+    {
+        base.ModifyMetadata(metadata, attributes);
+
+        // Adjust the metadata here, e.g. metadata.EditorConfiguration["key"] = value;
+    }
+}
+

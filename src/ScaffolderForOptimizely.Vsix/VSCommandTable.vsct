@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h" />
+  <Extern href="vsshlids.h" />
+  <Include href="KnownImageIds.vsct" />
+
+  <!--
+    Solution Explorer > right-click a project or folder > Add > Optimizely CMS > ... (the Commerce menu lives in the Scaffolder for Optimizely Commerce add-on)
+    Buttons are hidden until the package confirms the project references Optimizely.
+  -->
+  <Commands package="guidScaffolderPackage">
+    <Menus>
+      <Menu guid="guidScaffolderCmdSet" id="OptimizelyMenu" priority="0x0100" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_ADD_ITEMS" />
+        <Strings>
+          <ButtonText>Optimizely CMS</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <Groups>
+      <Group guid="guidScaffolderCmdSet" id="ContentTypesGroup" priority="0x0100">
+        <Parent guid="guidScaffolderCmdSet" id="OptimizelyMenu" />
+      </Group>
+      <Group guid="guidScaffolderCmdSet" id="RenderingGroup" priority="0x0200">
+        <Parent guid="guidScaffolderCmdSet" id="OptimizelyMenu" />
+      </Group>
+      <Group guid="guidScaffolderCmdSet" id="InfrastructureGroup" priority="0x0300">
+        <Parent guid="guidScaffolderCmdSet" id="OptimizelyMenu" />
+      </Group>
+      <Group guid="guidScaffolderCmdSet" id="EditorGroup" priority="0x0400">
+        <Parent guid="guidScaffolderCmdSet" id="OptimizelyMenu" />
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidScaffolderCmdSet" id="AddPageType" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="ContentTypesGroup" />
+        <Icon guid="ImageCatalogGuid" id="Document" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Page Type...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddBlockType" priority="0x0200" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="ContentTypesGroup" />
+        <Icon guid="ImageCatalogGuid" id="Class" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Block Type...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddMediaType" priority="0x0300" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="ContentTypesGroup" />
+        <Icon guid="ImageCatalogGuid" id="Image" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Media Type...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddPageController" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="RenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="CSClassFile" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Page Controller...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddBlockComponent" priority="0x0200" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="RenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="Component" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Block Component...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddPartialComponent" priority="0x0300" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="RenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="Component" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Partial Content Component...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddViewComponent" priority="0x0400" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="RenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="Component" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>View Component...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddInitializationModule" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="InfrastructureGroup" />
+        <Icon guid="ImageCatalogGuid" id="Settings" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Initialization Module...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddStartupFilter" priority="0x0150" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="InfrastructureGroup" />
+        <Icon guid="ImageCatalogGuid" id="Filter" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Startup Filter...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddScheduledJob" priority="0x0200" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="InfrastructureGroup" />
+        <Icon guid="ImageCatalogGuid" id="Timer" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Scheduled Job...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddServiceCollectionExtension" priority="0x0300" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="InfrastructureGroup" />
+        <Icon guid="ImageCatalogGuid" id="ExtensionMethod" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Service Collection Extension...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddSelectionFactory" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="EditorGroup" />
+        <Icon guid="ImageCatalogGuid" id="ComboBox" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Selection Factory...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddEditorDescriptor" priority="0x0200" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="EditorGroup" />
+        <Icon guid="ImageCatalogGuid" id="Extension" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Editor Descriptor...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddVisitorGroupCriterion" priority="0x0300" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="EditorGroup" />
+        <Icon guid="ImageCatalogGuid" id="Group" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Visitor Group Criterion...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddContentEventsHandler" priority="0x0400" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="EditorGroup" />
+        <Icon guid="ImageCatalogGuid" id="Event" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Content Events Handler...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddContentValidator" priority="0x0500" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="EditorGroup" />
+        <Icon guid="ImageCatalogGuid" id="ValidationSummary" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Content Validator...</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="guidScaffolderPackage" value="{f1fdcef1-a2ce-45dd-880e-abdaa8c0ee10}" />
+    <GuidSymbol name="guidScaffolderCmdSet" value="{8496ae22-5963-4937-b396-69043c24fe69}">
+      <IDSymbol name="OptimizelyMenu" value="0x1000" />
+      <IDSymbol name="ContentTypesGroup" value="0x1100" />
+      <IDSymbol name="RenderingGroup" value="0x1200" />
+      <IDSymbol name="AddPageType" value="0x0101" />
+      <IDSymbol name="AddBlockType" value="0x0102" />
+      <IDSymbol name="AddMediaType" value="0x0103" />
+      <IDSymbol name="AddPageController" value="0x0104" />
+      <IDSymbol name="AddBlockComponent" value="0x0105" />
+      <IDSymbol name="AddPartialComponent" value="0x0106" />
+      <IDSymbol name="AddViewComponent" value="0x0107" />
+      <IDSymbol name="InfrastructureGroup" value="0x1300" />
+      <IDSymbol name="EditorGroup" value="0x1400" />
+      <IDSymbol name="AddInitializationModule" value="0x0108" />
+      <IDSymbol name="AddScheduledJob" value="0x0109" />
+      <IDSymbol name="AddServiceCollectionExtension" value="0x010A" />
+      <IDSymbol name="AddSelectionFactory" value="0x010B" />
+      <IDSymbol name="AddEditorDescriptor" value="0x010C" />
+      <IDSymbol name="AddVisitorGroupCriterion" value="0x010D" />
+      <IDSymbol name="AddContentEventsHandler" value="0x010E" />
+      <IDSymbol name="AddContentValidator" value="0x010F" />
+      <IDSymbol name="AddStartupFilter" value="0x0110" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

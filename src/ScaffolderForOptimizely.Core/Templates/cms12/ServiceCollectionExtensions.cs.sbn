@@ -1,0 +1,15 @@
+using Microsoft.Extensions.DependencyInjection;
+
+namespace {{ namespace }};
+
+public static class {{ class_name }}
+{
+    /// <summary>
+    /// Call from Startup.ConfigureServices: <c>services.{{ options.methodName }}();</c>
+    /// </summary>
+    public static IServiceCollection {{ options.methodName }}(this IServiceCollection services)
+    {
+        // Register services here, e.g. services.AddSingleton<IMyService, MyService>();
+        return services;
+    }
+}

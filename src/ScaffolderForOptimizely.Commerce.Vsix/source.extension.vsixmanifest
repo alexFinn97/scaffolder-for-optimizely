@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="ScaffolderForOptimizely.Commerce.36dadee1-5e8c-4644-acdb-d5c838a48da1" Version="0.9.0" Language="en-US" Publisher="Alex Finnigan" />
+    <DisplayName>Scaffolder for Optimizely Commerce</DisplayName>
+    <Description xml:space="preserve">Optimizely Commerce 14 add-on for Scaffolder for Optimizely: right-click scaffolding for catalog content (products, variations, bundles, packages, categories), content controllers, promotions, payment and shipping providers and order service decorators, with project-aware defaults.</Description>
+    <MoreInfo>https://github.com/alexFinn97/scaffolder-for-optimizely</MoreInfo>
+    <License>LICENSE</License>
+    <GettingStartedGuide>https://github.com/alexFinn97/scaffolder-for-optimizely#readme</GettingStartedGuide>
+    <ReleaseNotes>https://github.com/alexFinn97/scaffolder-for-optimizely/blob/master/CHANGELOG.md</ReleaseNotes>
+    <Icon>Resources\Icon.png</Icon>
+    <PreviewImage>Resources\Preview.png</PreviewImage>
+    <Tags>optimizely, episerver, commerce, scaffolding, code generation</Tags>
+    <Preview>true</Preview>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,19.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.8,)" />
+    <!-- The dialog, generator and templates live in the main extension; released together, so pinned to the same minor. -->
+    <Dependency Id="ScaffolderForOptimizely.0766a9ca-0833-4f20-a61c-abe0790c391b" DisplayName="Scaffolder for Optimizely" d:Source="Manual" Version="[0.9.0,0.10.0)" />
+  </Dependencies>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,19.0)" DisplayName="Visual Studio core editor" />
+  </Prerequisites>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+  </Assets>
+</PackageManifest>

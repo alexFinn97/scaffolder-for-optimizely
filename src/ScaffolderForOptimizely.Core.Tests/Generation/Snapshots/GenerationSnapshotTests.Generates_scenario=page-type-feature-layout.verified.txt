@@ -1,0 +1,59 @@
+﻿=== Features/Events/EventPage.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Features.Events;
+
+[ContentType(
+    DisplayName = "Event Page",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    Description = "")]
+public class EventPage : PageData
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Heading",
+        Description = "The main heading of the page.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual string? Heading { get; set; }
+}
+
+=== Features/Events/EventPage.cshtml (embedded)
+@model Contoso.Web.Features.Events.EventPageViewModel
+
+<article>
+    <h1>@Model.CurrentPage.Name</h1>
+</article>
+
+=== Features/Events/EventPageController.cs (embedded)
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Features.Events;
+
+public class EventPageController : PageController<EventPage>
+{
+    public IActionResult Index(EventPage currentPage)
+    {
+        var model = new EventPageViewModel(currentPage);
+
+        return View("~/Features/Events/EventPage.cshtml", model);
+    }
+}
+
+=== Features/Events/EventPageViewModel.cs (embedded)
+namespace Contoso.Web.Features.Events;
+
+public class EventPageViewModel
+{
+    public EventPageViewModel(EventPage currentPage)
+    {
+        CurrentPage = currentPage;
+    }
+
+    public EventPage CurrentPage { get; }
+}
+

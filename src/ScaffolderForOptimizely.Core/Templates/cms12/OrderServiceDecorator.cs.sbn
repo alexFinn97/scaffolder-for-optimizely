@@ -1,0 +1,112 @@
+{{~
+  if options.kind == "placedPriceProcessor"
+    service = "IPlacedPriceProcessor"
+  else if options.kind == "taxCalculator"
+    service = "ITaxCalculator"
+  else if options.kind == "shippingCalculator"
+    service = "IShippingCalculator"
+  else
+    service = "ILineItemValidator"
+  end
+~}}
+{{~ if service == "ILineItemValidator" || service == "IPlacedPriceProcessor" ~}}
+using System;
+{{~ end ~}}
+{{~ if service == "IPlacedPriceProcessor" ~}}
+using EPiServer.Commerce.Catalog.ContentTypes;
+{{~ end ~}}
+using EPiServer.Commerce.Order;
+using Mediachase.Commerce;
+{{~ if service == "IPlacedPriceProcessor" ~}}
+using Mediachase.Commerce.Customers;
+{{~ end ~}}
+
+namespace {{ namespace }};
+
+/// <summary>
+/// Wraps Commerce's default <see cref="{{ service }}"/>: everything goes to it unless you change it here.
+{{~ if class_extensions ~}}
+/// Registered by <see cref="{{ class_extensions }}.Add{{ class_name }}"/>.
+{{~ else ~}}
+/// Register it after AddCommerce(): <c>services.Intercept&lt;{{ service }}&gt;((provider, inner) => new {{ class_name }}(inner));</c>
+{{~ end ~}}
+/// </summary>
+public class {{ class_name }} : {{ service }}
+{
+    private readonly {{ service }} _inner;
+
+    public {{ class_name }}({{ service }} inner)
+    {
+        _inner = inner;
+    }
+{{~ if service == "ILineItemValidator" ~}}
+
+    public bool Validate(ILineItem lineItem, MarketId marketId, Action<ILineItem, ValidationIssue> onValidationError)
+    {
+        if (!_inner.Validate(lineItem, marketId, onValidationError))
+        {
+            return false;
+        }
+
+        // Add your own checks here. To reject the item, call onValidationError and return false.
+        return true;
+    }
+{{~ else if service == "IPlacedPriceProcessor" ~}}
+
+    public Money? GetPlacedPrice(EntryContentBase entry, decimal quantity, CustomerContact customerContact, MarketId marketId, Currency currency)
+    {
+        // Return a different price here, e.g. for a customer group or a negotiated contract.
+        return _inner.GetPlacedPrice(entry, quantity, customerContact, marketId, currency);
+    }
+
+    public bool UpdatePlacedPrice(ILineItem lineItem, CustomerContact customerContact, MarketId marketId, Currency currency, Action<ILineItem, ValidationIssue> onValidationError) =>
+        _inner.UpdatePlacedPrice(lineItem, customerContact, marketId, currency, onValidationError);
+{{~ else if service == "ITaxCalculator" ~}}
+
+    public Money GetSalesTax(ILineItem lineItem, IMarket market, IOrderAddress shippingAddress, Money basePrice)
+    {
+        // Change how sales tax is worked out here, e.g. call a tax service for the shipping address.
+        return _inner.GetSalesTax(lineItem, market, shippingAddress, basePrice);
+    }
+
+    public Money GetSalesTax(System.Collections.Generic.IEnumerable<ILineItem> lineItems, IMarket market, IOrderAddress shippingAddress, Currency currency) =>
+        _inner.GetSalesTax(lineItems, market, shippingAddress, currency);
+
+    public Money GetShippingTax(ILineItem lineItem, IMarket market, IOrderAddress shippingAddress, Money basePrice) =>
+        _inner.GetShippingTax(lineItem, market, shippingAddress, basePrice);
+{{~ else ~}}
+
+    public Money GetShippingCost(IShipment shipment, IMarket market, Currency currency)
+    {
+        // Change how a shipment's cost is worked out here.
+        return _inner.GetShippingCost(shipment, market, currency);
+    }
+
+    public Money GetDiscountedShippingAmount(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetDiscountedShippingAmount(shipment, market, currency);
+
+    public Money GetShippingItemsTotal(IShipment shipment, Currency currency) =>
+        _inner.GetShippingItemsTotal(shipment, currency);
+
+    public Money GetShippingReturnItemsTotal(IShipment shipment, Currency currency) =>
+        _inner.GetShippingReturnItemsTotal(shipment, currency);
+
+    public ShippingTotals GetShippingTotals(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetShippingTotals(shipment, market, currency);
+
+    public ShippingTotals GetReturnShippingTotals(IShipment shipment, Currency currency) =>
+        _inner.GetReturnShippingTotals(shipment, currency);
+
+    public Money GetSalesTax(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetSalesTax(shipment, market, currency);
+
+    public Money GetShippingTax(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetShippingTax(shipment, market, currency);
+
+    public Money GetReturnSalesTax(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetReturnSalesTax(shipment, market, currency);
+
+    public Money GetReturnShippingTax(IShipment shipment, IMarket market, Currency currency) =>
+        _inner.GetReturnShippingTax(shipment, market, currency);
+{{~ end ~}}
+}

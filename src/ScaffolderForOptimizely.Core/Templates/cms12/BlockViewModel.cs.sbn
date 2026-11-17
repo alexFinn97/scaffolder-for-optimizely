@@ -1,0 +1,11 @@
+namespace {{ namespace }};
+
+public class {{ class_name }}
+{
+    public {{ class_name }}({{ model_class }} currentBlock)
+    {
+        CurrentBlock = currentBlock;
+    }
+
+    public {{ model_class }} CurrentBlock { get; }
+}

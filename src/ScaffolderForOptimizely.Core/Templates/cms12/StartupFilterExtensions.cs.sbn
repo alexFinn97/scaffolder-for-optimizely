@@ -1,0 +1,17 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace {{ namespace }};
+
+public static class {{ class_name }}
+{
+    /// <summary>
+    /// Call from Startup.ConfigureServices: <c>services.Add{{ class_filter }}();</c>
+    /// </summary>
+    public static IServiceCollection Add{{ class_filter }}(this IServiceCollection services)
+    {
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, {{ class_filter }}>());
+        return services;
+    }
+}

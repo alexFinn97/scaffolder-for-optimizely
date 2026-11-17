@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!-- Generated code is compiled against the real Optimizely packages, so a template that
+       doesn't compile fails the build. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="EPiServer.CMS.AspNetCore.Mvc" Version="12.24.3" />
+    <PackageReference Include="EPiServer.CMS.Core" Version="12.24.3" />
+    <!-- EPiServer.Shell: editor descriptors, selection factories, visitor group criteria. -->
+    <PackageReference Include="EPiServer.CMS.UI.Core" Version="12.34.9" />
+    <!-- Commerce 14: catalog content, promotions, payment, shipping and order services. -->
+    <PackageReference Include="EPiServer.Commerce.Core" Version="14.46.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ScaffolderForOptimizely.Core\ScaffolderForOptimizely.Core.csproj" />
+  </ItemGroup>
+
+  <!-- The scenarios live in Core.Tests; compiling the same list here keeps both test projects in step. -->
+  <ItemGroup>
+    <Compile Include="..\ScaffolderForOptimizely.Core.Tests\Shared\**\*.cs" Link="Shared\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

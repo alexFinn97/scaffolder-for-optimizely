@@ -1,0 +1,44 @@
+﻿=== Infrastructure/Jobs/ReindexJob.cs (embedded, primary)
+using EPiServer.PlugIn;
+using EPiServer.Scheduler;
+
+namespace Contoso.Web.Infrastructure.Jobs;
+
+[ScheduledPlugIn(
+    DisplayName = "Reindex",
+    Description = "",
+    GUID = "11111111-2222-3333-4444-555555555555")]
+public class ReindexJob : ScheduledJobBase
+{
+    private bool _stopSignaled;
+
+    public ReindexJob()
+    {
+        IsStoppable = true;
+    }
+
+    public override string Execute()
+    {
+        OnStatusChanged("Starting...");
+        var processed = 0;
+
+        // Do the work here. For long-running work, loop over the items and:
+        //   - return early when _stopSignaled is true
+        //   - call OnStatusChanged($"Processed {processed} items") every so often
+        //   - count processed items for the result message
+
+        if (_stopSignaled)
+        {
+            return $"Stopped after {processed} items.";
+        }
+
+        var message = $"Processed {processed} items.";
+        return message;
+    }
+
+    public override void Stop()
+    {
+        _stopSignaled = true;
+    }
+}
+

@@ -1,0 +1,40 @@
+﻿=== Controllers/StandardPageController.cs (embedded, primary)
+using Contoso.Web.Models.Pages;
+using Contoso.Web.Models.ViewModels;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers;
+
+public class StandardPageController : PageController<StandardPage>
+{
+    public IActionResult Index(StandardPage currentPage)
+    {
+        var model = new StandardPageViewModel(currentPage);
+
+        return View(model);
+    }
+}
+
+=== Models/ViewModels/StandardPageViewModel.cs (embedded)
+using Contoso.Web.Models.Pages;
+
+namespace Contoso.Web.Models.ViewModels;
+
+public class StandardPageViewModel
+{
+    public StandardPageViewModel(StandardPage currentPage)
+    {
+        CurrentPage = currentPage;
+    }
+
+    public StandardPage CurrentPage { get; }
+}
+
+=== Views/StandardPage/Index.cshtml (embedded)
+@model Contoso.Web.Models.ViewModels.StandardPageViewModel
+
+<article>
+    <h1>@Model.CurrentPage.Name</h1>
+</article>
+

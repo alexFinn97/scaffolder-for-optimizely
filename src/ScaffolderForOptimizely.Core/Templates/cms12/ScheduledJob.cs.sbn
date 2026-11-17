@@ -1,0 +1,76 @@
+using EPiServer.PlugIn;
+using EPiServer.Scheduler;
+{{~ if options.logger ~}}
+using Microsoft.Extensions.Logging;
+{{~ end ~}}
+
+namespace {{ namespace }};
+
+[ScheduledPlugIn(
+    DisplayName = "{{ display_name }}",
+    Description = "{{ description }}",
+{{~ if options.restartable ~}}
+    Restartable = true,
+{{~ end ~}}
+    GUID = "{{ guid }}")]
+public class {{ class_name }} : ScheduledJobBase
+{
+{{~ if options.logger ~}}
+    private readonly ILogger<{{ class_name }}> _logger;
+{{~ end ~}}
+{{~ if options.stoppable ~}}
+    private bool _stopSignaled;
+{{~ end ~}}
+{{~ if options.stoppable || options.logger ~}}
+
+    public {{ class_name }}({{ if options.logger }}ILogger<{{ class_name }}> logger{{ end }})
+    {
+{{~ if options.logger ~}}
+        _logger = logger;
+{{~ end ~}}
+{{~ if options.stoppable ~}}
+        IsStoppable = true;
+{{~ end ~}}
+    }
+{{~ end ~}}
+
+    public override string Execute()
+    {
+{{~ if options.logger ~}}
+        _logger.LogInformation("{Job} started.", nameof({{ class_name }}));
+{{~ end ~}}
+{{~ if options.statusProgress ~}}
+        OnStatusChanged("Starting...");
+{{~ end ~}}
+        var processed = 0;
+
+        // Do the work here. For long-running work, loop over the items and:
+{{~ if options.stoppable ~}}
+        //   - return early when _stopSignaled is true
+{{~ end ~}}
+{{~ if options.statusProgress ~}}
+        //   - call OnStatusChanged($"Processed {processed} items") every so often
+{{~ end ~}}
+        //   - count processed items for the result message
+{{~ if options.stoppable ~}}
+
+        if (_stopSignaled)
+        {
+            return $"Stopped after {processed} items.";
+        }
+{{~ end ~}}
+
+        var message = $"Processed {processed} items.";
+{{~ if options.logger ~}}
+        _logger.LogInformation("{Job} finished: {Message}", nameof({{ class_name }}), message);
+{{~ end ~}}
+        return message;
+    }
+{{~ if options.stoppable ~}}
+
+    public override void Stop()
+    {
+        _stopSignaled = true;
+    }
+{{~ end ~}}
+}

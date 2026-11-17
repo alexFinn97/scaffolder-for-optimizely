@@ -1,0 +1,24 @@
+using EPiServer;
+using Microsoft.Extensions.Logging;
+
+namespace {{ namespace }};
+
+/// <summary>
+/// Handles content events. Registered and subscribed by <see cref="{{ class_initialization }}"/>.
+/// </summary>
+public class {{ class_name }}
+{
+    private readonly ILogger<{{ class_name }}> _logger;
+
+    public {{ class_name }}(ILogger<{{ class_name }}> logger)
+    {
+        _logger = logger;
+    }
+{{~ for evt in events ~}}
+
+    public void On{{ evt }}(object{{ q }} sender, ContentEventArgs args)
+    {
+        _logger.LogDebug("{Event}: {ContentLink}", "{{ evt }}", args.ContentLink);
+    }
+{{~ end ~}}
+}

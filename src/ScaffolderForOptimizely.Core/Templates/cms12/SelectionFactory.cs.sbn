@@ -1,0 +1,50 @@
+{{~ if options.autosuggest ~}}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using EPiServer.ServiceLocation;
+using EPiServer.Shell.ObjectEditing;
+
+namespace {{ namespace }};
+
+/// <summary>
+/// Autosuggest options. Use on a string property:
+/// <c>[AutoSuggestSelection(typeof({{ class_name }}))]</c>
+/// </summary>
+[ServiceConfiguration(typeof(ISelectionQuery))]
+public class {{ class_name }} : ISelectionQuery
+{
+    private static readonly ISelectItem[] Items =
+    {
+        new SelectItem { Text = "First option", Value = "first" },
+        new SelectItem { Text = "Second option", Value = "second" },
+    };
+
+    public IEnumerable<ISelectItem> GetItems(string query) =>
+        Items.Where(i => i.Text.StartsWith(query ?? string.Empty, StringComparison.OrdinalIgnoreCase));
+
+    public ISelectItem{{ q }} GetItemByValue(string value) =>
+        Items.FirstOrDefault(i => string.Equals(i.Value as string, value, StringComparison.Ordinal));
+}
+{{~ else ~}}
+using System.Collections.Generic;
+using EPiServer.Shell.ObjectEditing;
+
+namespace {{ namespace }};
+
+/// <summary>
+/// Dropdown options. Use on a property:
+/// <c>[SelectOne(SelectionFactoryType = typeof({{ class_name }}))]</c> or <c>[SelectMany(...)]</c>
+/// </summary>
+public class {{ class_name }} : ISelectionFactory
+{
+    public IEnumerable<ISelectItem> GetSelections(ExtendedMetadata metadata)
+    {
+        return new ISelectItem[]
+        {
+            new SelectItem { Text = "First option", Value = "first" },
+            new SelectItem { Text = "Second option", Value = "second" },
+        };
+    }
+}
+{{~ end ~}}

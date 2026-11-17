@@ -1,0 +1,40 @@
+﻿=== Controllers/FashionProductController.cs (embedded, primary)
+using Contoso.Web.Models.Catalog;
+using Contoso.Web.Models.ViewModels;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers;
+
+public class FashionProductController : ContentController<FashionProduct>
+{
+    public IActionResult Index(FashionProduct currentContent)
+    {
+        var model = new FashionProductViewModel(currentContent);
+
+        return View(model);
+    }
+}
+
+=== Models/ViewModels/FashionProductViewModel.cs (embedded)
+using Contoso.Web.Models.Catalog;
+
+namespace Contoso.Web.Models.ViewModels;
+
+public class FashionProductViewModel
+{
+    public FashionProductViewModel(FashionProduct currentContent)
+    {
+        CurrentContent = currentContent;
+    }
+
+    public FashionProduct CurrentContent { get; }
+}
+
+=== Views/FashionProduct/Index.cshtml (embedded)
+@model Contoso.Web.Models.ViewModels.FashionProductViewModel
+
+<article>
+    <h1>@Model.CurrentContent.DisplayName</h1>
+</article>
+

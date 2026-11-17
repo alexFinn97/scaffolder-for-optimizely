@@ -1,0 +1,46 @@
+﻿=== Components/TeaserCardBlockViewComponent.cs (embedded)
+using System.Threading.Tasks;
+using Contoso.Web.Models.Blocks;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Components;
+
+public class TeaserCardBlockViewComponent : AsyncBlockComponent<TeaserCardBlock>
+{
+    protected override async Task<IViewComponentResult> InvokeComponentAsync(TeaserCardBlock currentBlock)
+    {
+        return await Task.FromResult(View("~/Views/Shared/Blocks/TeaserCard.cshtml", currentBlock));
+    }
+}
+
+=== Models/Blocks/TeaserCardBlock.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Models.Blocks;
+
+[ContentType(
+    DisplayName = "Teaser Card Block",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    Description = "")]
+public class TeaserCardBlock : BlockData
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Heading",
+        Description = "The heading shown on the block.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual string? Heading { get; set; }
+}
+
+=== Views/Shared/Blocks/TeaserCard.cshtml (embedded)
+@model Contoso.Web.Models.Blocks.TeaserCardBlock
+
+<div class="teasercardblock">
+    @* Render properties here, e.g. @Html.PropertyFor(x => x.Heading) *@
+</div>
+

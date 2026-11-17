@@ -1,0 +1,32 @@
+{{~
+  view_args = ""
+  if view_path != ""
+    view_args = "\"" + view_path + "\""
+  end
+~}}
+{{~ if async ~}}
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+
+namespace {{ namespace }};
+
+public class {{ class_name }} : ViewComponent
+{
+    public async Task<IViewComponentResult> InvokeAsync()
+    {
+        return await Task.FromResult(View({{ view_args }}));
+    }
+}
+{{~ else ~}}
+using Microsoft.AspNetCore.Mvc;
+
+namespace {{ namespace }};
+
+public class {{ class_name }} : ViewComponent
+{
+    public IViewComponentResult Invoke()
+    {
+        return View({{ view_args }});
+    }
+}
+{{~ end ~}}

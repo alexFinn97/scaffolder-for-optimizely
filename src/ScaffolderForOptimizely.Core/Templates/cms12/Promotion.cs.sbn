@@ -1,0 +1,49 @@
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Marketing;
+using EPiServer.Commerce.Marketing.DataAnnotations;
+using EPiServer.Commerce.Marketing.Promotions;
+using EPiServer.DataAnnotations;
+
+namespace {{ namespace }};
+
+/// <summary>
+/// Shown in the Marketing UI's promotion list. Evaluated by <see cref="{{ class_processor }}"/>.
+/// </summary>
+[ContentType(
+    DisplayName = "{{ display_name }}",
+    GUID = "{{ guid }}",
+    GroupName = "{{ options.kind }}promotion",
+    Description = "{{ description }}")]
+{{~ if options.kind == "order" ~}}
+public class {{ class_name }} : OrderPromotion
+{
+    /// <summary>How much the order must be worth, per currency.</summary>
+    [PromotionRegion(PromotionRegionName.Condition)]
+    [Display(Order = 10)]
+    public virtual PurchaseAmount{{ q }} Condition { get; set; }
+{{~ else if options.kind == "shipping" ~}}
+public class {{ class_name }} : ShippingPromotion
+{
+    /// <summary>How much the order must be worth, per currency.</summary>
+    [PromotionRegion(PromotionRegionName.Condition)]
+    [Display(Order = 10)]
+    public virtual PurchaseAmount{{ q }} Condition { get; set; }
+{{~ else ~}}
+public class {{ class_name }} : EntryPromotion
+{
+    /// <summary>Which items, and how many, the customer must buy.</summary>
+    [PromotionRegion(PromotionRegionName.Condition)]
+    [Display(Order = 10)]
+    public virtual PurchaseQuantity{{ q }} Condition { get; set; }
+
+    /// <summary>Which items get the discount.</summary>
+    [PromotionRegion(PromotionRegionName.Reward)]
+    [Display(Order = 20)]
+    public virtual DiscountItems{{ q }} DiscountTargets { get; set; }
+{{~ end ~}}
+
+    /// <summary>A fixed amount per currency, or a percentage.</summary>
+    [PromotionRegion(PromotionRegionName.Discount)]
+    [Display(Order = 30)]
+    public virtual MonetaryReward{{ q }} Discount { get; set; }
+}

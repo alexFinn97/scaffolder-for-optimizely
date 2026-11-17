@@ -1,0 +1,22 @@
+﻿=== Business/SelectionFactories/ColourSelectionFactory.cs (embedded, primary)
+using System.Collections.Generic;
+using EPiServer.Shell.ObjectEditing;
+
+namespace Contoso.Web.Business.SelectionFactories;
+
+/// <summary>
+/// Dropdown options. Use on a property:
+/// <c>[SelectOne(SelectionFactoryType = typeof(ColourSelectionFactory))]</c> or <c>[SelectMany(...)]</c>
+/// </summary>
+public class ColourSelectionFactory : ISelectionFactory
+{
+    public IEnumerable<ISelectItem> GetSelections(ExtendedMetadata metadata)
+    {
+        return new ISelectItem[]
+        {
+            new SelectItem { Text = "First option", Value = "first" },
+            new SelectItem { Text = "Second option", Value = "second" },
+        };
+    }
+}
+
