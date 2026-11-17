@@ -113,6 +113,12 @@ public sealed class DotnetNewTemplateProvider : ITemplateProvider
                 arguments += $" --contentType {m}";
             }
 
+            foreach (var pair in mapping.BoolArguments)
+            {
+                var on = request.Options.TryGetValue(pair.Key, out var value) && string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+                arguments += $" {pair.Value} {(on ? "true" : "false")}";
+            }
+
             var result = await _runner.RunAsync("dotnet", arguments, tempDirectory, Timeout, cancellationToken).ConfigureAwait(false);
             var file = Path.Combine(tempDirectory, output.ClassName + ".cs");
             if (result.ExitCode != 0 || !File.Exists(file))

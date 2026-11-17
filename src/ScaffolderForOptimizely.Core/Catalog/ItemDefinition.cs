@@ -60,6 +60,15 @@ public sealed class ItemDefinition
     /// </summary>
     public string? NameFromOption { get; set; }
 
+    /// <summary>
+    /// For infrastructure/editor items: the folder setting (see FolderConfig) and detection key used
+    /// when scaffolding from the project node, e.g. <c>scheduledJobs</c>.
+    /// </summary>
+    public string? FolderKey { get; set; }
+
+    /// <summary>Alloy-style fallback when nothing is configured or detected, e.g. <c>Business/ScheduledJobs</c>.</summary>
+    public string DefaultFolder { get; set; } = string.Empty;
+
     public IReadOnlyList<ItemOption> Options { get; }
 
     public IReadOnlyList<OutputDefinition> Outputs { get; }

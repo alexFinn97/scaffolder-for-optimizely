@@ -23,6 +23,66 @@ public static class CompilationAnalyzer
     private const string GroupDefinitionsName = "EPiServer.DataAnnotations.GroupDefinitionsAttribute";
     private const string ViewLocationExpanderName = "Microsoft.AspNetCore.Mvc.Razor.IViewLocationExpander";
 
+    private sealed class FolderRule
+    {
+        public FolderRule(string key, Func<INamedTypeSymbol, bool> matches)
+        {
+            Key = key;
+            Matches = matches;
+        }
+
+        public string Key { get; }
+
+        public Func<INamedTypeSymbol, bool> Matches { get; }
+    }
+
+    /// <summary>
+    /// How to recognise existing implementations of each infrastructure/editor item. Rules whose
+    /// Optimizely type isn't referenced by the project are left out.
+    /// </summary>
+    private static List<FolderRule> FolderRules(Compilation compilation)
+    {
+        INamedTypeSymbol? Type(string metadataName) => compilation.GetTypeByMetadataName(metadataName);
+
+        var rules = new List<FolderRule>();
+        void Add(string key, INamedTypeSymbol? symbol, Func<INamedTypeSymbol, INamedTypeSymbol, bool> matches)
+        {
+            if (symbol is not null)
+            {
+                rules.Add(new FolderRule(key, t => matches(t, symbol)));
+            }
+        }
+
+        Add(Catalog.FolderKeys.Initialization, Type("EPiServer.Framework.IInitializableModule"), Implements);
+        Add(Catalog.FolderKeys.StartupFilters, Type("Microsoft.AspNetCore.Hosting.IStartupFilter"), Implements);
+        Add(Catalog.FolderKeys.ScheduledJobs, Type("EPiServer.Scheduler.ScheduledJobBase"), DerivesFrom);
+        Add(Catalog.FolderKeys.SelectionFactories, Type("EPiServer.Shell.ObjectEditing.ISelectionFactory"), Implements);
+        Add(Catalog.FolderKeys.SelectionFactories, Type("EPiServer.Shell.ObjectEditing.ISelectionQuery"), Implements);
+        Add(Catalog.FolderKeys.EditorDescriptors, Type("EPiServer.Shell.ObjectEditing.EditorDescriptors.EditorDescriptor"), DerivesFrom);
+        Add(Catalog.FolderKeys.VisitorGroups, Type("EPiServer.Personalization.VisitorGroups.CriterionBase`1"), DerivesFrom);
+        Add(Catalog.FolderKeys.Validators, Type("EPiServer.Validation.IValidate`1"), Implements);
+        Add(Catalog.FolderKeys.ServiceExtensions, Type("Microsoft.Extensions.DependencyInjection.IServiceCollection"),
+            (t, services) => t.IsStatic && t.GetMembers().OfType<IMethodSymbol>().Any(m =>
+                m.IsExtensionMethod && m.Parameters.Length > 0 && SymbolEqualityComparer.Default.Equals(m.Parameters[0].Type, services)));
+        Add(Catalog.FolderKeys.ContentEvents, Type("EPiServer.ContentEventArgs"),
+            (t, args) => t.GetMembers().OfType<IMethodSymbol>().Any(m =>
+                m.Parameters.Any(p => p.Type is INamedTypeSymbol pt && (SymbolEqualityComparer.Default.Equals(pt, args) || DerivesFrom(pt, args)))));
+
+        return rules;
+    }
+
+    private static bool Implements(INamedTypeSymbol type, INamedTypeSymbol @interface) =>
+        type.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i.OriginalDefinition, @interface));
+
+    /// <summary>Most common folder; ties go to the shallower, then alphabetically first.</summary>
+    private static string? MostUsed(IEnumerable<string> folders) =>
+        folders
+            .GroupBy(f => f, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(g => g.Count())
+            .ThenBy(g => g.Key.Count(c => c == '/'))
+            .ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault()?.Key;
+
     /// <summary>Folder of the type's first source file, relative to the project; null if outside it.</summary>
     private static string? FolderOf(INamedTypeSymbol type, string projectDirectory)
     {
@@ -55,12 +115,27 @@ public static class CompilationAnalyzer
         var groupDefinitions = compilation.GetTypeByMetadataName(GroupDefinitionsName);
         var viewLocationExpander = compilation.GetTypeByMetadataName(ViewLocationExpanderName);
         var viewModelFolders = new List<string>();
+        var folderRules = FolderRules(compilation);
+        var ruleFolders = new Dictionary<string, List<string>>(StringComparer.Ordinal);
 
         foreach (var type in GetSourceTypes(compilation.Assembly.GlobalNamespace))
         {
             if (type.TypeKind != TypeKind.Class)
             {
                 continue;
+            }
+
+            foreach (var rule in folderRules)
+            {
+                if (rule.Matches(type) && FolderOf(type, context.ProjectDirectory) is { } ruleFolder)
+                {
+                    if (!ruleFolders.TryGetValue(rule.Key, out var list))
+                    {
+                        ruleFolders[rule.Key] = list = new List<string>();
+                    }
+
+                    list.Add(ruleFolder);
+                }
             }
 
             if (viewLocationExpander is not null
@@ -97,15 +172,17 @@ public static class CompilationAnalyzer
         }
 
         // Where most existing view models live beats a folder that merely has the right name.
-        var mostUsed = viewModelFolders
-            .GroupBy(f => f, StringComparer.OrdinalIgnoreCase)
-            .OrderByDescending(g => g.Count())
-            .ThenBy(g => g.Key.Count(c => c == '/'))
-            .ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
-            .FirstOrDefault();
-        if (mostUsed is not null)
+        if (MostUsed(viewModelFolders) is { } viewModels)
         {
-            context.ViewModelsFolder = mostUsed.Key;
+            context.ViewModelsFolder = viewModels;
+        }
+
+        foreach (var pair in ruleFolders)
+        {
+            if (MostUsed(pair.Value) is { } folder)
+            {
+                context.DetectedFolders[pair.Key] = folder;
+            }
         }
 
         context.PageBaseClasses.Sort(StringComparer.Ordinal);

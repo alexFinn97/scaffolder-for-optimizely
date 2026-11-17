@@ -40,6 +40,12 @@ public sealed class ProjectContext
     /// </summary>
     public string? ViewModelsFolder { get; set; }
 
+    /// <summary>
+    /// Folder holding most existing implementations per <see cref="Catalog.FolderKeys"/> key
+    /// (relative, forward slashes), e.g. scheduledJobs → Business/Jobs.
+    /// </summary>
+    public Dictionary<string, string> DetectedFolders { get; } = new();
+
     /// <summary>The project has a custom IViewLocationExpander, so views may be found outside MVC's defaults.</summary>
     public bool HasViewLocationExpander { get; set; }
 
