@@ -23,7 +23,64 @@ public static class ProjectFileScanner
         var projectDirectory = Path.GetDirectoryName(Path.GetFullPath(projectFilePath))!;
         var context = new ProjectContext(projectDirectory, ReadRootNamespace(projectFilePath));
         context.UsesFeatureFolders = DetectFeatureFolders(projectDirectory);
+        context.ViewModelsFolder = FindViewModelsFolder(projectDirectory);
+        context.RazorViews.AddRange(ReadRazorViews(projectDirectory));
         return context;
+    }
+
+    /// <summary>Every non-underscore .cshtml with an <c>@model</c> directive near the top.</summary>
+    public static IEnumerable<RazorViewInfo> ReadRazorViews(string projectDirectory)
+    {
+        var root = projectDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        foreach (var file in EnumerateFiles(root, "*.cshtml"))
+        {
+            if (Path.GetFileName(file).StartsWith("_", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var model = ReadModelDirective(file);
+            if (model is not null)
+            {
+                yield return new RazorViewInfo(file.Substring(root.Length + 1).Replace('\\', '/'), model);
+            }
+        }
+    }
+
+    private static string? ReadModelDirective(string file)
+    {
+        try
+        {
+            foreach (var line in File.ReadLines(file).Take(40))
+            {
+                var trimmed = line.Trim();
+                if (trimmed.StartsWith("@model ", StringComparison.Ordinal))
+                {
+                    return trimmed.Substring("@model ".Length).Trim();
+                }
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // Unreadable view: just skip it.
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// The shallowest folder named <c>ViewModels</c> (any case), relative to the project with forward
+    /// slashes; ties go to the alphabetically first path. Null when there is none.
+    /// </summary>
+    public static string? FindViewModelsFolder(string projectDirectory)
+    {
+        var root = projectDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        return EnumerateDirectories(root)
+            .Where(d => string.Equals(Path.GetFileName(d), "ViewModels", StringComparison.OrdinalIgnoreCase))
+            .Select(d => d.Substring(root.Length + 1).Replace('\\', '/'))
+            .OrderBy(d => d.Count(c => c == '/'))
+            .ThenBy(d => d, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault();
     }
 
     public static string ReadRootNamespace(string projectFilePath)
@@ -77,6 +134,30 @@ public static class ProjectFileScanner
         }
 
         return feature > conventional;
+    }
+
+    private static IEnumerable<string> EnumerateDirectories(string directory)
+    {
+        var pending = new Stack<string>();
+        pending.Push(directory);
+        while (pending.Count > 0)
+        {
+            string[] dirs;
+            try
+            {
+                dirs = Directory.GetDirectories(pending.Pop());
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                continue;
+            }
+
+            foreach (var dir in dirs.Where(d => !IgnoredFolders.Contains(Path.GetFileName(d))))
+            {
+                yield return dir;
+                pending.Push(dir);
+            }
+        }
     }
 
     private static IEnumerable<string> EnumerateFiles(string directory, string pattern)

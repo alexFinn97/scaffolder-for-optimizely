@@ -21,6 +21,21 @@ public static class CompilationAnalyzer
     private const string BlockDataName = "EPiServer.Core.BlockData";
     private const string MediaDataName = "EPiServer.Core.MediaData";
     private const string GroupDefinitionsName = "EPiServer.DataAnnotations.GroupDefinitionsAttribute";
+    private const string ViewLocationExpanderName = "Microsoft.AspNetCore.Mvc.Razor.IViewLocationExpander";
+
+    /// <summary>Folder of the type's first source file, relative to the project; null if outside it.</summary>
+    private static string? FolderOf(INamedTypeSymbol type, string projectDirectory)
+    {
+        var path = type.DeclaringSyntaxReferences.FirstOrDefault()?.SyntaxTree.FilePath;
+        if (string.IsNullOrEmpty(path))
+        {
+            return null;
+        }
+
+        var directory = System.IO.Path.GetDirectoryName(path);
+        var relative = directory is null ? string.Empty : NamespaceHelper.GetRelativePath(projectDirectory, directory);
+        return relative.Length == 0 ? null : relative.Replace('\\', '/');
+    }
 
     public static void Apply(Compilation compilation, ProjectContext context)
     {
@@ -38,12 +53,26 @@ public static class CompilationAnalyzer
         var blockData = compilation.GetTypeByMetadataName(BlockDataName);
         var mediaData = compilation.GetTypeByMetadataName(MediaDataName);
         var groupDefinitions = compilation.GetTypeByMetadataName(GroupDefinitionsName);
+        var viewLocationExpander = compilation.GetTypeByMetadataName(ViewLocationExpanderName);
+        var viewModelFolders = new List<string>();
 
         foreach (var type in GetSourceTypes(compilation.Assembly.GlobalNamespace))
         {
             if (type.TypeKind != TypeKind.Class)
             {
                 continue;
+            }
+
+            if (viewLocationExpander is not null
+                && type.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, viewLocationExpander)))
+            {
+                context.HasViewLocationExpander = true;
+            }
+
+            if (type.ContainingType is null && type.Name.EndsWith("ViewModel", StringComparison.Ordinal)
+                && FolderOf(type, context.ProjectDirectory) is { } folder)
+            {
+                viewModelFolders.Add(folder);
             }
 
             var fullName = type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
@@ -65,6 +94,18 @@ public static class CompilationAnalyzer
             {
                 AddGroupNames(type, context);
             }
+        }
+
+        // Where most existing view models live beats a folder that merely has the right name.
+        var mostUsed = viewModelFolders
+            .GroupBy(f => f, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(g => g.Count())
+            .ThenBy(g => g.Key.Count(c => c == '/'))
+            .ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault();
+        if (mostUsed is not null)
+        {
+            context.ViewModelsFolder = mostUsed.Key;
         }
 
         context.PageBaseClasses.Sort(StringComparer.Ordinal);

@@ -34,6 +34,24 @@ public sealed class ProjectContext
     /// <summary>True when existing views sit next to their classes rather than under Views/.</summary>
     public bool UsesFeatureFolders { get; set; }
 
+    /// <summary>
+    /// Where view models live, relative to the project with forward slashes: the folder holding most
+    /// existing <c>*ViewModel</c> classes, else a folder named ViewModels, else null.
+    /// </summary>
+    public string? ViewModelsFolder { get; set; }
+
+    /// <summary>The project has a custom IViewLocationExpander, so views may be found outside MVC's defaults.</summary>
+    public bool HasViewLocationExpander { get; set; }
+
+    /// <summary>View path pattern learnt from existing page views, e.g. <c>Views/{name}/Index.cshtml</c>.</summary>
+    public string? PageViewPattern { get; set; }
+
+    /// <summary>View path pattern learnt from existing block views, e.g. <c>Views/Shared/Blocks/{name}.cshtml</c>.</summary>
+    public string? BlockViewPattern { get; set; }
+
+    /// <summary>Existing Razor views and their <c>@model</c>, used to learn the view patterns.</summary>
+    public List<RazorViewInfo> RazorViews { get; } = new();
+
     /// <summary>Abstract page base classes declared in the project (full names).</summary>
     public List<string> PageBaseClasses { get; } = new();
 
@@ -54,6 +72,20 @@ public static class Profiles
 {
     public const string Cms12 = "cms12";
     public const string Cms13 = "cms13";
+}
+
+/// <summary>An existing Razor view: path relative to the project (forward slashes) and its <c>@model</c>.</summary>
+public sealed class RazorViewInfo
+{
+    public RazorViewInfo(string relativePath, string modelType)
+    {
+        RelativePath = relativePath;
+        ModelType = modelType;
+    }
+
+    public string RelativePath { get; }
+
+    public string ModelType { get; }
 }
 
 /// <summary>A string constant usable as a GroupName, e.g. <c>Globals.GroupNames.Specialized</c>.</summary>

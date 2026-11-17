@@ -33,6 +33,37 @@ public class CompilationAnalyzerTests
     }
 
     [Fact]
+    public void Detects_a_view_location_expander_and_where_view_models_live()
+    {
+        string InProject(string relative) => System.IO.Path.Combine(Scenarios.ProjectDirectory, relative);
+
+        var compilation = TestCompiler.Create(
+            new[]
+            {
+                (InProject(@"Business\SiteViewLocationExpander.cs"), """
+                    using System.Collections.Generic;
+                    using Microsoft.AspNetCore.Mvc.Razor;
+                    namespace Contoso.Web.Business;
+                    public class SiteViewLocationExpander : IViewLocationExpander
+                    {
+                        public void PopulateValues(ViewLocationExpanderContext context) { }
+                        public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations) => viewLocations;
+                    }
+                    """),
+                (InProject(@"Models\ViewModels\LayoutViewModel.cs"), "namespace Contoso.Web.Models.ViewModels;\npublic class LayoutViewModel { }"),
+                (InProject(@"Models\ViewModels\PageViewModel.cs"), "namespace Contoso.Web.Models.ViewModels;\npublic class PageViewModel<T> { }"),
+                (InProject(@"Features\Search\SearchViewModel.cs"), "namespace Contoso.Web.Features.Search;\npublic class SearchViewModel { }"),
+            },
+            nullable: true);
+        var context = new ProjectContext(Scenarios.ProjectDirectory, Scenarios.RootNamespace) { ViewModelsFolder = "Other/ViewModels" };
+
+        CompilationAnalyzer.Apply(compilation, context);
+
+        Assert.True(context.HasViewLocationExpander);
+        Assert.Equal("Models/ViewModels", context.ViewModelsFolder);
+    }
+
+    [Fact]
     public void Detects_file_scoped_namespaces_and_disabled_nullable()
     {
         var compilation = TestCompiler.Create(

@@ -48,6 +48,9 @@ internal static class ProjectContextService
             await log.WriteAsync($"Project analysis failed: {ex.Message}");
         }
 
+        // Needs both the views (file scan) and the content types (Roslyn).
+        ViewConventionDetector.Apply(context);
+
         if (context.CmsMajorVersion is > 12)
         {
             await log.WriteAsync($"CMS {context.CmsMajorVersion} detected. Version-specific templates aren't available yet, so the CMS 12 templates are used.");
