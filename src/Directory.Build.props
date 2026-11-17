@@ -7,6 +7,6 @@
     <Copyright>Copyright (c) 2026 Alex Finnigan</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/alexFinn97/scaffolder-for-optimizely</RepositoryUrl>
-    <Version>0.9.1</Version>
+    <Version>0.9.2</Version>
   </PropertyGroup>
 </Project>
