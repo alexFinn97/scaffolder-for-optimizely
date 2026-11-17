@@ -102,6 +102,10 @@ jobs:
             if ($output -notmatch 'VsixPub0038') { throw "Publishing $($package.Payload) failed." }
           }
 
+          # Both uploads succeeded. Actions fails a pwsh step whose last program exited non-zero,
+          # which VsixPublisher's telemetry crash still causes, so finish explicitly.
+          exit 0
+
       - name: Marketplace publishing skipped
         if: env.VS_MARKETPLACE_PAT == ''
         shell: pwsh
