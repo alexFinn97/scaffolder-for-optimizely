@@ -23,6 +23,9 @@ public enum ContentKind
     Page,
     Block,
     Media,
+
+    /// <summary>Commerce catalog content: product, variation, bundle, package or category (node).</summary>
+    Catalog,
 }
 
 /// <summary>Which Razor view path convention a view output follows.</summary>

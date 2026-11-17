@@ -25,6 +25,16 @@ public static partial class ItemCatalog
         public const string VisitorGroupCriterion = "cms-visitor-group-criterion";
         public const string ContentEventsHandler = "cms-content-events-handler";
         public const string ContentValidator = "cms-content-validator";
+        public const string Product = "commerce-product";
+        public const string Variation = "commerce-variation";
+        public const string Bundle = "commerce-bundle";
+        public const string Package = "commerce-package";
+        public const string CatalogCategory = "commerce-category";
+        public const string ContentController = "commerce-content-controller";
+        public const string Promotion = "commerce-promotion";
+        public const string PaymentProvider = "commerce-payment-provider";
+        public const string ShippingProvider = "commerce-shipping-provider";
+        public const string OrderServiceDecorator = "commerce-order-service-decorator";
     }
 
     public static class Categories
@@ -33,6 +43,13 @@ public static partial class ItemCatalog
         public const string CmsRendering = "CMS/Rendering";
         public const string CmsInfrastructure = "CMS/Infrastructure";
         public const string CmsEditor = "CMS/Editor";
+        public const string CommerceCatalog = "Commerce/Catalog";
+        public const string CommerceRendering = "Commerce/Rendering";
+        public const string CommerceMarketing = "Commerce/Marketing";
+        public const string CommerceOrders = "Commerce/Orders";
+
+        /// <summary>Commerce items are only offered in projects that reference Optimizely Commerce.</summary>
+        public static bool IsCommerce(string category) => category.StartsWith("Commerce/", StringComparison.Ordinal);
     }
 
     private static readonly Lazy<IReadOnlyList<ItemDefinition>> LazyAll = new(Build);
@@ -60,6 +77,16 @@ public static partial class ItemCatalog
         VisitorGroupCriterion(),
         ContentEventsHandler(),
         ContentValidator(),
+        CatalogType(Ids.Product, "Product", CatalogRoots.Product, "A product: the item customers browse to, grouping its variations.", "FashionProduct"),
+        CatalogType(Ids.Variation, "Variation", CatalogRoots.Variation, "A variation (SKU): the item customers buy, with its own price and stock.", "FashionVariation"),
+        CatalogType(Ids.Bundle, "Bundle", CatalogRoots.Bundle, "A bundle: entries sold together but priced and shipped separately.", "OutfitBundle"),
+        CatalogType(Ids.Package, "Package", CatalogRoots.Package, "A package: entries sold as one item with a single price.", "StarterPackage"),
+        CatalogType(Ids.CatalogCategory, "Category", CatalogRoots.Category, "A catalog category (node) that groups products.", "FashionCategory"),
+        ContentController(),
+        Promotion(),
+        PaymentProvider(),
+        ShippingProvider(),
+        OrderServiceDecorator(),
     };
 
     private static ItemDefinition PageType() => new(

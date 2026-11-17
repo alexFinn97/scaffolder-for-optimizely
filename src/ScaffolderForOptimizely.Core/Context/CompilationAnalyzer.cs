@@ -68,7 +68,46 @@ public static class CompilationAnalyzer
             (t, args) => t.GetMembers().OfType<IMethodSymbol>().Any(m =>
                 m.Parameters.Any(p => p.Type is INamedTypeSymbol pt && (SymbolEqualityComparer.Default.Equals(pt, args) || DerivesFrom(pt, args)))));
 
+        // Commerce: skipped automatically in projects without Commerce, as the types won't resolve.
+        Add(Catalog.FolderKeys.Promotions, Type("EPiServer.Commerce.Marketing.PromotionData"), DerivesFrom);
+        Add(Catalog.FolderKeys.Payments, Type("EPiServer.Commerce.Order.IPaymentPlugin"), Implements);
+        Add(Catalog.FolderKeys.Payments, Type("Mediachase.Commerce.Orders.IPaymentGateway"), Implements);
+        Add(Catalog.FolderKeys.Shipping, Type("Mediachase.Commerce.Orders.IShippingPlugin"), Implements);
+        Add(Catalog.FolderKeys.Shipping, Type("Mediachase.Commerce.Orders.IShippingGateway"), Implements);
+        foreach (var service in OrderServiceInterfaces)
+        {
+            Add(Catalog.FolderKeys.OrderServices, Type(service), Implements);
+        }
+
+        // Controllers whose base class is generic over catalog content, e.g. ContentController<ShirtProduct>
+        // or a site's own CatalogControllerBase<T>.
+        var catalogRoots = Catalog.CatalogRoots.All.Select(Type).OfType<INamedTypeSymbol>().ToList();
+        Add(Catalog.FolderKeys.CatalogControllers, Type("Microsoft.AspNetCore.Mvc.Controller"),
+            (t, controller) => !t.IsAbstract && DerivesFrom(t, controller) && BaseTypeArguments(t).Any(arg =>
+                catalogRoots.Any(root => SymbolEqualityComparer.Default.Equals(arg, root) || DerivesFrom(arg, root))));
+
         return rules;
+    }
+
+    /// <summary>Order services the Order Service Decorator item can wrap.</summary>
+    private static readonly string[] OrderServiceInterfaces =
+    {
+        "EPiServer.Commerce.Order.ILineItemValidator",
+        "EPiServer.Commerce.Order.IPlacedPriceProcessor",
+        "EPiServer.Commerce.Order.ITaxCalculator",
+        "EPiServer.Commerce.Order.IShippingCalculator",
+    };
+
+    /// <summary>Type arguments anywhere in the base class chain, e.g. T in ContentController&lt;T&gt;.</summary>
+    private static IEnumerable<INamedTypeSymbol> BaseTypeArguments(INamedTypeSymbol type)
+    {
+        for (var current = type.BaseType; current is not null; current = current.BaseType)
+        {
+            foreach (var argument in current.TypeArguments.OfType<INamedTypeSymbol>())
+            {
+                yield return argument;
+            }
+        }
     }
 
     private static bool Implements(INamedTypeSymbol type, INamedTypeSymbol @interface) =>
@@ -114,6 +153,10 @@ public static class CompilationAnalyzer
         var mediaData = compilation.GetTypeByMetadataName(MediaDataName);
         var groupDefinitions = compilation.GetTypeByMetadataName(GroupDefinitionsName);
         var viewLocationExpander = compilation.GetTypeByMetadataName(ViewLocationExpanderName);
+        var catalogRoots = Catalog.CatalogRoots.All
+            .Select(name => (Name: name, Symbol: compilation.GetTypeByMetadataName(name)))
+            .Where(r => r.Symbol is not null)
+            .ToList();
         var viewModelFolders = new List<string>();
         var folderRules = FolderRules(compilation);
         var ruleFolders = new Dictionary<string, List<string>>(StringComparer.Ordinal);
@@ -164,6 +207,22 @@ public static class CompilationAnalyzer
             {
                 context.MediaBaseClasses.Add(fullName);
             }
+            else if (catalogRoots.FirstOrDefault(r => DerivesFrom(type, r.Symbol!)) is { Name: not null } root)
+            {
+                if (!type.IsAbstract)
+                {
+                    context.CatalogTypes.Add(fullName);
+                }
+                else
+                {
+                    if (!context.CatalogBaseClasses.TryGetValue(root.Name, out var bases))
+                    {
+                        context.CatalogBaseClasses[root.Name] = bases = new List<string>();
+                    }
+
+                    bases.Add(fullName);
+                }
+            }
 
             if (IsGroupNameHolder(type, groupDefinitions))
             {
@@ -190,6 +249,11 @@ public static class CompilationAnalyzer
         context.MediaBaseClasses.Sort(StringComparer.Ordinal);
         context.PageTypes.Sort(StringComparer.Ordinal);
         context.BlockTypes.Sort(StringComparer.Ordinal);
+        context.CatalogTypes.Sort(StringComparer.Ordinal);
+        foreach (var bases in context.CatalogBaseClasses.Values)
+        {
+            bases.Sort(StringComparer.Ordinal);
+        }
     }
 
     private static void ApplyVersions(Compilation compilation, ProjectContext context)

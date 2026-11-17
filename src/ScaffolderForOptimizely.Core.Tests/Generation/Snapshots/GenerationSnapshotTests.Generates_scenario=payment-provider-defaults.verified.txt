@@ -1,0 +1,86 @@
+﻿=== Business/Payments/InvoicePaymentGateway.cs (embedded, primary)
+using EPiServer.Commerce.Order;
+using Mediachase.Commerce.Orders;
+using Mediachase.Commerce.Plugins.Payment;
+
+namespace Contoso.Web.Business.Payments;
+
+/// <summary>
+/// Processes payments for a payment method whose gateway is set to this class in Commerce admin > Payments.
+/// Implements the order API (<see cref="IPaymentPlugin"/>) and the legacy gateway, so both code paths work.
+/// Checkout creates the payments through <see cref="InvoicePaymentMethod"/>.
+/// </summary>
+public class InvoicePaymentGateway : AbstractPaymentGateway, IPaymentPlugin
+{
+    /// <summary>Legacy entry point (Mediachase order system); forwards to the order API version.</summary>
+    public override bool ProcessPayment(Payment payment, ref string message)
+    {
+        var result = ProcessPayment(payment.Parent.Parent, payment);
+        message = result.Message;
+        return result.IsSuccessful;
+    }
+
+    /// <summary>Called when the order is placed, e.g. through <c>IOrderGroup.ProcessPayments()</c>.</summary>
+    public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
+    {
+        // Settings holds the parameters set for this payment method in Commerce admin.
+        // Call the payment provider here and return CreateUnsuccessfulResult(...) if it declines.
+        payment.Status = PaymentStatus.Processed.ToString();
+        return PaymentProcessingResult.CreateSuccessfulResult($"Payment of {payment.Amount} processed.");
+    }
+}
+
+=== Business/Payments/InvoicePaymentMethod.cs (embedded)
+using System;
+using EPiServer.Commerce.Order;
+using EPiServer.Globalization;
+using Mediachase.Commerce.Orders;
+using Mediachase.Commerce.Orders.Dto;
+using Mediachase.Commerce.Orders.Managers;
+
+namespace Contoso.Web.Business.Payments;
+
+/// <summary>
+/// The checkout side of the payment method with system keyword <c>Invoice</c>:
+/// creates the payment that <see cref="InvoicePaymentGateway"/> processes.
+/// </summary>
+public class InvoicePaymentMethod : IPaymentMethod
+{
+    public const string Keyword = "Invoice";
+
+    private readonly IOrderGroupFactory _orderGroupFactory;
+    private readonly Lazy<PaymentMethodDto.PaymentMethodRow?> _method;
+
+    public InvoicePaymentMethod(IOrderGroupFactory orderGroupFactory)
+    {
+        _orderGroupFactory = orderGroupFactory;
+        _method = new Lazy<PaymentMethodDto.PaymentMethodRow?>(() =>
+        {
+            var methods = PaymentManager.GetPaymentMethodBySystemName(Keyword, ContentLanguage.PreferredCulture.Name);
+            return methods.PaymentMethod.Count > 0 ? methods.PaymentMethod[0] : null;
+        });
+    }
+
+    public Guid PaymentMethodId => _method.Value?.PaymentMethodId ?? Guid.Empty;
+
+    public string SystemKeyword => Keyword;
+
+    public string Name => _method.Value?.Name ?? Keyword;
+
+    public string Description => _method.Value?.Description ?? string.Empty;
+
+    public IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)
+    {
+        var payment = orderGroup.CreatePayment(_orderGroupFactory);
+        payment.PaymentMethodId = PaymentMethodId;
+        payment.PaymentMethodName = SystemKeyword;
+        payment.Amount = amount;
+        payment.Status = PaymentStatus.Pending.ToString();
+        payment.TransactionType = TransactionType.Authorization.ToString();
+        return payment;
+    }
+
+    /// <summary>Validate checkout form data (card details, references...) before the payment is created.</summary>
+    public bool ValidateData() => true;
+}
+

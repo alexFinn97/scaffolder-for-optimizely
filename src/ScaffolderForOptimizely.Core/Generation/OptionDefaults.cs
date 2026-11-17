@@ -31,7 +31,7 @@ public static class OptionDefaults
             case ChoiceSource.Static:
                 return option.Choices;
             case ChoiceSource.BaseClasses:
-                values = BaseClassChoices(item.ContentKind, context);
+                values = BaseClassChoices(option, item.ContentKind, context);
                 break;
             case ChoiceSource.ContentTypeGroups:
                 return new[] { new OptionChoice(string.Empty, "(none)") }
@@ -44,8 +44,11 @@ public static class OptionDefaults
                 values = context.BlockTypes.Concat(new[] { "EPiServer.Core.BlockData" });
                 break;
             case ChoiceSource.ContentTypes:
-                values = context.PageTypes.Concat(context.BlockTypes)
+                values = context.PageTypes.Concat(context.BlockTypes).Concat(context.CatalogTypes)
                     .Concat(new[] { "EPiServer.Core.PageData", "EPiServer.Core.BlockData" });
+                break;
+            case ChoiceSource.CatalogTypes:
+                values = context.CatalogTypes.Concat(CatalogRoots.All);
                 break;
             default:
                 return option.Choices;
@@ -54,13 +57,18 @@ public static class OptionDefaults
         return values.Distinct(StringComparer.Ordinal).Select(v => new OptionChoice(v, v)).ToList();
     }
 
-    private static IEnumerable<string> BaseClassChoices(ContentKind kind, ProjectContext context) => kind switch
+    private static IEnumerable<string> BaseClassChoices(ItemOption option, ContentKind kind, ProjectContext context) => kind switch
     {
         ContentKind.Page => context.PageBaseClasses.Concat(new[] { "EPiServer.Core.PageData" }),
         ContentKind.Block => context.BlockBaseClasses.Concat(new[] { "EPiServer.Core.BlockData" }),
         ContentKind.Media => context.MediaBaseClasses.Concat(new[] { "EPiServer.Core.ImageData", "EPiServer.Core.VideoData", "EPiServer.Core.MediaData" }),
+        // Each catalog item's default is its root type (ProductContent...); offer the project's bases for that root.
+        ContentKind.Catalog => CatalogBaseClasses(option.DefaultValue, context).Concat(new[] { option.DefaultValue }),
         _ => Enumerable.Empty<string>(),
     };
+
+    private static List<string> CatalogBaseClasses(string root, ProjectContext context) =>
+        context.CatalogBaseClasses.TryGetValue(root, out var bases) ? bases : new List<string>();
 
     private static string DefaultFor(ItemOption option, ItemDefinition item, ProjectContext context, ScaffolderConfig config)
     {
@@ -77,6 +85,7 @@ public static class OptionDefaults
                 {
                     ContentKind.Page => context.PageBaseClasses,
                     ContentKind.Block => context.BlockBaseClasses,
+                    ContentKind.Catalog => CatalogBaseClasses(option.DefaultValue, context),
                     _ => new List<string>(),
                 }) ?? option.DefaultValue;
             default:
@@ -128,6 +137,8 @@ public static class OptionDefaults
             ContentKind.Page => config.BaseClasses.Page,
             ContentKind.Block => config.BaseClasses.Block,
             ContentKind.Media => config.BaseClasses.Media,
+            ContentKind.Catalog => config.BaseClasses.ForCatalogRoot(
+                item.Options.First(o => o.Key == OptionKeys.BaseClass).DefaultValue),
             _ => null,
         };
 

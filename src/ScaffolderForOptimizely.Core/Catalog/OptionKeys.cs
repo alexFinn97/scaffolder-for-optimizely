@@ -22,6 +22,9 @@ public static class OptionKeys
     /// <summary>Custom view model file path relative to the project; empty means the default.</summary>
     public const string ViewModelPath = "viewModelPath";
 
+    /// <summary>Custom controller file path relative to the project; empty means the default. The file name is the class name.</summary>
+    public const string ControllerPath = "controllerPath";
+
     /// <summary>"true"/"false" to force passing the view path to View(); empty means decide automatically.</summary>
     public const string PassViewPath = "passViewPath";
 
@@ -40,6 +43,13 @@ public static class OptionKeys
     public const string Scope = "scope";
     public const string Middleware = "middleware";
     public const string Registration = "registration";
+
+    // Commerce items.
+    public const string MetaClassName = "metaClassName";
+    public const string Kind = "kind";
+    public const string PaymentMethod = "paymentMethod";
+    public const string SystemKeyword = "systemKeyword";
+    public const string DecorateDefault = "decorateDefault";
 
     /// <summary>Prefix for content event switches, e.g. <c>event:PublishingContent</c>.</summary>
     public const string EventPrefix = "event:";

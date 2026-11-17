@@ -65,6 +65,10 @@ public sealed class ViewPathConfig
     /// <summary>e.g. <c>Views/Shared/Blocks/{name}.cshtml</c>.</summary>
     [JsonProperty("block")]
     public string? Block { get; set; }
+
+    /// <summary>Commerce catalog content, e.g. <c>Views/Catalog/{name}.cshtml</c>.</summary>
+    [JsonProperty("catalog")]
+    public string? Catalog { get; set; }
 }
 
 public static class TemplateSources
@@ -90,6 +94,10 @@ public sealed class FolderConfig
 
     [JsonProperty("media")]
     public string Media { get; set; } = "Models/Media";
+
+    /// <summary>Commerce catalog content types.</summary>
+    [JsonProperty("catalog")]
+    public string CatalogContent { get; set; } = "Models/Catalog";
 
     [JsonProperty("controllers")]
     public string Controllers { get; set; } = "Controllers";
@@ -132,6 +140,23 @@ public sealed class FolderConfig
     [JsonProperty("validators")]
     public string? Validators { get; set; }
 
+    // Commerce items.
+    /// <summary>Controllers for catalog content. Null = where existing ones live, else <see cref="Controllers"/>.</summary>
+    [JsonProperty("catalogControllers")]
+    public string? CatalogControllers { get; set; }
+
+    [JsonProperty("promotions")]
+    public string? Promotions { get; set; }
+
+    [JsonProperty("payments")]
+    public string? Payments { get; set; }
+
+    [JsonProperty("shipping")]
+    public string? Shipping { get; set; }
+
+    [JsonProperty("orderServices")]
+    public string? OrderServices { get; set; }
+
     /// <summary>The configured folder for a <see cref="Catalog.FolderKeys"/> key, or null.</summary>
     public string? ForKey(string key) => key switch
     {
@@ -144,6 +169,11 @@ public sealed class FolderConfig
         Catalog.FolderKeys.VisitorGroups => VisitorGroups,
         Catalog.FolderKeys.ContentEvents => ContentEvents,
         Catalog.FolderKeys.Validators => Validators,
+        Catalog.FolderKeys.CatalogControllers => CatalogControllers,
+        Catalog.FolderKeys.Promotions => Promotions,
+        Catalog.FolderKeys.Payments => Payments,
+        Catalog.FolderKeys.Shipping => Shipping,
+        Catalog.FolderKeys.OrderServices => OrderServices,
         _ => null,
     };
 }
@@ -159,6 +189,33 @@ public sealed class BaseClassConfig
 
     [JsonProperty("media")]
     public string? Media { get; set; }
+
+    // Commerce catalog content.
+    [JsonProperty("product")]
+    public string? Product { get; set; }
+
+    [JsonProperty("variation")]
+    public string? Variation { get; set; }
+
+    [JsonProperty("bundle")]
+    public string? Bundle { get; set; }
+
+    [JsonProperty("package")]
+    public string? Package { get; set; }
+
+    [JsonProperty("category")]
+    public string? Category { get; set; }
+
+    /// <summary>The configured base class for a <see cref="Catalog.CatalogRoots"/> root type, or null.</summary>
+    public string? ForCatalogRoot(string root) => root switch
+    {
+        Catalog.CatalogRoots.Product => Product,
+        Catalog.CatalogRoots.Variation => Variation,
+        Catalog.CatalogRoots.Bundle => Bundle,
+        Catalog.CatalogRoots.Package => Package,
+        Catalog.CatalogRoots.Category => Category,
+        _ => null,
+    };
 }
 
 /// <summary>Default state of the companion checkboxes. Null = item default.</summary>

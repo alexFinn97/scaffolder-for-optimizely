@@ -70,6 +70,18 @@ public sealed class ProjectContext
 
     public List<string> BlockTypes { get; } = new();
 
+    /// <summary>
+    /// Abstract Commerce catalog base classes declared in the project, keyed by the
+    /// <see cref="Catalog.CatalogRoots"/> type they derive from.
+    /// </summary>
+    public Dictionary<string, List<string>> CatalogBaseClasses { get; } = new();
+
+    /// <summary>Concrete catalog content types declared in the project (full names).</summary>
+    public List<string> CatalogTypes { get; } = new();
+
+    /// <summary>View path pattern learnt from existing catalog content views.</summary>
+    public string? CatalogViewPattern { get; set; }
+
     /// <summary>Constants that can be used as a content type group.</summary>
     public List<GroupNameCandidate> GroupNames { get; } = new();
 }

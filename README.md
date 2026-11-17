@@ -1,12 +1,12 @@
 # Scaffolder for Optimizely
 
-A Visual Studio 2022/2026 extension that brings back right-click scaffolding for Optimizely CMS 12: content types, controllers and components, infrastructure such as initialization modules and scheduled jobs, and editor extensions, with defaults taken from your project.
+A Visual Studio 2022/2026 extension that brings back right-click scaffolding for Optimizely CMS 12 and Commerce 14: content types, controllers and components, infrastructure such as initialization modules and scheduled jobs, editor extensions, and Commerce catalog, promotion, payment, shipping and order items, with defaults taken from your project.
 
-> **Status: v0.2 preview.** CMS content types, rendering, infrastructure and editor items are in. Commerce comes in v0.3.
+> **Status: v0.4 preview.** CMS items are in, with Commerce items in a separate add-on extension. v1.0 brings the Marketplace release.
 
 ## What it does
 
-In Solution Explorer, right-click a project or folder and choose **Add > Optimizely**:
+In Solution Explorer, right-click a project or folder and choose **Add > Optimizely CMS**:
 
 | Content types | Rendering |
 |---|---|
@@ -23,7 +23,18 @@ In Solution Explorer, right-click a project or folder and choose **Add > Optimiz
 | Service Collection Extension (`services.AddX()`) | Content Events Handler (DI-registered handler + initialization module that subscribes it) |
 | | Content Validator (`IValidate<T>`) |
 
-Each command opens a dialog with the item's options and a live preview of every file it will create. The menu only appears in projects that reference Optimizely CMS.
+### Optimizely Commerce add-on
+
+Commerce items come in a separate extension, **Scaffolder for Optimizely Commerce**, so CMS-only developers don't get a Commerce menu. It needs Scaffolder for Optimizely installed first (same version line), and uses its dialog, detection and templates. In projects that reference Optimizely Commerce, **Add > Optimizely Commerce** adds:
+
+| Catalog | Marketing and orders |
+|---|---|
+| Product, Variation, Bundle, Package, Category (`[CatalogContentType]`, + controller, view model, Razor view, each with an editable path) | Promotion (entry, order or shipping, + its promotion processor) |
+| Content Controller (`ContentController<T>` for an existing Commerce content type) | Payment Provider (`AbstractPaymentGateway` + `IPaymentPlugin`, + optional checkout `IPaymentMethod`) |
+| | Shipping Provider (`IShippingPlugin` + `IShippingGateway`) |
+| | Order Service Decorator (wraps `ILineItemValidator`, `IPlacedPriceProcessor`, `ITaxCalculator` or `IShippingCalculator`, + `services.AddX()` registration) |
+
+Each command opens a dialog with the item's options and a live preview of every file it will create. The menus only appear in projects that reference Optimizely CMS (and Commerce, for the Commerce menu).
 
 Plain item templates for the core items are also available under **Add > New Item > Optimizely**, for people who prefer that route. They don't have the project-aware options.
 
@@ -33,13 +44,15 @@ When the dialog opens, the extension reads the project with Roslyn and offers:
 
 - abstract base classes you already have (e.g. `SitePageData`) as the default base class
 - `GroupNames`-style constants (or classes marked `[GroupDefinitions]`) as content type groups
-- existing page and block types for controllers and components
+- existing page, block and catalog types for controllers and components
+- abstract catalog base classes per kind (e.g. a `BaseProduct : ProductContent` for products)
+- where existing Commerce controllers live, if they're kept apart from the CMS ones
 - your namespace style (file-scoped or block-scoped) and nullable setting
 - feature-folder vs `Views/` layout, based on where existing views live
 - view path patterns learnt from existing views' `@model` (e.g. `Views/Shared/Blocks/{name}.cshtml`)
 - the folder holding most existing `*ViewModel` classes (or a folder named `ViewModels`)
 - whether a custom `IViewLocationExpander` exists, which decides whether to pass the view path to `View()`
-- where your existing initialization modules, startup filters, scheduled jobs, selection factories, editor descriptors, criteria, content event handlers and validators live
+- where your existing initialization modules, startup filters, scheduled jobs, selection factories, editor descriptors, criteria, content event handlers, validators, promotions, payment and shipping providers and order services live
 
 Content type pickers start blank. The view path and view model path fill in from the above, and stay editable. Right-clicking a folder puts the main file there. Right-clicking the project uses the configured or detected folder, else a conventional one (e.g. `Models/Pages`, `Business/ScheduledJobs`). Existing files are never overwritten.
 
@@ -81,15 +94,15 @@ Requirements: Visual Studio 2022 17.x or 2026 with the **Visual Studio extension
 ```bash
 dotnet test src/ScaffolderForOptimizely.Core.Tests
 dotnet test src/ScaffolderForOptimizely.Compile.Tests
-msbuild src/ScaffolderForOptimizely.Vsix/ScaffolderForOptimizely.Vsix.csproj /restore
+msbuild src/ScaffolderForOptimizely.Commerce.Vsix/ScaffolderForOptimizely.Commerce.Vsix.csproj /restore
 ```
 
-The VSIX project uses the classic project format, so build it with `msbuild` (or Visual Studio), not `dotnet build`. To debug, set **ScaffolderForOptimizely.Vsix** as the startup project and press F5. It starts an experimental instance of Visual Studio.
+Building the Commerce add-on also builds the main extension, so that one command produces both `.vsix` files. The VSIX projects use the classic project format, so build them with `msbuild` (or Visual Studio), not `dotnet build`. To debug, set **ScaffolderForOptimizely.Commerce.Vsix** (both extensions) or **ScaffolderForOptimizely.Vsix** (CMS only) as the startup project and press F5. It starts an experimental instance of Visual Studio.
 
 ### Tests
 
 - **Core.Tests:** unit tests plus [Verify](https://github.com/VerifyTests/Verify) snapshot tests of every scenario in [src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs](src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs). After an intended template change, review the `.received.txt` files and rename them to `.verified.txt`.
-- **Compile.Tests:** compiles every scenario's generated C# (it links the same `Scenarios.cs`) against the real `EPiServer.CMS` 12 packages and fails on any error or warning. It also checks project detection against an Alloy-style project.
+- **Compile.Tests:** compiles every scenario's generated C# (it links the same `Scenarios.cs`) against the real `EPiServer.CMS` 12 and `EPiServer.Commerce.Core` 14 packages and fails on any error or warning. It also checks project detection against an Alloy-style project.
 
 ### Layout
 
@@ -99,7 +112,8 @@ src/
   Directory.Build.props                   version and package metadata shared by every project
   nuget.config                            nuget.org plus Optimizely's feed
   ScaffolderForOptimizely.Core            netstandard2.0: item catalogue, config, detection, generation, templates
-  ScaffolderForOptimizely.Vsix            net48 VSIX: commands, dialog, Roslyn workspace access, file writing
+  ScaffolderForOptimizely.Vsix            net48 VSIX: CMS commands, dialog, Roslyn workspace access, file writing
+  ScaffolderForOptimizely.Commerce.Vsix   net48 VSIX add-on: the Optimizely Commerce menu; depends on the main extension
   ScaffolderForOptimizely.Core.Tests      unit and snapshot tests, plus the shared test scenarios
   ScaffolderForOptimizely.Compile.Tests   compile tests against the real Optimizely packages
 schema/                                   JSON schema for .optimizely-scaffolder.json

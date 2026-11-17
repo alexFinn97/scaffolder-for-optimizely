@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h" />
+  <Extern href="vsshlids.h" />
+  <Include href="KnownImageIds.vsct" />
+
+  <!--
+    Solution Explorer > right-click a project or folder > Add > Optimizely Commerce > ...
+    Buttons are hidden until the package confirms the project references Optimizely Commerce,
+    and Visual Studio hides the submenu while all of them are hidden.
+  -->
+  <Commands package="guidCommercePackage">
+    <Menus>
+      <Menu guid="guidCommerceCmdSet" id="CommerceMenu" priority="0x0101" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_ADD_ITEMS" />
+        <Strings>
+          <ButtonText>Optimizely Commerce</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <Groups>
+      <Group guid="guidCommerceCmdSet" id="CommerceCatalogGroup" priority="0x0100">
+        <Parent guid="guidCommerceCmdSet" id="CommerceMenu" />
+      </Group>
+      <Group guid="guidCommerceCmdSet" id="CommerceRenderingGroup" priority="0x0200">
+        <Parent guid="guidCommerceCmdSet" id="CommerceMenu" />
+      </Group>
+      <Group guid="guidCommerceCmdSet" id="CommerceMarketingGroup" priority="0x0300">
+        <Parent guid="guidCommerceCmdSet" id="CommerceMenu" />
+      </Group>
+      <Group guid="guidCommerceCmdSet" id="CommerceOrdersGroup" priority="0x0400">
+        <Parent guid="guidCommerceCmdSet" id="CommerceMenu" />
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidCommerceCmdSet" id="AddProduct" priority="0x0100" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="CatalogZone" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Product...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCommerceCmdSet" id="AddVariation" priority="0x0200" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="Component" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Variation...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCommerceCmdSet" id="AddBundle" priority="0x0300" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="Box" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Bundle...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCommerceCmdSet" id="AddPackage" priority="0x0400" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="Package" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Package...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCommerceCmdSet" id="AddCatalogCategory" priority="0x0500" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceCatalogGroup" />
+        <Icon guid="ImageCatalogGuid" id="FolderClosed" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Category...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCommerceCmdSet" id="AddContentController" priority="0x0100" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceRenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="CSClassFile" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Content Controller...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCommerceCmdSet" id="AddPromotion" priority="0x0100" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceMarketingGroup" />
+        <Icon guid="ImageCatalogGuid" id="Tag" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Promotion...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCommerceCmdSet" id="AddPaymentProvider" priority="0x0100" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceOrdersGroup" />
+        <Icon guid="ImageCatalogGuid" id="Currency" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Payment Provider...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCommerceCmdSet" id="AddShippingProvider" priority="0x0200" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceOrdersGroup" />
+        <Icon guid="ImageCatalogGuid" id="Send" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Shipping Provider...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidCommerceCmdSet" id="AddOrderServiceDecorator" priority="0x0300" type="Button">
+        <Parent guid="guidCommerceCmdSet" id="CommerceOrdersGroup" />
+        <Icon guid="ImageCatalogGuid" id="Calculator" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Order Service Decorator...</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="guidCommercePackage" value="{a9dc2109-38e7-4a59-989e-2ef85605b9a5}" />
+    <GuidSymbol name="guidCommerceCmdSet" value="{5dd36305-8484-42c4-aa87-187ff291252c}">
+      <IDSymbol name="CommerceMenu" value="0x2000" />
+      <IDSymbol name="CommerceCatalogGroup" value="0x2100" />
+      <IDSymbol name="CommerceRenderingGroup" value="0x2200" />
+      <IDSymbol name="CommerceMarketingGroup" value="0x2300" />
+      <IDSymbol name="CommerceOrdersGroup" value="0x2400" />
+      <IDSymbol name="AddProduct" value="0x0111" />
+      <IDSymbol name="AddVariation" value="0x0112" />
+      <IDSymbol name="AddBundle" value="0x0113" />
+      <IDSymbol name="AddPackage" value="0x0114" />
+      <IDSymbol name="AddCatalogCategory" value="0x0115" />
+      <IDSymbol name="AddContentController" value="0x0116" />
+      <IDSymbol name="AddPromotion" value="0x0117" />
+      <IDSymbol name="AddPaymentProvider" value="0x0118" />
+      <IDSymbol name="AddShippingProvider" value="0x0119" />
+      <IDSymbol name="AddOrderServiceDecorator" value="0x011A" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

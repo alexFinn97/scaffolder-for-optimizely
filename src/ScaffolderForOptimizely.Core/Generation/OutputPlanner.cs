@@ -89,6 +89,29 @@ public static class OutputPlanner
         }
 
         var controllerClass = item.PrimaryRole == OutputRole.Controller ? name : modelClass + ControllerSuffix;
+
+        // Controller companion: default folder and class, or a typed file path whose file name is the class.
+        var controllerPath = Path.Combine(DirectoryFor(OutputRole.Controller), controllerClass + ".cs");
+        var typedControllerPath = item.PrimaryRole == OutputRole.Controller ? string.Empty : Get(options, OptionKeys.ControllerPath);
+        if (typedControllerPath.Length > 0)
+        {
+            var resolved = ResolvePath(projectDirectory, typedControllerPath, ".cs");
+            if (resolved is null)
+            {
+                plan.Warnings.Add($"Controller path '{typedControllerPath}' is outside the project, so the default path was used.");
+            }
+            else
+            {
+                controllerPath = resolved;
+                controllerClass = NamespaceHelper.Sanitize(Path.GetFileNameWithoutExtension(controllerPath)).Replace(".", "_");
+            }
+        }
+
+        if (item.Options.Any(o => o.Key == OptionKeys.ControllerPath))
+        {
+            plan.ResolvedOptions[OptionKeys.ControllerPath] = Relative(projectDirectory, controllerPath);
+        }
+
         var componentClass = item.PrimaryRole == OutputRole.Component ? name : modelClass + ViewComponentSuffix;
         var componentName = componentClass.EndsWith(ViewComponentSuffix, StringComparison.Ordinal)
             ? componentClass.Substring(0, componentClass.Length - ViewComponentSuffix.Length)
@@ -165,6 +188,8 @@ public static class OutputPlanner
         var baseName = StripSuffix(name, item.NameSuffix);
         ResolveAuto(OptionKeys.MethodName, "Add" + StripSuffix(baseName, "ServiceCollection"), identifier: true);
         ResolveAuto(OptionKeys.UiHint, baseName, identifier: false);
+        ResolveAuto(OptionKeys.MetaClassName, name, identifier: true);
+        ResolveAuto(OptionKeys.SystemKeyword, baseName, identifier: true);
 
         void ResolveAuto(string key, string derived, bool identifier)
         {
@@ -251,8 +276,8 @@ public static class OutputPlanner
                     break;
                 case OutputRole.Controller:
                     className = controllerClass;
-                    fullPath = Path.Combine(DirectoryFor(OutputRole.Controller), className + ".cs");
-                    ns = NamespaceForDirectory(DirectoryFor(OutputRole.Controller));
+                    fullPath = controllerPath;
+                    ns = NamespaceForDirectory(Path.GetDirectoryName(controllerPath)!);
                     break;
                 case OutputRole.Component:
                     className = componentClass;
@@ -412,9 +437,14 @@ public static class OutputPlanner
             ContentKind.Page => config.Folders.Pages,
             ContentKind.Block => config.Folders.Blocks,
             ContentKind.Media => config.Folders.Media,
+            ContentKind.Catalog => config.Folders.CatalogContent,
             _ => "Models",
         },
-        OutputRole.Controller => config.Folders.Controllers,
+        // Commerce controllers may live apart from CMS ones: config, then where existing ones live.
+        OutputRole.Controller => kind == ContentKind.Catalog
+            ? config.Folders.CatalogControllers
+                ?? (context.DetectedFolders.TryGetValue(FolderKeys.CatalogControllers, out var catalogControllers) ? catalogControllers : config.Folders.Controllers)
+            : config.Folders.Controllers,
         OutputRole.Component => config.Folders.Components,
         // Config wins, then where existing view models live, then the default.
         OutputRole.ViewModel => config.Folders.ViewModels ?? context.ViewModelsFolder ?? "Models/ViewModels",
@@ -433,6 +463,7 @@ public static class OutputPlanner
         {
             ContentKind.Page => config.ViewPaths.Page,
             ContentKind.Block => config.ViewPaths.Block,
+            ContentKind.Catalog => config.ViewPaths.Catalog,
             _ => null,
         };
 
@@ -451,6 +482,7 @@ public static class OutputPlanner
         {
             ContentKind.Page => context.PageViewPattern,
             ContentKind.Block => context.BlockViewPattern,
+            ContentKind.Catalog => context.CatalogViewPattern,
             _ => null,
         };
 

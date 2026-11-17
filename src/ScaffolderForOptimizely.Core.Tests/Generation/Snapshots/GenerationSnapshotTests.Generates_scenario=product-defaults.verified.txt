@@ -1,0 +1,48 @@
+﻿=== Controllers/ShirtProductController.cs (embedded)
+using Contoso.Web.Models.Catalog;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers;
+
+public class ShirtProductController : ContentController<ShirtProduct>
+{
+    public IActionResult Index(ShirtProduct currentContent)
+    {
+        return View(currentContent);
+    }
+}
+
+=== Models/Catalog/ShirtProduct.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Catalog.ContentTypes;
+using EPiServer.Commerce.Catalog.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Models.Catalog;
+
+[CatalogContentType(
+    DisplayName = "Shirt Product",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    MetaClassName = "ShirtProduct",
+    Description = "A shirt with sizes and colours.")]
+public class ShirtProduct : ProductContent
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Description",
+        Description = "Shown on the storefront.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual XhtmlString? Description { get; set; }
+}
+
+=== Views/ShirtProduct/Index.cshtml (embedded)
+@model Contoso.Web.Models.Catalog.ShirtProduct
+
+<article>
+    <h1>@Model.DisplayName</h1>
+</article>
+

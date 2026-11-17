@@ -149,6 +149,71 @@ public class OutputPlannerTests
         Assert.Contains("public static IServiceCollection AddSiteServices(this IServiceCollection services)", Assert.Single(result.Files).Content);
     }
 
+    [Fact]
+    public void Catalog_items_offer_base_classes_for_their_own_root()
+    {
+        var context = Scenarios.CreateContext(Scenarios.Get("product-defaults"));
+        context.CatalogBaseClasses[CatalogRoots.Product] = new List<string> { "Contoso.Web.Models.Catalog.BaseProduct" };
+        context.CatalogBaseClasses[CatalogRoots.Variation] = new List<string> { "Contoso.Web.Models.Catalog.BaseVariant" };
+        var product = ItemCatalog.Get(ItemCatalog.Ids.Product);
+        var baseClass = product.Options.Single(o => o.Key == OptionKeys.BaseClass);
+
+        var choices = OptionDefaults.ChoicesFor(baseClass, product, context).Select(c => c.Value);
+        var defaults = OptionDefaults.For(product, context, new ScaffolderConfig());
+
+        Assert.Equal(new[] { "Contoso.Web.Models.Catalog.BaseProduct", CatalogRoots.Product }, choices);
+        Assert.Equal("Contoso.Web.Models.Catalog.BaseProduct", defaults[OptionKeys.BaseClass]);
+
+        var config = new ScaffolderConfig();
+        config.BaseClasses.Variation = "Contoso.Web.Models.Catalog.SiteVariant";
+        var variationDefaults = OptionDefaults.For(ItemCatalog.Get(ItemCatalog.Ids.Variation), context, config);
+        Assert.Equal("Contoso.Web.Models.Catalog.SiteVariant", variationDefaults[OptionKeys.BaseClass]);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task Catalog_types_use_the_catalog_folder_and_view_pattern()
+    {
+        var request = Scenarios.CreateRequest(Scenarios.Get("product-defaults"));
+        request.Context.CatalogViewPattern = "Views/Catalog/{name}.cshtml";
+
+        var result = await new ScaffoldGenerator().GenerateAsync(request);
+
+        Assert.Contains(result.Files, f => f.RelativePath == "Models/Catalog/ShirtProduct.cs");
+        Assert.Contains(result.Files, f => f.RelativePath == "Views/Catalog/ShirtProduct.cshtml");
+        Assert.Equal("ShirtProduct", result.ResolvedOptions[OptionKeys.MetaClassName]);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task A_typed_controller_path_sets_the_folder_class_and_default_view()
+    {
+        var defaults = await new ScaffoldGenerator().GenerateAsync(Scenarios.CreateRequest(Scenarios.Get("product-defaults")));
+        Assert.Equal("Controllers/ShirtProductController.cs", defaults.ResolvedOptions[OptionKeys.ControllerPath]);
+
+        var result = await new ScaffoldGenerator().GenerateAsync(Scenarios.CreateRequest(Scenarios.Get("product-controller-path")));
+
+        var controller = result.Files.Single(f => f.OutputId == "controller");
+        Assert.Equal("Controllers/Commerce/BootController.cs", controller.RelativePath);
+        Assert.Contains("namespace Contoso.Web.Controllers.Commerce;", controller.Content);
+        Assert.Contains("public class BootController : ContentController<BootProduct>", controller.Content);
+        Assert.Contains(result.Files, f => f.RelativePath == "Views/Boot/Index.cshtml");
+        Assert.Equal("Controllers/Commerce/BootController.cs", result.ResolvedOptions[OptionKeys.ControllerPath]);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task Configured_catalog_controller_folder_beats_detection_and_leaves_cms_controllers_alone()
+    {
+        var request = Scenarios.CreateRequest(Scenarios.Get("product-detected-controller-folder"));
+        request.Config.Config.Folders.CatalogControllers = "Commerce/Controllers";
+
+        var result = await new ScaffoldGenerator().GenerateAsync(request);
+        Assert.Equal("Commerce/Controllers/HatProductController.cs", result.Files.Single(f => f.OutputId == "controller").RelativePath);
+
+        var page = Scenarios.CreateRequest(Scenarios.Get("page-type-defaults"));
+        page.Config.Config.Folders.CatalogControllers = "Commerce/Controllers";
+        var pageResult = await new ScaffoldGenerator().GenerateAsync(page);
+        Assert.Equal("Controllers/ArticlePageController.cs", pageResult.Files.Single(f => f.OutputId == "controller").RelativePath);
+    }
+
     [Theory]
     [InlineData("ArticlePage", "Article Page")]
     [InlineData("FAQPage", "FAQ Page")]

@@ -13,7 +13,14 @@ internal static class OptimizelyProjectDetector
 {
     private static readonly ConcurrentDictionary<string, (DateTime Stamp, bool Result)> Cache = new(StringComparer.OrdinalIgnoreCase);
 
-    public static bool IsOptimizelyProject(string projectFilePath)
+    public static bool IsOptimizelyProject(string projectFilePath) =>
+        Check(projectFilePath, "cms", "EPiServer.", "\"EPiServer.CMS.Core/");
+
+    /// <summary>References Optimizely Commerce, directly or transitively; decides the Commerce submenu.</summary>
+    public static bool IsCommerceProject(string projectFilePath) =>
+        Check(projectFilePath, "commerce", "EPiServer.Commerce", "\"EPiServer.Commerce.Core/");
+
+    private static bool Check(string projectFilePath, string kind, string inProjectFile, string inAssets)
     {
         if (string.IsNullOrEmpty(projectFilePath) || !File.Exists(projectFilePath))
         {
@@ -22,14 +29,15 @@ internal static class OptimizelyProjectDetector
 
         var assetsPath = Path.Combine(Path.GetDirectoryName(projectFilePath)!, "obj", "project.assets.json");
         var stamp = Max(File.GetLastWriteTimeUtc(projectFilePath), File.Exists(assetsPath) ? File.GetLastWriteTimeUtc(assetsPath) : DateTime.MinValue);
+        var key = kind + "|" + projectFilePath;
 
-        if (Cache.TryGetValue(projectFilePath, out var cached) && cached.Stamp == stamp)
+        if (Cache.TryGetValue(key, out var cached) && cached.Stamp == stamp)
         {
             return cached.Result;
         }
 
-        var result = Contains(projectFilePath, "EPiServer.") || (File.Exists(assetsPath) && Contains(assetsPath, "\"EPiServer.CMS.Core/"));
-        Cache[projectFilePath] = (stamp, result);
+        var result = Contains(projectFilePath, inProjectFile) || (File.Exists(assetsPath) && Contains(assetsPath, inAssets));
+        Cache[key] = (stamp, result);
         return result;
     }
 

@@ -413,8 +413,9 @@ FodyWeavers.xsd
 
 # Built Visual Studio Code Extensions
 *.vsix
-# The VSIX project folder ends in ".Vsix"; keep it tracked (built .vsix files live under bin/, which is ignored).
+# The VSIX project folders end in ".Vsix"; keep them tracked (built .vsix files live under bin/, which is ignored).
 !src/ScaffolderForOptimizely.Vsix/
+!src/ScaffolderForOptimizely.Commerce.Vsix/
 
 # Windows Installer files from build outputs
 *.cab

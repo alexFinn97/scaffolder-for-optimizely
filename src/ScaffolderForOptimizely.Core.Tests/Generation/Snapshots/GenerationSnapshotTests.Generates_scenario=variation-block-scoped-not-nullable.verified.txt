@@ -1,0 +1,50 @@
+﻿=== Controllers/ShirtVariationController.cs (embedded)
+using Contoso.Web.Models.Catalog;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers
+{
+    public class ShirtVariationController : ContentController<ShirtVariation>
+    {
+        public IActionResult Index(ShirtVariation currentContent)
+        {
+            return View(currentContent);
+        }
+    }
+}
+
+=== Models/Catalog/ShirtVariation.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Catalog.ContentTypes;
+using EPiServer.Commerce.Catalog.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Models.Catalog
+{
+    [CatalogContentType(
+        DisplayName = "Shirt Variation",
+        GUID = "11111111-2222-3333-4444-555555555555",
+        MetaClassName = "ShirtVariation",
+        Description = "")]
+    public class ShirtVariation : VariationContent
+    {
+        [CultureSpecific]
+        [Display(
+            Name = "Description",
+            Description = "Shown on the storefront.",
+            GroupName = SystemTabNames.Content,
+            Order = 10)]
+        public virtual XhtmlString Description { get; set; }
+    }
+}
+
+=== Views/ShirtVariation/Index.cshtml (embedded)
+@model Contoso.Web.Models.Catalog.ShirtVariation
+
+<article>
+    <h1>@Model.DisplayName</h1>
+</article>
+

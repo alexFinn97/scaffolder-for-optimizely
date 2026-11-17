@@ -21,6 +21,9 @@ public enum ChoiceSource
     PageTypes,
     BlockTypes,
     ContentTypes,
+
+    /// <summary>Concrete Commerce catalog content types (products, variations, categories...).</summary>
+    CatalogTypes,
 }
 
 public sealed class ItemOption

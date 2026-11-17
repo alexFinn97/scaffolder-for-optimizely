@@ -1,0 +1,93 @@
+﻿=== Features/Marketing/LoyaltyPromotion.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Commerce.Marketing;
+using EPiServer.Commerce.Marketing.DataAnnotations;
+using EPiServer.Commerce.Marketing.Promotions;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Features.Marketing;
+
+/// <summary>
+/// Shown in the Marketing UI's promotion list. Evaluated by <see cref="LoyaltyPromotionProcessor"/>.
+/// </summary>
+[ContentType(
+    DisplayName = "Loyalty",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    GroupName = "entrypromotion",
+    Description = "")]
+public class LoyaltyPromotion : EntryPromotion
+{
+    /// <summary>Which items, and how many, the customer must buy.</summary>
+    [PromotionRegion(PromotionRegionName.Condition)]
+    [Display(Order = 10)]
+    public virtual PurchaseQuantity? Condition { get; set; }
+
+    /// <summary>Which items get the discount.</summary>
+    [PromotionRegion(PromotionRegionName.Reward)]
+    [Display(Order = 20)]
+    public virtual DiscountItems? DiscountTargets { get; set; }
+
+    /// <summary>A fixed amount per currency, or a percentage.</summary>
+    [PromotionRegion(PromotionRegionName.Discount)]
+    [Display(Order = 30)]
+    public virtual MonetaryReward? Discount { get; set; }
+}
+
+=== Features/Marketing/LoyaltyPromotionProcessor.cs (embedded)
+using System.Collections.Generic;
+using System.Linq;
+using EPiServer.Commerce.Marketing;
+using EPiServer.Core;
+
+namespace Contoso.Web.Features.Marketing;
+
+/// <summary>
+/// Decides whether a cart qualifies for <see cref="LoyaltyPromotion"/> and what it saves.
+/// Found by the promotion engine automatically.
+/// </summary>
+public class LoyaltyPromotionProcessor : EntryPromotionProcessorBase<LoyaltyPromotion>
+{
+    private readonly CollectionTargetEvaluator _targetEvaluator;
+    private readonly FulfillmentEvaluator _fulfillmentEvaluator;
+
+    public LoyaltyPromotionProcessor(
+        CollectionTargetEvaluator targetEvaluator,
+        FulfillmentEvaluator fulfillmentEvaluator,
+        RedemptionDescriptionFactory redemptionDescriptionFactory)
+        : base(redemptionDescriptionFactory)
+    {
+        _targetEvaluator = targetEvaluator;
+        _fulfillmentEvaluator = fulfillmentEvaluator;
+    }
+
+    protected override RewardDescription Evaluate(LoyaltyPromotion promotionData, PromotionProcessorContext context)
+    {
+        if (promotionData.Condition is null || promotionData.DiscountTargets is null || promotionData.Discount is null)
+        {
+            return RewardDescription.CreateNotFulfilledDescription(promotionData, FulfillmentStatus.NotFulfilled);
+        }
+
+        var lineItems = GetLineItems(context.OrderForm).ToList();
+
+        // Does the cart hold enough of the condition items?
+        var conditionCodes = _targetEvaluator.GetApplicableCodes(lineItems, promotionData.Condition.Items, promotionData.Condition.MatchRecursive);
+        var status = _fulfillmentEvaluator.GetStatusForBuyQuantityPromotion(conditionCodes, lineItems, promotionData.Condition.RequiredQuantity, 0);
+        if (status != FulfillmentStatus.Fulfilled)
+        {
+            return RewardDescription.CreateNotFulfilledDescription(promotionData, status);
+        }
+
+        // Discount the target items in the cart.
+        var targetCodes = _targetEvaluator.GetApplicableCodes(lineItems, promotionData.DiscountTargets.Items, promotionData.DiscountTargets.MatchRecursive);
+        var redemptions = GetRedemptions(promotionData, context, targetCodes);
+        return RewardDescription.CreateMoneyOrPercentageRewardDescription(
+            status, redemptions, promotionData, promotionData.Discount, context.OrderGroup.Currency, promotionData.Description);
+    }
+
+    protected override PromotionItems GetPromotionItems(LoyaltyPromotion promotionData) =>
+        new PromotionItems(
+            promotionData,
+            new CatalogItemSelection(promotionData.Condition?.Items ?? new List<ContentReference>(), CatalogItemSelectionType.Specific, promotionData.Condition?.MatchRecursive ?? true),
+            new CatalogItemSelection(promotionData.DiscountTargets?.Items ?? new List<ContentReference>(), CatalogItemSelectionType.Specific, promotionData.DiscountTargets?.MatchRecursive ?? true));
+}
+

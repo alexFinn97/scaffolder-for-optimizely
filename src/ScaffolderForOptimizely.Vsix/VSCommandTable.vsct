@@ -6,7 +6,7 @@
   <Include href="KnownImageIds.vsct" />
 
   <!--
-    Solution Explorer > right-click a project or folder > Add > Optimizely > ...
+    Solution Explorer > right-click a project or folder > Add > Optimizely CMS > ... (the Commerce menu lives in the Scaffolder for Optimizely Commerce add-on)
     Buttons are hidden until the package confirms the project references Optimizely.
   -->
   <Commands package="guidScaffolderPackage">
@@ -14,7 +14,7 @@
       <Menu guid="guidScaffolderCmdSet" id="OptimizelyMenu" priority="0x0100" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_ADD_ITEMS" />
         <Strings>
-          <ButtonText>Optimizely</ButtonText>
+          <ButtonText>Optimizely CMS</ButtonText>
         </Strings>
       </Menu>
     </Menus>
