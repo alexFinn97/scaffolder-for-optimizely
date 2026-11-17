@@ -15,6 +15,12 @@ public sealed class GenerationResult
     /// offers to install it.
     /// </summary>
     public bool DotnetTemplatePackMissing { get; set; }
+
+    /// <summary>Why nothing was generated (e.g. no content type chosen), or null.</summary>
+    public string? Error { get; set; }
+
+    /// <summary>Values chosen for auto options, keyed by option key, for the dialog to display.</summary>
+    public Dictionary<string, string> ResolvedOptions { get; } = new();
 }
 
 public sealed class GeneratedFile

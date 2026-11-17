@@ -34,7 +34,7 @@
         "media": { "type": "string", "default": "Models/Media" },
         "controllers": { "type": "string", "default": "Controllers" },
         "components": { "type": "string", "default": "Components" },
-        "viewModels": { "type": "string", "default": "Models/ViewModels" },
+        "viewModels": { "type": "string", "description": "Leave out to use an existing ViewModels folder in the project (the shallowest one), or Models/ViewModels if there is none." },
         "views": { "type": "string", "default": "Views" }
       }
     },
@@ -56,6 +56,19 @@
       "description": "Default block component style.",
       "enum": ["async", "sync", "viewComponent"],
       "default": "async"
+    },
+    "viewPaths": {
+      "description": "Razor view path patterns relative to the project, where {name} is the content type's class name. Leave out to learn them from existing views (matched by @model), falling back to MVC's default locations.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": { "type": "string", "examples": ["Views/{name}/Index.cshtml", "Views/Pages/{name}.cshtml"] },
+        "block": { "type": "string", "examples": ["Views/Shared/Blocks/{name}.cshtml", "Views/Shared/Components/{name}/Default.cshtml"] }
+      }
+    },
+    "passViewPath": {
+      "description": "Default for 'Pass view path to View()'. Leave out to pass it only when the view isn't where MVC looks by default and the project has no IViewLocationExpander.",
+      "type": "boolean"
     },
     "companions": {
       "description": "Default state of the companion-file checkboxes.",

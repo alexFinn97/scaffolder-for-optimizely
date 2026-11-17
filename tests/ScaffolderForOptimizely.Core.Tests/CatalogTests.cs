@@ -38,6 +38,28 @@ public class CatalogTests
     }
 
     [Fact]
+    public void Items_named_after_a_content_type_start_from_a_placeholder()
+    {
+        foreach (var item in ItemCatalog.All.Where(i => i.NameFromOption is not null))
+        {
+            Assert.StartsWith("New", item.DefaultName);
+            Assert.EndsWith(item.NameSuffix, item.DefaultName);
+        }
+    }
+
+    [Fact]
+    public void Every_item_with_a_view_has_an_editable_view_path()
+    {
+        foreach (var item in ItemCatalog.All.Where(i => i.Outputs.Any(o => o.Role == OutputRole.View)))
+        {
+            var viewPath = Assert.Single(item.Options, o => o.Key == OptionKeys.ViewPath);
+            Assert.True(viewPath.IsAutoValue);
+            Assert.Contains(item.Options, o => o.Key == OptionKeys.PassViewPath && o.IsAutoValue && o.EnabledWhenOption == OptionKeys.View);
+            Assert.Equal(OptionKeys.View, viewPath.EnabledWhenOption);
+        }
+    }
+
+    [Fact]
     public void Cms13_falls_back_to_cms12_templates()
     {
         Assert.NotNull(EmbeddedTemplateStore.Instance.TryGet(Profiles.Cms13, "PageType.cs.sbn"));

@@ -56,6 +56,12 @@ public sealed class OutputDefinition
     public ViewKind ViewKind { get; set; } = ViewKind.None;
 
     /// <summary>
+    /// For views: which detected or configured pattern applies (page or block views); None uses
+    /// the MVC default path.
+    /// </summary>
+    public ContentKind ViewFor { get; set; } = ContentKind.None;
+
+    /// <summary>
     /// Optional mapping onto an Optimizely <c>dotnet new</c> item template. Used only when the
     /// template source is <c>dotnet-new</c> and the pack is installed.
     /// </summary>

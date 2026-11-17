@@ -30,6 +30,7 @@ internal sealed class ScaffoldDialogViewModel : INotifyPropertyChanged
     private bool _nameEdited;
     private PreviewFile? _selectedFile;
     private string _message = string.Empty;
+    private bool _applyingAutoValues;
 
     public ScaffoldDialogViewModel(ItemDefinition item, ProjectContext context, LoadedConfig config, string targetDirectory)
     {
@@ -48,7 +49,10 @@ internal sealed class ScaffoldDialogViewModel : INotifyPropertyChanged
             Options.Add(vm);
         }
 
-        _name = OutputPlanner.SuggestName(item, CurrentOptions());
+        // Start from a placeholder, not the default content type's name, which usually already
+        // has a controller/component. Picking a content type still renames it until the user types.
+        _name = item.DefaultName;
+        UpdateEnabledStates();
 
         _previewTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
         _previewTimer.Tick += (_, _) =>
@@ -109,7 +113,8 @@ internal sealed class ScaffoldDialogViewModel : INotifyPropertyChanged
         }
     }
 
-    public bool CanAdd => OutputPlanner.NormalizeName(_name, Item).Length > 0;
+    /// <summary>False until there's a name and, where needed, a content type.</summary>
+    public bool CanAdd => OutputPlanner.Validate(CreateRequest(previewOnly: true)) is null;
 
     public PreviewFile? SelectedFile
     {
@@ -140,7 +145,8 @@ internal sealed class ScaffoldDialogViewModel : INotifyPropertyChanged
         var options = new Dictionary<string, string>(_hiddenOptions, StringComparer.Ordinal);
         foreach (var option in Options)
         {
-            options[option.Key] = option.Value;
+            // An auto-filled value the user hasn't touched means "use the default".
+            options[option.Key] = option.IsAuto && !option.IsUserEdited ? string.Empty : option.Value;
         }
 
         return options;
@@ -148,14 +154,53 @@ internal sealed class ScaffoldDialogViewModel : INotifyPropertyChanged
 
     private void OnOptionChanged(object sender, PropertyChangedEventArgs e)
     {
-        if (sender is OptionViewModel option && option.Key == Item.NameFromOption && !_nameEdited)
+        if (_applyingAutoValues || e.PropertyName is not (nameof(OptionViewModel.Value)))
         {
-            _name = OutputPlanner.SuggestName(Item, CurrentOptions());
-            OnPropertyChanged(nameof(Name));
-            OnPropertyChanged(nameof(CanAdd));
+            return;
         }
 
+        if (sender is OptionViewModel option && option.Key == Item.NameFromOption && !_nameEdited)
+        {
+            var suggested = OutputPlanner.SuggestName(Item, CurrentOptions());
+            if (suggested.Length > 0)
+            {
+                _name = suggested;
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+
+        OnPropertyChanged(nameof(CanAdd));
+        UpdateEnabledStates();
         SchedulePreview();
+    }
+
+    /// <summary>Greys out options whose switch is off (e.g. view path when "Razor view" is unticked).</summary>
+    private void UpdateEnabledStates()
+    {
+        foreach (var option in Options.Where(o => o.Option.EnabledWhenOption is not null))
+        {
+            option.IsEnabled = Options.FirstOrDefault(o => o.Key == option.Option.EnabledWhenOption)?.BoolValue ?? true;
+        }
+    }
+
+    /// <summary>Shows what the generator decided (paths, pass-view-path) in auto options the user hasn't edited.</summary>
+    private void ApplyAutoValues(GenerationResult result)
+    {
+        _applyingAutoValues = true;
+        try
+        {
+            foreach (var option in Options.Where(o => o.IsAuto))
+            {
+                if (result.ResolvedOptions.TryGetValue(option.Key, out var value))
+                {
+                    option.SetAutoValue(value);
+                }
+            }
+        }
+        finally
+        {
+            _applyingAutoValues = false;
+        }
     }
 
     private void SchedulePreview()
@@ -170,10 +215,11 @@ internal sealed class ScaffoldDialogViewModel : INotifyPropertyChanged
         _previewCts = new CancellationTokenSource();
         var token = _previewCts.Token;
 
-        if (!CanAdd)
+        var problem = OutputPlanner.Validate(CreateRequest(previewOnly: true));
+        if (problem is not null)
         {
             PreviewFiles.Clear();
-            Message = "Enter a name to see the files that will be created.";
+            Message = problem + " The files that will be created are previewed here.";
             return;
         }
 
@@ -198,6 +244,7 @@ internal sealed class ScaffoldDialogViewModel : INotifyPropertyChanged
         }
 
         SelectedFile = PreviewFiles.FirstOrDefault(f => f.RelativePath == selectedPath) ?? PreviewFiles.FirstOrDefault();
+        ApplyAutoValues(result);
 
         var notes = result.Warnings.ToList();
         var existing = PreviewFiles.Where(f => f.Exists).Select(f => f.RelativePath).ToList();

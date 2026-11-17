@@ -52,6 +52,7 @@ public static class ConfigLoader
             config.Folders ??= new FolderConfig();
             config.BaseClasses ??= new BaseClassConfig();
             config.Companions ??= new CompanionConfig();
+            config.ViewPaths ??= new ViewPathConfig();
             return new LoadedConfig(config, path, null) { RootDirectory = Path.GetDirectoryName(path) };
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)

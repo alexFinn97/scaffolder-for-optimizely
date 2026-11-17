@@ -40,6 +40,17 @@ public sealed class Scenario
 
     public string? Layout { get; set; }
 
+    /// <summary>Simulates an existing ViewModels folder found in the project.</summary>
+    public string? ViewModelsFolder { get; set; }
+
+    /// <summary>Simulates view patterns learnt from existing views.</summary>
+    public string? PageViewPattern { get; set; }
+
+    public string? BlockViewPattern { get; set; }
+
+    /// <summary>Simulates a custom IViewLocationExpander in the project.</summary>
+    public bool HasViewLocationExpander { get; set; }
+
     public override string ToString() => Name;
 }
 
@@ -84,7 +95,28 @@ public static class Scenarios
             Layout = Layouts.Feature,
             Options = { [OptionKeys.ViewModel] = "true" },
         },
+        new("page-type-custom-view-path", ItemCatalog.Ids.PageType, "ArticlePage")
+        {
+            Options = { [OptionKeys.ViewModel] = "true", [OptionKeys.ViewPath] = "Views/Pages/Article" },
+        },
+        new("page-type-custom-view-model-path", ItemCatalog.Ids.PageType, "ArticlePage")
+        {
+            Options = { [OptionKeys.ViewModel] = "true", [OptionKeys.ViewModelPath] = "Features/Article/ArticleModel" },
+        },
+        new("page-type-detected-view-pattern", ItemCatalog.Ids.PageType, "ArticlePage")
+        {
+            PageViewPattern = "Views/Pages/{name}.cshtml",
+        },
+        new("block-type-detected-view-pattern-with-expander", ItemCatalog.Ids.BlockType, "TeaserCardBlock")
+        {
+            BlockViewPattern = "Views/Shared/Blocks/{name}.cshtml",
+            HasViewLocationExpander = true,
+        },
         new("block-type-async", ItemCatalog.Ids.BlockType, "TeaserCardBlock"),
+        new("block-type-custom-view-path", ItemCatalog.Ids.BlockType, "TeaserCardBlock")
+        {
+            Options = { [OptionKeys.ViewPath] = "~/Views/Shared/Blocks/TeaserCard.cshtml" },
+        },
         new("block-type-sync-view-model", ItemCatalog.Ids.BlockType, "HeroBlock")
         {
             Options = { [OptionKeys.BlockStyle] = BlockStyles.Sync, [OptionKeys.ViewModel] = "true" },
@@ -111,6 +143,32 @@ public static class Scenarios
         {
             Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage" },
         },
+        new("page-controller-view-model", ItemCatalog.Ids.PageController, "StandardPage")
+        {
+            Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage", [OptionKeys.ViewModel] = "true" },
+        },
+        new("page-controller-detected-view-models-folder", ItemCatalog.Ids.PageController, "StandardPage")
+        {
+            ViewModelsFolder = "Features/Shared/ViewModels",
+            Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage", [OptionKeys.ViewModel] = "true" },
+        },
+        new("page-controller-custom-view-path", ItemCatalog.Ids.PageController, "StandardPage")
+        {
+            Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage", [OptionKeys.ViewPath] = "~/Views/Pages/Standard" },
+        },
+        new("page-controller-view-path-not-passed", ItemCatalog.Ids.PageController, "StandardPage")
+        {
+            Options =
+            {
+                [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage",
+                [OptionKeys.ViewPath] = "Views/Pages/Standard",
+                [OptionKeys.PassViewPath] = "false",
+            },
+        },
+        new("page-controller-typed-conventional-view-path", ItemCatalog.Ids.PageController, "StandardPage")
+        {
+            Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage", [OptionKeys.ViewPath] = @"Views\StandardPage\Index.cshtml" },
+        },
         new("block-component-sync", ItemCatalog.Ids.BlockComponent, "TeaserBlock")
         {
             Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Blocks.TeaserBlock", [OptionKeys.BlockStyle] = BlockStyles.Sync },
@@ -124,6 +182,14 @@ public static class Scenarios
             Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage", [OptionKeys.Async] = "false" },
         },
         new("view-component-async", ItemCatalog.Ids.ViewComponent, "SiteFooter"),
+        new("view-component-custom-view-path", ItemCatalog.Ids.ViewComponent, "SiteFooter")
+        {
+            Options = { [OptionKeys.ViewPath] = "Views/Shared/Footer" },
+        },
+        new("partial-component-custom-view-path", ItemCatalog.Ids.PartialComponent, "StandardPagePartial")
+        {
+            Options = { [OptionKeys.ContentType] = "Contoso.Web.Models.Pages.StandardPage", [OptionKeys.ViewPath] = "Views/Shared/Partials/StandardPage" },
+        },
         new("view-component-sync-no-view", ItemCatalog.Ids.ViewComponent, "Breadcrumbs")
         {
             Options = { [OptionKeys.Async] = "false", [OptionKeys.View] = "false" },
@@ -142,6 +208,10 @@ public static class Scenarios
             CmsMajorVersion = 12,
             FileScopedNamespaces = scenario.FileScopedNamespaces,
             NullableEnabled = scenario.Nullable,
+            ViewModelsFolder = scenario.ViewModelsFolder,
+            PageViewPattern = scenario.PageViewPattern,
+            BlockViewPattern = scenario.BlockViewPattern,
+            HasViewLocationExpander = scenario.HasViewLocationExpander,
         };
         context.PageBaseClasses.Add("Contoso.Web.Models.Pages.SitePageData");
         context.BlockBaseClasses.Add("Contoso.Web.Models.Blocks.SiteBlockData");

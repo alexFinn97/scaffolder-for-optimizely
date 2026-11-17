@@ -54,6 +54,15 @@ public sealed class ItemOption
 
     /// <summary>Allows typing a value that isn't in the list (e.g. a base class in another project).</summary>
     public bool AllowCustomValue { get; set; }
+
+    /// <summary>Bool option that must be on for this option to be editable (e.g. view path needs "Razor view").</summary>
+    public string? EnabledWhenOption { get; set; }
+
+    /// <summary>
+    /// The dialog shows the value the generator worked out (see GenerationResult.ResolvedOptions)
+    /// until the user edits it. Until then the option is passed as empty, meaning "work it out".
+    /// </summary>
+    public bool IsAutoValue { get; set; }
 }
 
 public sealed class OptionChoice

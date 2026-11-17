@@ -79,13 +79,9 @@ public static class OptionDefaults
                     ContentKind.Block => context.BlockBaseClasses,
                     _ => new List<string>(),
                 }) ?? option.DefaultValue;
-            case ChoiceSource.PageTypes:
-                return context.PageTypes.FirstOrDefault() ?? option.DefaultValue;
-            case ChoiceSource.BlockTypes:
-                return context.BlockTypes.FirstOrDefault() ?? option.DefaultValue;
-            case ChoiceSource.ContentTypes:
-                return context.PageTypes.Concat(context.BlockTypes).FirstOrDefault() ?? option.DefaultValue;
             default:
+                // Content type pickers start blank: preselecting an existing type usually means a
+                // controller/component for a type that already has one.
                 return option.DefaultValue;
         }
     }

@@ -42,6 +42,29 @@ public sealed class ScaffolderConfig
 
     [JsonProperty("companions")]
     public CompanionConfig Companions { get; set; } = new();
+
+    /// <summary>Razor view path patterns; null = detect from existing views.</summary>
+    [JsonProperty("viewPaths")]
+    public ViewPathConfig ViewPaths { get; set; } = new();
+
+    /// <summary>
+    /// Default for "Pass view path to View()". Null = only when the view isn't where MVC looks by
+    /// default and the project has no IViewLocationExpander.
+    /// </summary>
+    [JsonProperty("passViewPath")]
+    public bool? PassViewPath { get; set; }
+}
+
+/// <summary>View path patterns relative to the project. <c>{name}</c> is the content type's class name.</summary>
+public sealed class ViewPathConfig
+{
+    /// <summary>e.g. <c>Views/Pages/{name}.cshtml</c>.</summary>
+    [JsonProperty("page")]
+    public string? Page { get; set; }
+
+    /// <summary>e.g. <c>Views/Shared/Blocks/{name}.cshtml</c>.</summary>
+    [JsonProperty("block")]
+    public string? Block { get; set; }
 }
 
 public static class TemplateSources
@@ -74,8 +97,9 @@ public sealed class FolderConfig
     [JsonProperty("components")]
     public string Components { get; set; } = "Components";
 
+    /// <summary>Null = use an existing ViewModels folder in the project, else <c>Models/ViewModels</c>.</summary>
     [JsonProperty("viewModels")]
-    public string ViewModels { get; set; } = "Models/ViewModels";
+    public string? ViewModels { get; set; }
 
     [JsonProperty("views")]
     public string Views { get; set; } = "Views";

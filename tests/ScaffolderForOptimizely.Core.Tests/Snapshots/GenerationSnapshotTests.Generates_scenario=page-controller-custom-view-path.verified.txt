@@ -1,0 +1,22 @@
+﻿=== Controllers/StandardPageController.cs (embedded, primary)
+using Contoso.Web.Models.Pages;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers;
+
+public class StandardPageController : PageController<StandardPage>
+{
+    public IActionResult Index(StandardPage currentPage)
+    {
+        return View("~/Views/Pages/Standard.cshtml", currentPage);
+    }
+}
+
+=== Views/Pages/Standard.cshtml (embedded)
+@model Contoso.Web.Models.Pages.StandardPage
+
+<article>
+    <h1>@Model.Name</h1>
+</article>
+

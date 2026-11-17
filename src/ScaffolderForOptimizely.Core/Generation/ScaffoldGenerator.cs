@@ -37,10 +37,22 @@ public sealed class ScaffoldGenerator
             result.Warnings.Add($"Couldn't read {request.Config.FilePath}: {request.Config.Error}. Using defaults.");
         }
 
+        result.Error = OutputPlanner.Validate(request);
+        if (result.Error is not null)
+        {
+            return result;
+        }
+
         var log = new ProviderLog();
         var providers = ProvidersFor(request);
+        var plan = OutputPlanner.Plan(request);
+        result.Warnings.AddRange(plan.Warnings);
+        foreach (var pair in plan.ResolvedOptions)
+        {
+            result.ResolvedOptions[pair.Key] = pair.Value;
+        }
 
-        foreach (var output in OutputPlanner.Plan(request))
+        foreach (var output in plan.Outputs)
         {
             string? content = null;
             string source = string.Empty;

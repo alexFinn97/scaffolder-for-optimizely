@@ -45,8 +45,14 @@ public sealed class ItemDefinition
     /// <summary>Suffix added to the entered name when it is missing (e.g. <c>Controller</c>).</summary>
     public string NameSuffix { get; set; } = string.Empty;
 
-    /// <summary>Placeholder shown in the name box.</summary>
+    /// <summary>Example shown under the name box.</summary>
     public string NameExample { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Name the dialog starts with, e.g. <c>NewPageController</c>. A neutral placeholder rather than
+    /// an existing type's name, which would usually clash with a class the project already has.
+    /// </summary>
+    public string DefaultName { get; set; } = string.Empty;
 
     /// <summary>
     /// When set, the class name is suggested from this option's value (e.g. a controller named after

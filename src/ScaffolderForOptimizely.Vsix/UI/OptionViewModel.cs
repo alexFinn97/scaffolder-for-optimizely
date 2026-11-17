@@ -46,6 +46,7 @@ internal sealed class OptionViewModel : INotifyPropertyChanged
     /// <summary>Plain values for editable combo boxes (the empty "(none)" choice is just an empty box).</summary>
     public IReadOnlyList<string> ChoiceValues { get; }
 
+    /// <summary>Set by the UI. For auto-filled options, any edit means "use what I typed".</summary>
     public string Value
     {
         get => _value;
@@ -58,8 +59,46 @@ internal sealed class OptionViewModel : INotifyPropertyChanged
             }
 
             _value = value;
+            IsUserEdited = value.Trim().Length > 0;
             OnPropertyChanged();
             OnPropertyChanged(nameof(BoolValue));
+        }
+    }
+
+    /// <summary>
+    /// For options with <see cref="ItemOption.IsAutoValue"/>: false while the value is the
+    /// one the dialog filled in. Clearing the box goes back to auto.
+    /// </summary>
+    public bool IsUserEdited { get; private set; }
+
+    public bool IsAuto => Option.IsAutoValue;
+
+    /// <summary>Shows a computed value without marking it as edited. Returns true if it changed.</summary>
+    public bool SetAutoValue(string value)
+    {
+        if (IsUserEdited || _value == value)
+        {
+            return false;
+        }
+
+        _value = value;
+        OnPropertyChanged(nameof(Value));
+        OnPropertyChanged(nameof(BoolValue));
+        return true;
+    }
+
+    private bool _isEnabled = true;
+
+    public bool IsEnabled
+    {
+        get => _isEnabled;
+        set
+        {
+            if (_isEnabled != value)
+            {
+                _isEnabled = value;
+                OnPropertyChanged();
+            }
         }
     }
 

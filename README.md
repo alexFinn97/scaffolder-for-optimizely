@@ -28,8 +28,11 @@ When the dialog opens, the extension reads the project with Roslyn and offers:
 - existing page and block types for controllers and components
 - your namespace style (file-scoped or block-scoped) and nullable setting
 - feature-folder vs `Views/` layout, based on where existing views live
+- view path patterns learnt from existing views' `@model` (e.g. `Views/Shared/Blocks/{name}.cshtml`)
+- the folder holding most existing `*ViewModel` classes (or a folder named `ViewModels`)
+- whether a custom `IViewLocationExpander` exists, which decides whether to pass the view path to `View()`
 
-Right-clicking a folder puts the main file there. Right-clicking the project uses the conventional folder for it (e.g. `Models/Pages`). Existing files are never overwritten.
+Content type pickers start blank. The view path and view model path fill in from the above, and stay editable. Right-clicking a folder puts the main file there. Right-clicking the project uses the conventional folder for it (e.g. `Models/Pages`). Existing files are never overwritten.
 
 ## Settings: `.optimizely-scaffolder.json`
 
@@ -44,6 +47,8 @@ Put this file next to your solution (or in any folder above the project) to pin 
   "baseClasses": { "page": "MySite.Models.Pages.SitePageData" },
   "contentTypeGroup": "Globals.GroupNames.Content",
   "blockRenderStyle": "async",
+  "viewPaths": { "page": "Views/{name}/Index.cshtml", "block": "Views/Shared/Blocks/{name}.cshtml" },
+  "passViewPath": false,
   "companions": { "controller": true, "viewModel": false, "view": true }
 }
 ```

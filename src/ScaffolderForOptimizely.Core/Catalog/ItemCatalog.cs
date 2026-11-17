@@ -56,7 +56,10 @@ public static class ItemCatalog
             GroupOption(),
             Companion(OptionKeys.Controller, "Controller", "companions.controller", true),
             Companion(OptionKeys.ViewModel, "View model", "companions.viewModel", false),
+            ViewModelPathOption(),
             Companion(OptionKeys.View, "Razor view", "companions.view", true),
+            ViewPathOption(),
+            PassViewPathOption(),
         },
         new[]
         {
@@ -82,6 +85,7 @@ public static class ItemCatalog
             {
                 EnabledByOption = OptionKeys.View,
                 ViewKind = ViewKind.PageIndex,
+                ViewFor = ContentKind.Page,
             },
         })
     {
@@ -104,7 +108,10 @@ public static class ItemCatalog
             Companion(OptionKeys.Component, "Block component", "companions.component", true),
             BlockStyleOption(),
             Companion(OptionKeys.ViewModel, "View model", "companions.viewModel", false),
+            ViewModelPathOption(),
             Companion(OptionKeys.View, "Razor view", "companions.view", true),
+            ViewPathOption(),
+            PassViewPathOption(),
         },
         new[]
         {
@@ -124,6 +131,7 @@ public static class ItemCatalog
             {
                 EnabledByOption = OptionKeys.View,
                 ViewKind = ViewKind.ComponentDefault,
+                ViewFor = ContentKind.Block,
             },
         })
     {
@@ -161,28 +169,43 @@ public static class ItemCatalog
         Ids.PageController,
         Categories.CmsRendering,
         "Page Controller",
-        "A PageController<T> for an existing page type, with an optional Razor view.",
+        "A PageController<T> for an existing page type, with an optional view model and Razor view.",
         OutputRole.Controller,
         new[]
         {
-            ContentTypeOption(ChoiceSource.PageTypes, "EPiServer.Core.PageData"),
+            ContentTypeOption(ChoiceSource.PageTypes),
+            Companion(OptionKeys.ViewModel, "Use a view model", "companions.viewModel", false),
+            ViewModelPathOption(),
             Companion(OptionKeys.View, "Razor view", "companions.view", true),
+            ViewPathOption(),
+            PassViewPathOption(),
         },
         new[]
         {
             new OutputDefinition("controller", OutputRole.Controller, "PageController.cs.sbn")
             {
-                DotnetNew = new DotnetNewMapping("epi-cms-pagecontroller") { PassContentType = true, RendersView = true },
+                DotnetNew = new DotnetNewMapping("epi-cms-pagecontroller")
+                {
+                    PassContentType = true,
+                    RendersView = true,
+                    UnsupportedWhenOptionsSet = new[] { OptionKeys.ViewModel },
+                },
+            },
+            new OutputDefinition("viewModel", OutputRole.ViewModel, "PageViewModel.cs.sbn")
+            {
+                EnabledByOption = OptionKeys.ViewModel,
             },
             new OutputDefinition("view", OutputRole.View, "PageView.cshtml.sbn")
             {
                 EnabledByOption = OptionKeys.View,
                 ViewKind = ViewKind.PageIndex,
+                ViewFor = ContentKind.Page,
             },
         })
     {
         NameSuffix = "Controller",
         NameExample = "ArticlePageController",
+        DefaultName = "NewPageController",
         NameFromOption = OptionKeys.ContentType,
     };
 
@@ -194,9 +217,11 @@ public static class ItemCatalog
         OutputRole.Component,
         new[]
         {
-            ContentTypeOption(ChoiceSource.BlockTypes, "EPiServer.Core.BlockData"),
+            ContentTypeOption(ChoiceSource.BlockTypes),
             BlockStyleOption(),
             Companion(OptionKeys.View, "Razor view", "companions.view", true),
+            ViewPathOption(),
+            PassViewPathOption(),
         },
         new[]
         {
@@ -205,11 +230,13 @@ public static class ItemCatalog
             {
                 EnabledByOption = OptionKeys.View,
                 ViewKind = ViewKind.ComponentDefault,
+                ViewFor = ContentKind.Block,
             },
         })
     {
         NameSuffix = "ViewComponent",
         NameExample = "TeaserBlockViewComponent",
+        DefaultName = "NewBlockViewComponent",
         NameFromOption = OptionKeys.ContentType,
     };
 
@@ -221,9 +248,11 @@ public static class ItemCatalog
         OutputRole.Component,
         new[]
         {
-            ContentTypeOption(ChoiceSource.ContentTypes, "EPiServer.Core.PageData"),
+            ContentTypeOption(ChoiceSource.ContentTypes),
             new ItemOption(OptionKeys.Async, "Async", OptionKind.Bool) { DefaultValue = "true" },
             Companion(OptionKeys.View, "Razor view", "companions.view", true),
+            ViewPathOption(),
+            PassViewPathOption(),
         },
         new[]
         {
@@ -257,6 +286,8 @@ public static class ItemCatalog
         {
             new ItemOption(OptionKeys.Async, "Async", OptionKind.Bool) { DefaultValue = "true" },
             Companion(OptionKeys.View, "Razor view", "companions.view", true),
+            ViewPathOption(),
+            PassViewPathOption(),
         },
         new[]
         {
@@ -297,6 +328,38 @@ public static class ItemCatalog
         UnsupportedWhenOptionsSet = new[] { OptionKeys.DisplayName, OptionKeys.Description, OptionKeys.Group },
     };
 
+    /// <summary>
+    /// Where the Razor view goes. Left empty, the configured, detected or MVC default path is
+    /// used; the dialog shows that path until the user edits it.
+    /// </summary>
+    private static ItemOption ViewPathOption() => new(OptionKeys.ViewPath, "View path", OptionKind.Text)
+    {
+        Description = "Relative to the project. Follows your existing views where possible.",
+        EnabledWhenOption = OptionKeys.View,
+        IsAutoValue = true,
+    };
+
+    /// <summary>
+    /// Whether the controller/component names the view path in View(). Left alone, it's ticked when
+    /// MVC wouldn't find the view by itself and the project has no IViewLocationExpander.
+    /// </summary>
+    private static ItemOption PassViewPathOption() => new(OptionKeys.PassViewPath, "Pass view path to View()", OptionKind.Bool)
+    {
+        EnabledWhenOption = OptionKeys.View,
+        IsAutoValue = true,
+    };
+
+    /// <summary>
+    /// Where the view model goes. The file name is the class name. Left empty, the configured or
+    /// detected view model folder is used.
+    /// </summary>
+    private static ItemOption ViewModelPathOption() => new(OptionKeys.ViewModelPath, "View model path", OptionKind.Text)
+    {
+        Description = "Relative to the project. The file name becomes the class name.",
+        EnabledWhenOption = OptionKeys.ViewModel,
+        IsAutoValue = true,
+    };
+
     private static ItemOption GroupOption() => new(OptionKeys.Group, "Content type group", OptionKind.Choice)
     {
         ChoiceSource = ChoiceSource.ContentTypeGroups,
@@ -304,12 +367,12 @@ public static class ItemCatalog
         Description = "Groups the type in the editor's create dialog. Constants found in the project are listed.",
     };
 
-    private static ItemOption ContentTypeOption(ChoiceSource source, string defaultValue) => new(OptionKeys.ContentType, "Content type", OptionKind.Choice)
+    /// <summary>Starts blank so a controller/component is never created for the wrong type by accident.</summary>
+    private static ItemOption ContentTypeOption(ChoiceSource source) => new(OptionKeys.ContentType, "Content type", OptionKind.Choice)
     {
         ChoiceSource = source,
-        DefaultValue = defaultValue,
         AllowCustomValue = true,
-        Description = "Content types found in the project are listed.",
+        Description = "Required. Content types found in the project are listed.",
     };
 
     private static ItemOption BlockStyleOption() => new(OptionKeys.BlockStyle, "Component style", OptionKind.Choice)
