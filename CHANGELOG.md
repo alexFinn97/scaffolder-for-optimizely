@@ -4,9 +4,15 @@ Both extensions, Scaffolder for Optimizely and Scaffolder for Optimizely Commerc
 
 ## [Unreleased]
 
-## [0.9.2] - 2026-11-17
+## [0.9.3] - 2026-11-17
 
-First Visual Studio Marketplace release, as a preview. 0.9.0 and 0.9.1 didn't reach the Marketplace because of release workflow problems; everything listed under them ships in this release.
+First Visual Studio Marketplace release, as a preview. 0.9.0 to 0.9.2 didn't reach the Marketplace because of release workflow and listing problems; everything listed under them ships in this release.
+
+### Fixed
+- The Marketplace rejected the extensions' descriptions for being over 280 characters; both are shorter now.
+- Release tests now check the Marketplace publisher's rules (description and display name length, tags, language, internal names) before a release goes out.
+
+## [0.9.2] - 2026-11-17 (GitHub release only)
 
 ### Fixed
 - The Marketplace rejected the extensions' tags: they're now separated with semicolons, not commas.
