@@ -7,5 +7,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Scaffolder for Optimizely")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 Alex Finnigan")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("0.2.1.0")]
-[assembly: AssemblyFileVersion("0.2.1.0")]
+[assembly: AssemblyVersion("0.3.1.0")]
+[assembly: AssemblyFileVersion("0.3.1.0")]
