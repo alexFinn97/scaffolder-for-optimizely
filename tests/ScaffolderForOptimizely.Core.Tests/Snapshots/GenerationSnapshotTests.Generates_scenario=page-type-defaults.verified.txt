@@ -1,0 +1,45 @@
+﻿=== Controllers/ArticlePageController.cs (embedded)
+using Contoso.Web.Models.Pages;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers;
+
+public class ArticlePageController : PageController<ArticlePage>
+{
+    public IActionResult Index(ArticlePage currentPage)
+    {
+        return View(currentPage);
+    }
+}
+
+=== Models/Pages/ArticlePage.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Models.Pages;
+
+[ContentType(
+    DisplayName = "Article Page",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    Description = "")]
+public class ArticlePage : PageData
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Heading",
+        Description = "The main heading of the page.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual string? Heading { get; set; }
+}
+
+=== Views/ArticlePage/Index.cshtml (embedded)
+@model Contoso.Web.Models.Pages.ArticlePage
+
+<article>
+    <h1>@Model.Name</h1>
+</article>
+

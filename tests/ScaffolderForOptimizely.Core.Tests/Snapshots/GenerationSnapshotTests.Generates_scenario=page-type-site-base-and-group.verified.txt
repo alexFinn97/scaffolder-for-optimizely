@@ -1,0 +1,46 @@
+﻿=== Controllers/ProductPageController.cs (embedded)
+using Contoso.Web.Models.Pages;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Controllers;
+
+public class ProductPageController : PageController<ProductPage>
+{
+    public IActionResult Index(ProductPage currentPage)
+    {
+        return View(currentPage);
+    }
+}
+
+=== Models/Pages/ProductPage.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Models.Pages;
+
+[ContentType(
+    DisplayName = "Product Page",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    GroupName = Globals.GroupNames.Specialized,
+    Description = "Shows a product.")]
+public class ProductPage : SitePageData
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Heading",
+        Description = "The main heading of the page.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual string? Heading { get; set; }
+}
+
+=== Views/ProductPage/Index.cshtml (embedded)
+@model Contoso.Web.Models.Pages.ProductPage
+
+<article>
+    <h1>@Model.Name</h1>
+</article>
+

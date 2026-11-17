@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/alexFinn97/scaffolder-for-optimizely/master/schema/optimizely-scaffolder.schema.json",
+  "title": "Scaffolder for Optimizely settings",
+  "description": "Per-solution settings for the Scaffolder for Optimizely Visual Studio extension. Every value is optional; anything left out is detected from the project.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "templateSource": {
+      "description": "Where file content comes from. 'dotnet-new' uses Optimizely's EPiServer.Templates where it has a matching template and falls back to the built-in templates; 'embedded' always uses the built-in templates. Per-solution overrides in .optimizely/templates/ win either way.",
+      "enum": ["dotnet-new", "embedded"],
+      "default": "dotnet-new"
+    },
+    "layout": {
+      "description": "'conventional' puts models, controllers, components, view models and views in their own folders. 'feature' keeps everything next to the item. Leave out to detect from where existing views live.",
+      "enum": ["conventional", "feature"]
+    },
+    "rootNamespace": {
+      "description": "Overrides the project's root namespace.",
+      "type": "string"
+    },
+    "fileScopedNamespaces": {
+      "description": "Use file-scoped namespaces. Leave out to match existing code.",
+      "type": "boolean"
+    },
+    "folders": {
+      "description": "Folders (relative to the project) used by the conventional layout, and when scaffolding from the project node.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pages": { "type": "string", "default": "Models/Pages" },
+        "blocks": { "type": "string", "default": "Models/Blocks" },
+        "media": { "type": "string", "default": "Models/Media" },
+        "controllers": { "type": "string", "default": "Controllers" },
+        "components": { "type": "string", "default": "Components" },
+        "viewModels": { "type": "string", "default": "Models/ViewModels" },
+        "views": { "type": "string", "default": "Views" }
+      }
+    },
+    "baseClasses": {
+      "description": "Default base classes as full type names, e.g. 'MySite.Models.Pages.SitePageData'. Leave out to pick from abstract base classes found in the project.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": { "type": "string" },
+        "block": { "type": "string" },
+        "media": { "type": "string" }
+      }
+    },
+    "contentTypeGroup": {
+      "description": "Default content type group expression, e.g. 'Globals.GroupNames.Content'.",
+      "type": "string"
+    },
+    "blockRenderStyle": {
+      "description": "Default block component style.",
+      "enum": ["async", "sync", "viewComponent"],
+      "default": "async"
+    },
+    "companions": {
+      "description": "Default state of the companion-file checkboxes.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "controller": { "type": "boolean", "default": true },
+        "component": { "type": "boolean", "default": true },
+        "viewModel": { "type": "boolean", "default": false },
+        "view": { "type": "boolean", "default": true }
+      }
+    }
+  }
+}

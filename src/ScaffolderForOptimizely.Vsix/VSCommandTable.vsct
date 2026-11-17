@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h" />
+  <Extern href="vsshlids.h" />
+  <Include href="KnownImageIds.vsct" />
+
+  <!--
+    Solution Explorer > right-click a project or folder > Add > Optimizely > ...
+    Buttons are hidden until the package confirms the project references Optimizely.
+  -->
+  <Commands package="guidScaffolderPackage">
+    <Menus>
+      <Menu guid="guidScaffolderCmdSet" id="OptimizelyMenu" priority="0x0100" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_ADD_ITEMS" />
+        <Strings>
+          <ButtonText>Optimizely</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <Groups>
+      <Group guid="guidScaffolderCmdSet" id="ContentTypesGroup" priority="0x0100">
+        <Parent guid="guidScaffolderCmdSet" id="OptimizelyMenu" />
+      </Group>
+      <Group guid="guidScaffolderCmdSet" id="RenderingGroup" priority="0x0200">
+        <Parent guid="guidScaffolderCmdSet" id="OptimizelyMenu" />
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidScaffolderCmdSet" id="AddPageType" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="ContentTypesGroup" />
+        <Icon guid="ImageCatalogGuid" id="Document" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Page Type...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddBlockType" priority="0x0200" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="ContentTypesGroup" />
+        <Icon guid="ImageCatalogGuid" id="Class" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Block Type...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddMediaType" priority="0x0300" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="ContentTypesGroup" />
+        <Icon guid="ImageCatalogGuid" id="Image" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Media Type...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddPageController" priority="0x0100" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="RenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="CSClassFile" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Page Controller...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddBlockComponent" priority="0x0200" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="RenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="Component" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Block Component...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddPartialComponent" priority="0x0300" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="RenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="Component" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Partial Content Component...</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidScaffolderCmdSet" id="AddViewComponent" priority="0x0400" type="Button">
+        <Parent guid="guidScaffolderCmdSet" id="RenderingGroup" />
+        <Icon guid="ImageCatalogGuid" id="Component" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>View Component...</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="guidScaffolderPackage" value="{f1fdcef1-a2ce-45dd-880e-abdaa8c0ee10}" />
+    <GuidSymbol name="guidScaffolderCmdSet" value="{8496ae22-5963-4937-b396-69043c24fe69}">
+      <IDSymbol name="OptimizelyMenu" value="0x1000" />
+      <IDSymbol name="ContentTypesGroup" value="0x1100" />
+      <IDSymbol name="RenderingGroup" value="0x1200" />
+      <IDSymbol name="AddPageType" value="0x0101" />
+      <IDSymbol name="AddBlockType" value="0x0102" />
+      <IDSymbol name="AddMediaType" value="0x0103" />
+      <IDSymbol name="AddPageController" value="0x0104" />
+      <IDSymbol name="AddBlockComponent" value="0x0105" />
+      <IDSymbol name="AddPartialComponent" value="0x0106" />
+      <IDSymbol name="AddViewComponent" value="0x0107" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

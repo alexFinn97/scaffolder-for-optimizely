@@ -1,0 +1,19 @@
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAnnotations;
+using EPiServer.Framework.DataAnnotations;
+
+namespace {{ namespace }};
+
+[ContentType(
+    DisplayName = "{{ display_name }}",
+    GUID = "{{ guid }}",
+    Description = "{{ description }}")]
+[MediaDescriptor(ExtensionString = "{{ extensions }}")]
+public class {{ class_name }} : {{ base_class }}
+{
+    [Display(
+        Name = "Copyright",
+        Order = 10)]
+    public virtual string{{ q }} Copyright { get; set; }
+}

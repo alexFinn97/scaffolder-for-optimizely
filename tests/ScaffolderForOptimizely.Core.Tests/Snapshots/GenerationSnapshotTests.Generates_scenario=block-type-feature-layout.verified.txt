@@ -1,0 +1,45 @@
+﻿=== Features/Promo/PromoBlock.cs (embedded, primary)
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Core;
+using EPiServer.DataAbstraction;
+using EPiServer.DataAnnotations;
+
+namespace Contoso.Web.Features.Promo;
+
+[ContentType(
+    DisplayName = "Promo Block",
+    GUID = "11111111-2222-3333-4444-555555555555",
+    Description = "")]
+public class PromoBlock : BlockData
+{
+    [CultureSpecific]
+    [Display(
+        Name = "Heading",
+        Description = "The heading shown on the block.",
+        GroupName = SystemTabNames.Content,
+        Order = 10)]
+    public virtual string? Heading { get; set; }
+}
+
+=== Features/Promo/PromoBlock.cshtml (embedded)
+@model Contoso.Web.Features.Promo.PromoBlock
+
+<div class="promoblock">
+    @* Render properties here, e.g. @Html.PropertyFor(x => x.Heading) *@
+</div>
+
+=== Features/Promo/PromoBlockViewComponent.cs (embedded)
+using System.Threading.Tasks;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Features.Promo;
+
+public class PromoBlockViewComponent : AsyncBlockComponent<PromoBlock>
+{
+    protected override Task<IViewComponentResult> InvokeComponentAsync(PromoBlock currentBlock)
+    {
+        return Task.FromResult<IViewComponentResult>(View("~/Features/Promo/PromoBlock.cshtml", currentBlock));
+    }
+}
+

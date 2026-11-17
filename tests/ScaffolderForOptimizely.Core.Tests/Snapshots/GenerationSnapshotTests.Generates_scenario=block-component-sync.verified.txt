@@ -1,0 +1,22 @@
+﻿=== Components/TeaserBlockViewComponent.cs (embedded, primary)
+using Contoso.Web.Models.Blocks;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Components;
+
+public class TeaserBlockViewComponent : BlockComponent<TeaserBlock>
+{
+    protected override IViewComponentResult InvokeComponent(TeaserBlock currentBlock)
+    {
+        return View(currentBlock);
+    }
+}
+
+=== Views/Shared/Components/TeaserBlock/Default.cshtml (embedded)
+@model Contoso.Web.Models.Blocks.TeaserBlock
+
+<div class="teaserblock">
+    @* Render properties here, e.g. @Html.PropertyFor(x => x.Heading) *@
+</div>
+

@@ -1,0 +1,23 @@
+﻿=== Components/StandardPagePartialViewComponent.cs (embedded, primary)
+using System.Threading.Tasks;
+using Contoso.Web.Models.Pages;
+using EPiServer.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Contoso.Web.Components;
+
+public class StandardPagePartialViewComponent : AsyncPartialContentComponent<StandardPage>
+{
+    protected override Task<IViewComponentResult> InvokeComponentAsync(StandardPage currentContent)
+    {
+        return Task.FromResult<IViewComponentResult>(View(currentContent));
+    }
+}
+
+=== Views/Shared/Components/StandardPagePartial/Default.cshtml (embedded)
+@model Contoso.Web.Models.Pages.StandardPage
+
+<div class="standardpagepartial">
+    @* Render properties here, e.g. @Html.PropertyFor(x => x.Heading) *@
+</div>
+
