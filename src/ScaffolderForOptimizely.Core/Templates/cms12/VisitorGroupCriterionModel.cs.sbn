@@ -1,0 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+using EPiServer.Personalization.VisitorGroups;
+
+namespace {{ namespace }};
+
+/// <summary>Settings an editor enters for <see cref="{{ class_criterion }}"/>.</summary>
+public class {{ class_name }} : CriterionModelBase
+{
+    [Required]
+    public string{{ q }} Value { get; set; }
+
+    public override ICriterionModel Copy() => ShallowCopy();
+}

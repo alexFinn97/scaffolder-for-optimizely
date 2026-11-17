@@ -1,0 +1,18 @@
+using System.Security.Principal;
+using EPiServer.Personalization.VisitorGroups;
+using Microsoft.AspNetCore.Http;
+
+namespace {{ namespace }};
+
+[VisitorGroupCriterion(
+    Category = "{{ options.category | cs_string }}",
+    DisplayName = "{{ display_name }}",
+    Description = "{{ description }}")]
+public class {{ class_name }} : CriterionBase<{{ class_model }}>
+{
+    public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
+    {
+        // Compare Model.Value with the current request, e.g. a header, cookie or query string.
+        return false;
+    }
+}

@@ -1,0 +1,60 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+{{~ if options.scope ~}}
+using Microsoft.Extensions.DependencyInjection;
+{{~ end ~}}
+{{~ if options.logger ~}}
+using Microsoft.Extensions.Logging;
+{{~ end ~}}
+
+namespace {{ namespace }};
+
+/// <summary>
+/// Runs once at startup, when ASP.NET Core builds the request pipeline.
+{{~ if class_extensions ~}}
+/// Registered by <see cref="{{ class_extensions }}.Add{{ class_name }}"/>.
+{{~ else ~}}
+/// Register it in Startup.ConfigureServices: <c>services.AddTransient&lt;IStartupFilter, {{ class_name }}&gt;();</c>
+{{~ end ~}}
+/// </summary>
+public class {{ class_name }} : IStartupFilter
+{
+{{~ if options.logger ~}}
+    private readonly ILogger<{{ class_name }}> _logger;
+
+    public {{ class_name }}(ILogger<{{ class_name }}> logger)
+    {
+        _logger = logger;
+    }
+
+{{~ end ~}}
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
+        {
+{{~ if options.logger ~}}
+            _logger.LogInformation("{Filter} running.", nameof({{ class_name }}));
+
+{{~ end ~}}
+{{~ if options.scope ~}}
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                // Run startup work here, resolving services with scope.ServiceProvider.GetRequiredService<T>().
+            }
+{{~ else ~}}
+            // Run startup work here. Resolve singletons with app.ApplicationServices.
+{{~ end ~}}
+{{~ if options.middleware ~}}
+
+            app.Use(async (context, nextMiddleware) =>
+            {
+                // Runs on every request, before the rest of the pipeline.
+                await nextMiddleware();
+            });
+{{~ end ~}}
+
+            next(app);
+        };
+    }
+}

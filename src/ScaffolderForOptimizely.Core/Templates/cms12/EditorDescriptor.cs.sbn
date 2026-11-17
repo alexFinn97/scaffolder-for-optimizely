@@ -1,0 +1,32 @@
+using System;
+using System.Collections.Generic;
+using EPiServer.Core;
+using EPiServer.Shell.ObjectEditing;
+using EPiServer.Shell.ObjectEditing.EditorDescriptors;
+
+namespace {{ namespace }};
+
+/// <summary>
+/// Applies to {{ options.targetType }} properties marked <c>[UIHint({{ class_name }}.UIHintName)]</c>.
+/// </summary>
+[EditorDescriptorRegistration(TargetType = typeof({{ options.targetType }}), UIHint = UIHintName)]
+public class {{ class_name }} : EditorDescriptor
+{
+    public const string UIHintName = "{{ options.uiHint | cs_string }}";
+
+    public {{ class_name }}()
+    {
+{{~ if options.clientEditingClass != "" ~}}
+        ClientEditingClass = "{{ options.clientEditingClass | cs_string }}";
+{{~ else ~}}
+        // Set ClientEditingClass to use a custom Dojo editor, e.g. "app/editors/{{ options.uiHint | cs_string }}".
+{{~ end ~}}
+    }
+
+    public override void ModifyMetadata(ExtendedMetadata metadata, IEnumerable<Attribute> attributes)
+    {
+        base.ModifyMetadata(metadata, attributes);
+
+        // Adjust the metadata here, e.g. metadata.EditorConfiguration["key"] = value;
+    }
+}

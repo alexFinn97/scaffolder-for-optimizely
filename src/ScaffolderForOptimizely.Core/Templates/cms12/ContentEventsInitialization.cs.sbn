@@ -1,0 +1,36 @@
+using EPiServer.Core;
+using EPiServer.Framework;
+using EPiServer.Framework.Initialization;
+using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace {{ namespace }};
+
+/// <summary>Registers <see cref="{{ class_handler }}"/> and subscribes it to content events.</summary>
+[InitializableModule]
+[ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
+public class {{ class_name }} : IConfigurableModule
+{
+    public void ConfigureContainer(ServiceConfigurationContext context)
+    {
+        context.Services.AddSingleton<{{ class_handler }}>();
+    }
+
+    public void Initialize(InitializationEngine context)
+    {
+        var contentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
+        var handler = context.Locate.Advanced.GetInstance<{{ class_handler }}>();
+{{~ for evt in events ~}}
+        contentEvents.{{ evt }} += handler.On{{ evt }};
+{{~ end ~}}
+    }
+
+    public void Uninitialize(InitializationEngine context)
+    {
+        var contentEvents = context.Locate.Advanced.GetInstance<IContentEvents>();
+        var handler = context.Locate.Advanced.GetInstance<{{ class_handler }}>();
+{{~ for evt in events ~}}
+        contentEvents.{{ evt }} -= handler.On{{ evt }};
+{{~ end ~}}
+    }
+}

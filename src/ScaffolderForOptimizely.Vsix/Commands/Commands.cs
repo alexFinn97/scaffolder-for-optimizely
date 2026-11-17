@@ -46,3 +46,57 @@ internal sealed class AddViewComponentCommand : ScaffoldCommand<AddViewComponent
 {
     protected override string ItemId => ItemCatalog.Ids.ViewComponent;
 }
+
+[Command(PackageGuids.ScaffolderCmdSetString, PackageIds.AddInitializationModule)]
+internal sealed class AddInitializationModuleCommand : ScaffoldCommand<AddInitializationModuleCommand>
+{
+    protected override string ItemId => ItemCatalog.Ids.InitializationModule;
+}
+
+[Command(PackageGuids.ScaffolderCmdSetString, PackageIds.AddStartupFilter)]
+internal sealed class AddStartupFilterCommand : ScaffoldCommand<AddStartupFilterCommand>
+{
+    protected override string ItemId => ItemCatalog.Ids.StartupFilter;
+}
+
+[Command(PackageGuids.ScaffolderCmdSetString, PackageIds.AddScheduledJob)]
+internal sealed class AddScheduledJobCommand : ScaffoldCommand<AddScheduledJobCommand>
+{
+    protected override string ItemId => ItemCatalog.Ids.ScheduledJob;
+}
+
+[Command(PackageGuids.ScaffolderCmdSetString, PackageIds.AddServiceCollectionExtension)]
+internal sealed class AddServiceCollectionExtensionCommand : ScaffoldCommand<AddServiceCollectionExtensionCommand>
+{
+    protected override string ItemId => ItemCatalog.Ids.ServiceCollectionExtension;
+}
+
+[Command(PackageGuids.ScaffolderCmdSetString, PackageIds.AddSelectionFactory)]
+internal sealed class AddSelectionFactoryCommand : ScaffoldCommand<AddSelectionFactoryCommand>
+{
+    protected override string ItemId => ItemCatalog.Ids.SelectionFactory;
+}
+
+[Command(PackageGuids.ScaffolderCmdSetString, PackageIds.AddEditorDescriptor)]
+internal sealed class AddEditorDescriptorCommand : ScaffoldCommand<AddEditorDescriptorCommand>
+{
+    protected override string ItemId => ItemCatalog.Ids.EditorDescriptor;
+}
+
+[Command(PackageGuids.ScaffolderCmdSetString, PackageIds.AddVisitorGroupCriterion)]
+internal sealed class AddVisitorGroupCriterionCommand : ScaffoldCommand<AddVisitorGroupCriterionCommand>
+{
+    protected override string ItemId => ItemCatalog.Ids.VisitorGroupCriterion;
+}
+
+[Command(PackageGuids.ScaffolderCmdSetString, PackageIds.AddContentEventsHandler)]
+internal sealed class AddContentEventsHandlerCommand : ScaffoldCommand<AddContentEventsHandlerCommand>
+{
+    protected override string ItemId => ItemCatalog.Ids.ContentEventsHandler;
+}
+
+[Command(PackageGuids.ScaffolderCmdSetString, PackageIds.AddContentValidator)]
+internal sealed class AddContentValidatorCommand : ScaffoldCommand<AddContentValidatorCommand>
+{
+    protected override string ItemId => ItemCatalog.Ids.ContentValidator;
+}
