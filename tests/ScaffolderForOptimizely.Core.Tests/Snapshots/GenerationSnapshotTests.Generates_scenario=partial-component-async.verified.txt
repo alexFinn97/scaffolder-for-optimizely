@@ -8,9 +8,9 @@ namespace Contoso.Web.Components;
 
 public class StandardPagePartialViewComponent : AsyncPartialContentComponent<StandardPage>
 {
-    protected override Task<IViewComponentResult> InvokeComponentAsync(StandardPage currentContent)
+    protected override async Task<IViewComponentResult> InvokeComponentAsync(StandardPage currentContent)
     {
-        return Task.FromResult<IViewComponentResult>(View(currentContent));
+        return await Task.FromResult(View(currentContent));
     }
 }
 

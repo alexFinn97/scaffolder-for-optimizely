@@ -37,9 +37,9 @@ namespace Contoso.Web.Features.Promo;
 
 public class PromoBlockViewComponent : AsyncBlockComponent<PromoBlock>
 {
-    protected override Task<IViewComponentResult> InvokeComponentAsync(PromoBlock currentBlock)
+    protected override async Task<IViewComponentResult> InvokeComponentAsync(PromoBlock currentBlock)
     {
-        return Task.FromResult<IViewComponentResult>(View("~/Features/Promo/PromoBlock.cshtml", currentBlock));
+        return await Task.FromResult(View("~/Features/Promo/PromoBlock.cshtml", currentBlock));
     }
 }
 

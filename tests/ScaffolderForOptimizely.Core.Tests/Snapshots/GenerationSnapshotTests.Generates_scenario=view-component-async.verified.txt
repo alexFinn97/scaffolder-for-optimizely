@@ -6,9 +6,9 @@ namespace Contoso.Web.Components;
 
 public class SiteFooterViewComponent : ViewComponent
 {
-    public Task<IViewComponentResult> InvokeAsync()
+    public async Task<IViewComponentResult> InvokeAsync()
     {
-        return Task.FromResult<IViewComponentResult>(View());
+        return await Task.FromResult(View());
     }
 }
 

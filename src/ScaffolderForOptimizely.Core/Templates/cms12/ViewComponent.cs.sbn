@@ -12,9 +12,9 @@ namespace {{ namespace }};
 
 public class {{ class_name }} : ViewComponent
 {
-    public Task<IViewComponentResult> InvokeAsync()
+    public async Task<IViewComponentResult> InvokeAsync()
     {
-        return Task.FromResult<IViewComponentResult>(View({{ view_args }}));
+        return await Task.FromResult(View({{ view_args }}));
     }
 }
 {{~ else ~}}

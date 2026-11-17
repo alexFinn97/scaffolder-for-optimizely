@@ -9,8 +9,8 @@ namespace $rootnamespace$;
 // where <Name> is the class name without "ViewComponent".
 public class $safeitemname$ : AsyncBlockComponent<BlockData>
 {
-    protected override Task<IViewComponentResult> InvokeComponentAsync(BlockData currentBlock)
+    protected override async Task<IViewComponentResult> InvokeComponentAsync(BlockData currentBlock)
     {
-        return Task.FromResult<IViewComponentResult>(View(currentBlock));
+        return await Task.FromResult(View(currentBlock));
     }
 }

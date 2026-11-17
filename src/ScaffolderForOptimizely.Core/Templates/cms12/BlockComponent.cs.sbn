@@ -46,9 +46,9 @@ namespace {{ namespace }};
 
 public class {{ class_name }} : AsyncBlockComponent<{{ model_class }}>
 {
-    protected override Task<IViewComponentResult> InvokeComponentAsync({{ model_class }} currentBlock)
+    protected override async Task<IViewComponentResult> InvokeComponentAsync({{ model_class }} currentBlock)
     {
-        return Task.FromResult<IViewComponentResult>(View({{ view_args }}));
+        return await Task.FromResult(View({{ view_args }}));
     }
 }
 {{~ end ~}}
