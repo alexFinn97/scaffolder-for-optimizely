@@ -39,14 +39,13 @@ Without the `VS_MARKETPLACE_PAT` secret, the release workflow skips publishing. 
 ## 3. Release
 
 1. Make sure `CHANGELOG.md` has a `## [x.y.z]` section for the version in `src/Directory.Build.props`.
-2. Commit, then tag and push:
-
-   ```bash
-   git tag v0.9.0
-   git push origin v0.9.0
-   ```
+2. Tag the release commit and push the tag. Either style works, but push only one tag per release, or the workflow runs twice:
+   - **git-flow:** `git flow release finish 1.0.0` tags `1.0.0`. Then push `master`, `develop` and the tag (`git push origin master develop 1.0.0`).
+   - **Plain git:** `git tag v1.0.0`, then `git push origin v1.0.0`.
 
 3. The **Release** workflow checks the tag matches the version, runs every test, builds both extensions, and creates a GitHub release with the changelog section as its notes. It then publishes to the Marketplace if option A is set up.
+
+GitHub uses the workflow as it is in the tagged commit, so changes to the release workflow only take effect for tags on commits that include them.
 
 ## Changing the version
 
