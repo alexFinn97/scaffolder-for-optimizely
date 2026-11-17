@@ -4,9 +4,16 @@ Both extensions, Scaffolder for Optimizely and Scaffolder for Optimizely Commerc
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-11-17
+
+First Marketplace release of Scaffolder for Optimizely Commerce. Scaffolder for Optimizely itself first reached the Marketplace in 0.9.3.
+
+### Fixed
+- The release workflow stopped after publishing the first extension, because the Marketplace publisher exits with an error code from its own telemetry even when the upload succeeds.
+
 ## [0.9.3] - 2026-11-17
 
-First Visual Studio Marketplace release, as a preview. 0.9.0 to 0.9.2 didn't reach the Marketplace because of release workflow and listing problems; everything listed under them ships in this release.
+First Visual Studio Marketplace release of Scaffolder for Optimizely, as a preview. 0.9.0 to 0.9.2 didn't reach the Marketplace because of release workflow and listing problems; everything listed under them ships in this release.
 
 ### Fixed
 - The Marketplace rejected the extensions' descriptions for being over 280 characters; both are shorter now.
