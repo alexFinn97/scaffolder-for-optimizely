@@ -10,9 +10,9 @@ public sealed class ScaffolderConfig
 {
     public const string FileName = ".optimizely-scaffolder.json";
 
-    /// <summary><c>dotnet-new</c> (wrap Optimizely's EPiServer.Templates where possible) or <c>embedded</c>.</summary>
+    /// <summary><c>embedded</c> (the built-in templates; default) or <c>dotnet-new</c> (Optimizely's EPiServer.Templates where one exists).</summary>
     [JsonProperty("templateSource")]
-    public string TemplateSource { get; set; } = TemplateSources.DotnetNew;
+    public string TemplateSource { get; set; } = TemplateSources.Embedded;
 
     /// <summary><c>conventional</c> (Models/Controllers/Views) or <c>feature</c> (everything in one folder). Null = detect.</summary>
     [JsonProperty("layout")]

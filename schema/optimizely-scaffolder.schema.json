@@ -8,9 +8,9 @@
   "properties": {
     "$schema": { "type": "string" },
     "templateSource": {
-      "description": "Where file content comes from. 'dotnet-new' uses Optimizely's EPiServer.Templates where it has a matching template and falls back to the built-in templates; 'embedded' always uses the built-in templates. Per-solution overrides in .optimizely/templates/ win either way.",
-      "enum": ["dotnet-new", "embedded"],
-      "default": "dotnet-new"
+      "description": "Where file content comes from. 'embedded' (default) always uses the built-in templates, so the output matches the dialog's preview. 'dotnet-new' uses Optimizely's EPiServer.Templates where it has a matching template (content types, page controllers, partial components, initialization modules) and falls back to the built-in templates. Per-solution overrides in .optimizely/templates/ win either way.",
+      "enum": ["embedded", "dotnet-new"],
+      "default": "embedded"
     },
     "layout": {
       "description": "'conventional' puts models, controllers, components, view models and views in their own folders. 'feature' keeps everything next to the item. Leave out to detect from where existing views live.",
