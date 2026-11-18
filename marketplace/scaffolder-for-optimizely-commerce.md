@@ -8,6 +8,8 @@ Right-click scaffolding for **Optimizely Commerce 14** in Visual Studio 2022 and
 
 In a project that references Optimizely Commerce, right-click the project or a folder in Solution Explorer and choose **Add > Optimizely Commerce**. Each item opens a dialog with its options and a live preview of every file it will create.
 
+![Scaffolding a Commerce item](images/commerce.png)
+
 ## What you can add
 
 **Catalog**

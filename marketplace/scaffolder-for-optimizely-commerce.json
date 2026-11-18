@@ -5,6 +5,9 @@
     "internalName": "ScaffolderForOptimizelyCommerce"
   },
   "overview": "scaffolder-for-optimizely-commerce.md",
+  "assetFiles": [
+    { "pathOnDisk": "images/commerce.png", "targetPath": "images/commerce.png" }
+  ],
   "priceCategory": "free",
   "publisher": "alexFinn97",
   "private": false,
