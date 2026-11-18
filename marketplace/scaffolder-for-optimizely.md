@@ -6,7 +6,13 @@ Right-click scaffolding for **Optimizely CMS 12** in Visual Studio 2022 and 2026
 
 ## How it works
 
-Right-click a project or folder in Solution Explorer and choose **Add > Optimizely CMS**. Each item opens a dialog with its options and a live preview of every file it will create. Click **Add** and the files are written into the project.
+Right-click a project or folder in Solution Explorer and choose **Add > Optimizely CMS**.
+
+![The Add > Optimizely CMS menu in Solution Explorer](images/menu.png)
+
+Each item opens a dialog with its options and a live preview of every file it will create. Click **Add** and the files are written into the project.
+
+![The Page Type dialog, with its options and a preview of the files it will create](images/dialog.png)
 
 The menu only appears in projects that reference Optimizely CMS.
 

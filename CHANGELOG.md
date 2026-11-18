@@ -4,6 +4,15 @@ Both extensions, Scaffolder for Optimizely and Scaffolder for Optimizely Commerc
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-11-18
+
+### Added
+- Screenshots on both Marketplace listings, and a release test that every image an overview page shows exists and is uploaded with it.
+
+### Fixed
+- The Marketplace cut both extensions' descriptions off mid-sentence, because the listing page only shows the first 200 characters. Both are shorter now, and the release tests check the 200-character limit.
+- The release workflow marked a successful Marketplace publish as failed.
+
 ## [0.9.4] - 2026-11-17
 
 First Marketplace release of Scaffolder for Optimizely Commerce. Scaffolder for Optimizely itself first reached the Marketplace in 0.9.3.
