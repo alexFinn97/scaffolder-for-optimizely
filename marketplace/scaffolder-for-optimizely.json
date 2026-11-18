@@ -5,6 +5,10 @@
     "internalName": "ScaffolderForOptimizely"
   },
   "overview": "scaffolder-for-optimizely.md",
+  "assetFiles": [
+    { "pathOnDisk": "images/menu.png", "targetPath": "images/menu.png" },
+    { "pathOnDisk": "images/dialog.png", "targetPath": "images/dialog.png" }
+  ],
   "priceCategory": "free",
   "publisher": "alexFinn97",
   "private": false,

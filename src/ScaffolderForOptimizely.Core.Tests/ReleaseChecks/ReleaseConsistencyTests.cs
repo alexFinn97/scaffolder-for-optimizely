@@ -102,8 +102,9 @@ public class ReleaseConsistencyTests
         var manifest = Manifest(project);
         string Value(string element) => manifest.Descendants(Vsx + element).Single().Value;
 
+        // The publisher accepts up to 279 characters, but the listing page only shows the first 200.
         var description = Value("Description");
-        Assert.True(description.Length is > 0 and < 280, $"Description is {description.Length} characters; the Marketplace needs 1 to 279.");
+        Assert.True(description.Length is > 0 and <= 200, $"Description is {description.Length} characters; the Marketplace page shows only the first 200.");
 
         var displayName = Value("DisplayName");
         Assert.True(displayName.Length is > 0 and < 100, $"Display name is {displayName.Length} characters.");
@@ -127,6 +128,42 @@ public class ReleaseConsistencyTests
 
         Assert.All(names, name => Assert.Matches("^[A-Za-z0-9-]{1,62}$", name));
         Assert.Equal(names.Count, names.Distinct(StringComparer.OrdinalIgnoreCase).Count());
+    }
+
+    public static TheoryData<string> PublishManifests => new() { "scaffolder-for-optimizely.json", "scaffolder-for-optimizely-commerce.json" };
+
+    /// <summary>
+    /// Every image an overview page shows has to exist and be listed in the publish manifest's
+    /// assetFiles, or VsixPublisher won't upload it and the listing shows a broken image.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(PublishManifests))]
+    public void Overview_images_exist_and_are_uploaded(string publishManifest)
+    {
+        var marketplace = Path.Combine(Root, "marketplace");
+        var manifest = JObject.Parse(File.ReadAllText(Path.Combine(marketplace, publishManifest)));
+
+        var overview = Path.Combine(marketplace, (string)manifest["overview"]!);
+        Assert.True(File.Exists(overview), $"{publishManifest}: overview {manifest["overview"]} doesn't exist.");
+
+        var uploaded = (manifest["assetFiles"] as JArray ?? new JArray()).ToDictionary(
+            a => (string)a["targetPath"]!,
+            a => (string)a["pathOnDisk"]!);
+
+        foreach (var asset in uploaded.Values)
+        {
+            Assert.True(File.Exists(Path.Combine(marketplace, asset)), $"{publishManifest}: asset {asset} doesn't exist.");
+        }
+
+        var images = Regex.Matches(File.ReadAllText(overview), @"!\[[^\]]*\]\((?<path>[^)\s]+)\)")
+            .Cast<Match>()
+            .Select(m => m.Groups["path"].Value)
+            .Where(p => !p.StartsWith("http", StringComparison.OrdinalIgnoreCase));
+
+        foreach (var image in images)
+        {
+            Assert.True(uploaded.ContainsKey(image), $"{Path.GetFileName(overview)} shows {image}, but {publishManifest} doesn't list it in assetFiles.");
+        }
     }
 
     private static XDocument Manifest(string project) =>
