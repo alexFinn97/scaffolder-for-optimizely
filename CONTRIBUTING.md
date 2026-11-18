@@ -2,6 +2,8 @@
 
 Issues and pull requests are welcome. Generated code that doesn't compile, or doesn't match how Optimizely sites are usually built, is the most useful kind of bug report. Include the item, the options you picked, and what you expected.
 
+[TODO.md](TODO.md) lists what still needs checking or sorting out. It's a good place to start if you'd like to help.
+
 ## Getting set up
 
 - Visual Studio 2022 17.x or 2026, with the **Visual Studio extension development** workload (needed to load and debug the VSIX projects).
