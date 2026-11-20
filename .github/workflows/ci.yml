@@ -5,6 +5,9 @@ on:
     branches: [master]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: windows-latest
@@ -19,6 +22,7 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      # Restores fail on packages with known moderate+ advisories (NuGetAudit in src/Directory.Build.props).
       # The VSIX project uses the classic project format, so tests run per project
       # rather than through the solution.
       - name: Unit and snapshot tests
@@ -33,6 +37,40 @@ jobs:
       - name: Build VSIXs
         run: msbuild src/ScaffolderForOptimizely.Commerce.Vsix/ScaffolderForOptimizely.Commerce.Vsix.csproj /restore /p:Configuration=Release /v:minimal
 
+      # Every project is restored by now. Lists each direct or transitive package with a known moderate,
+      # high or critical advisory, and fails if there are any.
+      - name: Vulnerable package check
+        shell: pwsh
+        run: |
+          $projects = @(
+            "src/ScaffolderForOptimizely.Core/ScaffolderForOptimizely.Core.csproj",
+            "src/ScaffolderForOptimizely.Core.Tests/ScaffolderForOptimizely.Core.Tests.csproj",
+            "src/ScaffolderForOptimizely.Compile.Tests/ScaffolderForOptimizely.Compile.Tests.csproj",
+            "src/ScaffolderForOptimizely.Vsix/ScaffolderForOptimizely.Vsix.csproj",
+            "src/ScaffolderForOptimizely.Commerce.Vsix/ScaffolderForOptimizely.Commerce.Vsix.csproj"
+          )
+          $findings = @()
+          foreach ($project in $projects) {
+            $json = dotnet list $project package --vulnerable --include-transitive --format json --no-restore | Out-String
+            if ($LASTEXITCODE -ne 0) { Write-Host $json; throw "dotnet list package failed for $project." }
+            foreach ($result in ($json | ConvertFrom-Json).projects) {
+              foreach ($framework in $result.frameworks) {
+                foreach ($package in @($framework.topLevelPackages) + @($framework.transitivePackages) | Where-Object { $_ }) {
+                  foreach ($vulnerability in $package.vulnerabilities) {
+                    if ($vulnerability.severity -in "Moderate", "High", "Critical") {
+                      $findings += "$(Split-Path $project -Leaf): $($package.id) $($package.resolvedVersion) - $($vulnerability.severity) $($vulnerability.advisoryurl)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+          if ($findings) {
+            $findings | ForEach-Object { Write-Host "::error::$_" }
+            throw "$($findings.Count) known moderate+ vulnerabilities in NuGet packages."
+          }
+          Write-Host "No known moderate+ vulnerabilities."
+
       - uses: actions/upload-artifact@v4
         with:
           name: ScaffolderForOptimizely-vsix
@@ -40,3 +78,19 @@ jobs:
             src/ScaffolderForOptimizely.Vsix/bin/Release/*.vsix
             src/ScaffolderForOptimizely.Commerce.Vsix/bin/Release/*.vsix
           if-no-files-found: error
+
+  # Fails a pull request that adds or bumps a dependency with a known moderate+ advisory. Uses GitHub's
+  # dependency graph, which sees direct PackageReferences only; the build job covers transitive ones.
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          comment-summary-in-pr: always
