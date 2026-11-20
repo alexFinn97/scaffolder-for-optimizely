@@ -13,6 +13,7 @@
          copied into the VSIX. Roslyn is compile-only here; consumers (tests) reference it themselves. -->
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" Version="10.0.15" />
   </ItemGroup>
 
   <ItemGroup>
