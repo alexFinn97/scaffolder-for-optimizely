@@ -115,23 +115,6 @@ Restore fails if any package has a known moderate, high or critical vulnerabilit
 - **Core.Tests:** unit tests plus [Verify](https://github.com/VerifyTests/Verify) snapshot tests of every scenario in [src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs](src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs). After an intended template change, review the `.received.txt` files and rename them to `.verified.txt`.
 - **Compile.Tests:** compiles every scenario's generated C# (it links the same `Scenarios.cs`) against the real `EPiServer.CMS` 12 and `EPiServer.Commerce.Core` 14 packages and fails on any error or warning. It also checks project detection against an Alloy-style project.
 
-### Layout
-
-```
-src/
-  ScaffolderForOptimizely.sln
-  Directory.Build.props                   version and package metadata shared by every project
-  nuget.config                            nuget.org plus Optimizely's feed
-  ScaffolderForOptimizely.Core            netstandard2.0: item catalogue, config, detection, generation, templates
-  ScaffolderForOptimizely.Vsix            net48 VSIX: CMS commands, dialog, Roslyn workspace access, file writing
-  ScaffolderForOptimizely.Commerce.Vsix   net48 VSIX add-on: the Optimizely Commerce menu; depends on the main extension
-  ScaffolderForOptimizely.Core.Tests      unit and snapshot tests, plus the shared test scenarios
-  ScaffolderForOptimizely.Compile.Tests   compile tests against the real Optimizely packages
-schema/                                   JSON schema for .optimizely-scaffolder.json
-```
-
-Test folders mirror the Core folders (`Catalog`, `Config`, `Context`, `Generation`, `Providers`). Snapshots live in `ScaffolderForOptimizely.Core.Tests/Generation/Snapshots`.
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for tests, adding an item and pull requests, and [docs/publishing.md](docs/publishing.md) for releases. To report a vulnerability, see [SECURITY.md](SECURITY.md).
