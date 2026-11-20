@@ -38,6 +38,29 @@ Please add or update scenarios with any template change. The compile tests are w
 - Branch from `develop`, and keep each pull request to one change.
 - Match the existing style: `.editorconfig` is the reference, with file-scoped namespaces and nullable enabled.
 - Add a line to the `Unreleased` section of `CHANGELOG.md` for anything users would notice.
+- CI's **dependency-review** check fails a pull request that adds or bumps a package with a known moderate, high or critical vulnerability.
+
+## Vulnerable packages
+
+Restore fails with **NU1902**, **NU1903** or **NU1904** when a package, direct or transitive, has a known moderate, high or critical vulnerability. This is set in `src/Directory.Build.props` and applies locally, in CI and to releases. CI also lists every such package in its "Vulnerable package check" step.
+
+To fix one:
+
+1. Find what pulls it in. `dotnet nuget why <project> <package>` works for the SDK projects. For the VSIX projects, look in their `obj/project.assets.json`.
+2. Bump the direct package if a newer version in the same major resolves a fixed version.
+3. Otherwise, add a direct `PackageReference` pinning the first fixed version. Use the same major where one exists. Put a comment above it naming the advisory and where the package comes from, so the pin can be removed once the parent package catches up. See the pins in `ScaffolderForOptimizely.Compile.Tests.csproj` and the two VSIX projects.
+4. In the VSIX projects, use `ExcludeAssets="runtime" PrivateAssets="all"` for anything Visual Studio already loads, so nothing new is shipped. Check the `.vsix` contents haven't changed.
+
+Only use `<NuGetAuditSuppress Include="<advisory URL>" />` if there's no fix. Use it only for packages that don't ship, and give the reason in a comment.
+
+### Dependabot
+
+[`.github/dependabot.yml`](.github/dependabot.yml) opens grouped pull requests against `develop` every Monday: one for the shipped projects, one for the test projects and one for GitHub Actions. Security fixes can arrive in between. Its ignore lists are deliberate:
+
+- **Shipped projects:** `Microsoft.CodeAnalysis.CSharp`, `Microsoft.VisualStudio.LanguageServices`, `Newtonsoft.Json` and `Community.VisualStudio.Toolkit.17` match what the oldest supported Visual Studio loads, so they're never bumped.
+- **Test projects:** no `EPiServer.*` major versions, so the compile tests stay on CMS 12 and Commerce 14.
+
+A Dependabot pull request only needs a `CHANGELOG.md` line if it changes what ships, for example a Scriban update.
 
 ## Releasing
 
