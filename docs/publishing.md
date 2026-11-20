@@ -47,6 +47,8 @@ Without the `VS_MARKETPLACE_PAT` secret, the release workflow skips publishing. 
 
 GitHub uses the workflow as it is in the tagged commit, so changes to the release workflow only take effect for tags on commits that include them.
 
+The release fails at restore if any package has a known moderate, high or critical vulnerability (see [CONTRIBUTING.md](../CONTRIBUTING.md#vulnerable-packages)). An advisory published after the release branch was tested can do this even when nothing else changed. Fix it on `develop`, bring the fix into the release, delete the failed tag locally and on GitHub (`git push origin --delete <tag>`), then tag again.
+
 ## Publishing one extension by hand
 
 If the workflow published one extension but not the other, publish the missing one from your machine with the same tool, using the `.vsix` from the GitHub release. Run this from the repository root in PowerShell, with your token:

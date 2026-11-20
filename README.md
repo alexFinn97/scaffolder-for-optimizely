@@ -108,6 +108,8 @@ msbuild src/ScaffolderForOptimizely.Commerce.Vsix/ScaffolderForOptimizely.Commer
 
 Building the Commerce add-on also builds the main extension, so that one command produces both `.vsix` files. The VSIX projects use the classic project format, so build them with `msbuild` (or Visual Studio), not `dotnet build`. To debug, set **ScaffolderForOptimizely.Commerce.Vsix** (both extensions) or **ScaffolderForOptimizely.Vsix** (CMS only) as the startup project and press F5. It starts an experimental instance of Visual Studio.
 
+Restore fails if any package has a known moderate, high or critical vulnerability. See [CONTRIBUTING.md](CONTRIBUTING.md#vulnerable-packages) for how to fix one.
+
 ### Tests
 
 - **Core.Tests:** unit tests plus [Verify](https://github.com/VerifyTests/Verify) snapshot tests of every scenario in [src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs](src/ScaffolderForOptimizely.Core.Tests/Shared/Scenarios.cs). After an intended template change, review the `.received.txt` files and rename them to `.verified.txt`.
@@ -132,7 +134,7 @@ Test folders mirror the Core folders (`Catalog`, `Config`, `Context`, `Generatio
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for tests, adding an item and pull requests, and [docs/publishing.md](docs/publishing.md) for releases.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for tests, adding an item and pull requests, and [docs/publishing.md](docs/publishing.md) for releases. To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
 ## Licence
 
