@@ -1,0 +1,71 @@
+version: 2
+
+# src/nuget.config lists the Optimizely feed too; declaring it here makes sure Dependabot can
+# resolve the EPiServer.* packages.
+registries:
+  optimizely:
+    type: nuget-feed
+    url: https://api.nuget.optimizely.com/v3/index.json
+
+updates:
+  # Shipped projects. The ignored packages match what the oldest supported Visual Studio loads
+  # (Roslyn, Newtonsoft.Json, the VS toolkit), so they're never bumped.
+  - package-ecosystem: nuget
+    directories:
+      - /src/ScaffolderForOptimizely.Core
+      - /src/ScaffolderForOptimizely.Vsix
+      - /src/ScaffolderForOptimizely.Commerce.Vsix
+    registries: "*"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Etc/UTC
+    assignees:
+      - alexFinn97
+    ignore:
+      - dependency-name: Microsoft.CodeAnalysis.CSharp
+      - dependency-name: Microsoft.VisualStudio.LanguageServices
+      - dependency-name: Newtonsoft.Json
+      - dependency-name: Community.VisualStudio.Toolkit.17
+    groups:
+      nuget-shipped:
+        patterns:
+          - "*"
+
+  # Test projects. Compile.Tests compiles generated code against CMS 12 and Commerce 14, so no
+  # EPiServer major versions.
+  - package-ecosystem: nuget
+    directories:
+      - /src/ScaffolderForOptimizely.Core.Tests
+      - /src/ScaffolderForOptimizely.Compile.Tests
+    registries: "*"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Etc/UTC
+    assignees:
+      - alexFinn97
+    ignore:
+      - dependency-name: "EPiServer.*"
+        update-types:
+          - version-update:semver-major
+    groups:
+      nuget-tests:
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Etc/UTC
+    assignees:
+      - alexFinn97
+    groups:
+      actions:
+        patterns:
+          - "*"

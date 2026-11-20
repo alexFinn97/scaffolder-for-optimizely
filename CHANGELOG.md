@@ -4,6 +4,13 @@ Both extensions, Scaffolder for Optimizely and Scaffolder for Optimizely Commerc
 
 ## [Unreleased]
 
+### Added
+- Dependabot keeps the NuGet packages and GitHub Actions up to date, and opens pull requests for security fixes.
+- Builds now fail when a NuGet package, direct or transitive, has a known moderate, high or critical vulnerability. CI also lists every such package and reviews each pull request's dependency changes.
+
+### Security
+- Pinned patched versions of transitive packages with known vulnerabilities: MessagePack 2.5.303 in both extensions (compile-time only, so not shipped), and System.Net.Http 4.3.4, System.Text.RegularExpressions 4.3.1 and System.Security.Cryptography.Pkcs 8.0.2 and System.Text.Json 8.0.6 in the compile tests.
+
 ## [0.9.5] - 2026-11-18
 
 ### Added

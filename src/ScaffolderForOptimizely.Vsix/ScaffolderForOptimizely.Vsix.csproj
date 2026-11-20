@@ -94,6 +94,10 @@
     <!-- VisualStudioWorkspace. Visual Studio already loads Roslyn, so nothing is copied into the VSIX. -->
     <PackageReference Include="Microsoft.VisualStudio.LanguageServices" Version="4.0.1" ExcludeAssets="runtime" PrivateAssets="all" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" ExcludeAssets="runtime" PrivateAssets="all" />
+    <!-- Transitive pin: the toolkit's StreamJsonRpc 2.8.28 pulls in MessagePack 2.2.85, which has known
+         advisories (fixed in 2.5.303). Visual Studio loads its own MessagePack, so nothing is copied into
+         the VSIX. Remove once the toolkit resolves 2.5.303 or later on its own. -->
+    <PackageReference Include="MessagePack" Version="2.5.303" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

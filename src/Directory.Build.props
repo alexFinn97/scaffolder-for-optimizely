@@ -9,4 +9,14 @@
     <RepositoryUrl>https://github.com/alexFinn97/scaffolder-for-optimizely</RepositoryUrl>
     <Version>0.9.5</Version>
   </PropertyGroup>
+
+  <!-- Restore fails on any package, direct or transitive, with a known moderate, high or critical
+       advisory (NU1902-NU1904), locally and in CI and release builds. Classic VSIX projects import
+       this file too. -->
+  <PropertyGroup>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>moderate</NuGetAuditLevel>
+    <WarningsAsErrors>$(WarningsAsErrors);NU1902;NU1903;NU1904</WarningsAsErrors>
+  </PropertyGroup>
 </Project>

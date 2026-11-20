@@ -86,6 +86,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <!-- Transitive pin: the toolkit's StreamJsonRpc 2.8.28 pulls in MessagePack 2.2.85, which has known
+         advisories (fixed in 2.5.303). Visual Studio loads its own MessagePack, so nothing is copied into
+         the VSIX. Remove once the toolkit resolves 2.5.303 or later on its own. -->
+    <PackageReference Include="MessagePack" Version="2.5.303" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
 
   <!-- Compile against the main extension; it is installed alongside (see the manifest dependency), so nothing is packaged. -->
