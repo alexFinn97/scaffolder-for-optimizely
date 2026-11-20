@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" PrivateAssets="all" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
   <!-- Generated code is compiled against the real Optimizely packages, so a template that
@@ -20,10 +20,10 @@
     <PackageReference Include="EPiServer.CMS.AspNetCore.Mvc" Version="12.24.3" />
     <PackageReference Include="EPiServer.CMS.Core" Version="12.24.3" />
     <!-- EPiServer.Shell: editor descriptors, selection factories, visitor group criteria. -->
-    <PackageReference Include="EPiServer.CMS.UI.Core" Version="12.34.9" />
+    <PackageReference Include="EPiServer.CMS.UI.Core" Version="12.35.0" />
     <!-- Commerce 14: catalog content, promotions, payment, shipping and order services. -->
-    <PackageReference Include="EPiServer.Commerce.Core" Version="14.46.2" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    <PackageReference Include="EPiServer.Commerce.Core" Version="14.48.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.12.0" />
   </ItemGroup>
 
   <!-- Transitive pins: EPiServer.CMS.Core 12 pulls in versions with known advisories, and its latest
@@ -35,11 +35,11 @@
     <!-- GHSA-cmhx-cq75-c4mj (high), via Castle.Core > NETStandard.Library 1.6.1. -->
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     <!-- GHSA-846f-f764-76mx (high) and GHSA-2fmv-rv2c-59x7 (moderate), via EPiServer.Framework and MimeKit. -->
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.2" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0" />
     <!-- GHSA-hh2w-p6rv-4g7w (high), via Castle.Windsor and Microsoft.Data.SqlClient > Azure.Identity.
          Resolved 7.0.3, which has no 7.x fix; net8.0 already ships System.Text.Json 8, so this moves
          the package to the runtime's own major. -->
-    <PackageReference Include="System.Text.Json" Version="8.0.6" />
+    <PackageReference Include="System.Text.Json" Version="11.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,8 +11,8 @@
     <PackageReference Include="Scriban" Version="7.6.1" />
     <!-- Newtonsoft.Json and Roslyn are already loaded inside Visual Studio, so they must not be
          copied into the VSIX. Roslyn is compile-only here; consumers (tests) reference it themselves. -->
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.12.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
