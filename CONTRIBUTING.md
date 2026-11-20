@@ -57,8 +57,12 @@ Only use `<NuGetAuditSuppress Include="<advisory URL>" />` if there's no fix. Us
 
 [`.github/dependabot.yml`](.github/dependabot.yml) opens grouped pull requests against `develop` every Monday: one for the shipped projects, one for the test projects and one for GitHub Actions. Security fixes can arrive in between. Its ignore lists are deliberate:
 
-- **Shipped projects:** `Microsoft.CodeAnalysis.CSharp`, `Microsoft.VisualStudio.LanguageServices`, `Newtonsoft.Json` and `Community.VisualStudio.Toolkit.17` match what the oldest supported Visual Studio loads, so they're never bumped.
+- **Visual Studio set, in both entries:** `Microsoft.CodeAnalysis.CSharp`, `Microsoft.VisualStudio.LanguageServices`, `Newtonsoft.Json` and `Community.VisualStudio.Toolkit.17` match what the oldest supported Visual Studio loads, so they're never bumped. The test entry needs them too, because Dependabot follows the test projects' reference into `ScaffolderForOptimizely.Core` and updates it. That means the tests' own Roslyn and Newtonsoft.Json are updated by hand.
+- **Security pins:** no major versions. `MessagePack` stays on 2.x, which Visual Studio loads. The `System.*` pins in Compile.Tests stay on the net8.0 runtime's major; 9.0 and later don't support net8.0 and stop the test host starting.
+- **Shipped projects:** no `Microsoft.VSSDK.BuildTools` major versions. Take those on deliberately, after installing the built `.vsix` in Visual Studio 2022 and 2026, and checking the VsixPublisher workaround in TODO.md.
 - **Test projects:** no `EPiServer.*` major versions, so the compile tests stay on CMS 12 and Commerce 14.
+
+Because of the project reference, both NuGet pull requests can touch `ScaffolderForOptimizely.Core`, for example a Scriban update. Merge one, and Dependabot rebases the other.
 
 A Dependabot pull request only needs a `CHANGELOG.md` line if it changes what ships, for example a Scriban update.
 

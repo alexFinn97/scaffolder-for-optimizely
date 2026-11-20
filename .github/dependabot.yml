@@ -8,8 +8,10 @@ registries:
     url: https://api.nuget.optimizely.com/v3/index.json
 
 updates:
-  # Shipped projects. The ignored packages match what the oldest supported Visual Studio loads
-  # (Roslyn, Newtonsoft.Json, the VS toolkit), so they're never bumped.
+  # Shipped projects. Roslyn, Newtonsoft.Json and the VS toolkit match what the oldest supported
+  # Visual Studio loads, so they're never bumped. MessagePack is a compile-only security pin that
+  # stays on 2.x, the major Visual Studio loads. VSSDK.BuildTools majors are taken on deliberately,
+  # with an install test, not through a grouped update.
   - package-ecosystem: nuget
     directories:
       - /src/ScaffolderForOptimizely.Core
@@ -28,13 +30,21 @@ updates:
       - dependency-name: Microsoft.VisualStudio.LanguageServices
       - dependency-name: Newtonsoft.Json
       - dependency-name: Community.VisualStudio.Toolkit.17
+      - dependency-name: MessagePack
+        update-types:
+          - version-update:semver-major
+      - dependency-name: Microsoft.VSSDK.BuildTools
+        update-types:
+          - version-update:semver-major
     groups:
       nuget-shipped:
         patterns:
           - "*"
 
-  # Test projects. Compile.Tests compiles generated code against CMS 12 and Commerce 14, so no
-  # EPiServer major versions.
+  # Test projects. Dependabot follows their project reference into ScaffolderForOptimizely.Core and
+  # updates it too, so the Visual Studio set is ignored here as well. Compile.Tests compiles generated
+  # code against CMS 12 and Commerce 14, so no EPiServer majors. The System.* packages are security
+  # pins that must stay on the net8.0 runtime's major.
   - package-ecosystem: nuget
     directories:
       - /src/ScaffolderForOptimizely.Core.Tests
@@ -48,7 +58,23 @@ updates:
     assignees:
       - alexFinn97
     ignore:
+      - dependency-name: Microsoft.CodeAnalysis.CSharp
+      - dependency-name: Microsoft.VisualStudio.LanguageServices
+      - dependency-name: Newtonsoft.Json
+      - dependency-name: Community.VisualStudio.Toolkit.17
       - dependency-name: "EPiServer.*"
+        update-types:
+          - version-update:semver-major
+      - dependency-name: System.Text.Json
+        update-types:
+          - version-update:semver-major
+      - dependency-name: System.Security.Cryptography.Pkcs
+        update-types:
+          - version-update:semver-major
+      - dependency-name: System.Net.Http
+        update-types:
+          - version-update:semver-major
+      - dependency-name: System.Text.RegularExpressions
         update-types:
           - version-update:semver-major
     groups:
