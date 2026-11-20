@@ -55,7 +55,9 @@ If the workflow published one extension but not the other, publish the missing o
 
 ```powershell
 gh release download 0.9.3 -p ScaffolderForOptimizely.Commerce.vsix -D release
-& "$env:USERPROFILE\.nuget\packages\microsoft.vssdk.buildtools\17.14.2094\tools\vssdk\bin\VsixPublisher.exe" publish -payload "$PWD\release\ScaffolderForOptimizely.Commerce.vsix" -publishManifest "$PWD\marketplace\scaffolder-for-optimizely-commerce.json" -personalAccessToken "<your token>"
+$publisher = Get-ChildItem "$env:USERPROFILE\.nuget\packages\microsoft.vssdk.buildtools\*\tools\vssdk\bin\VsixPublisher.exe" |
+  Sort-Object { [version]$_.Directory.Parent.Parent.Parent.Name } | Select-Object -Last 1
+& $publisher.FullName publish -payload "$PWD\release\ScaffolderForOptimizely.Commerce.vsix" -publishManifest "$PWD\marketplace\scaffolder-for-optimizely-commerce.json" -personalAccessToken "<your token>"
 ```
 
 Look for `VsixPub0038: Uploaded ... to the marketplace`. The tool can print an `Unhandled Exception` from its own telemetry, before or after that line. It doesn't affect the upload.
