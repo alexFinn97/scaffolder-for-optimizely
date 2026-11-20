@@ -8,45 +8,14 @@ registries:
     url: https://api.nuget.optimizely.com/v3/index.json
 
 updates:
-  # Shipped projects. Roslyn, Newtonsoft.Json and the VS toolkit match what the oldest supported
-  # Visual Studio loads, so they're never bumped. MessagePack is a compile-only security pin that
-  # stays on 2.x, the major Visual Studio loads. VSSDK.BuildTools majors are taken on deliberately,
-  # with an install test, not through a grouped update.
+  # One entry for every NuGet project. Dependabot follows project references (the test projects
+  # reference ScaffolderForOptimizely.Core), so separate entries would update the same package in
+  # different pull requests to different versions. One entry updates every copy together.
   - package-ecosystem: nuget
     directories:
       - /src/ScaffolderForOptimizely.Core
       - /src/ScaffolderForOptimizely.Vsix
       - /src/ScaffolderForOptimizely.Commerce.Vsix
-    registries: "*"
-    schedule:
-      interval: weekly
-      day: monday
-      time: "06:00"
-      timezone: Etc/UTC
-    assignees:
-      - alexFinn97
-    ignore:
-      - dependency-name: Microsoft.CodeAnalysis.CSharp
-      - dependency-name: Microsoft.VisualStudio.LanguageServices
-      - dependency-name: Newtonsoft.Json
-      - dependency-name: Community.VisualStudio.Toolkit.17
-      - dependency-name: MessagePack
-        update-types:
-          - version-update:semver-major
-      - dependency-name: Microsoft.VSSDK.BuildTools
-        update-types:
-          - version-update:semver-major
-    groups:
-      nuget-shipped:
-        patterns:
-          - "*"
-
-  # Test projects. Dependabot follows their project reference into ScaffolderForOptimizely.Core and
-  # updates it too, so the Visual Studio set is ignored here as well. Compile.Tests compiles generated
-  # code against CMS 12 and Commerce 14, so no EPiServer majors. The System.* packages are security
-  # pins that must stay on the net8.0 runtime's major.
-  - package-ecosystem: nuget
-    directories:
       - /src/ScaffolderForOptimizely.Core.Tests
       - /src/ScaffolderForOptimizely.Compile.Tests
     registries: "*"
@@ -58,13 +27,24 @@ updates:
     assignees:
       - alexFinn97
     ignore:
+      # Match what the oldest supported Visual Studio loads, so they're never bumped.
       - dependency-name: Microsoft.CodeAnalysis.CSharp
       - dependency-name: Microsoft.VisualStudio.LanguageServices
       - dependency-name: Newtonsoft.Json
       - dependency-name: Community.VisualStudio.Toolkit.17
+      # Compile-only security pin in the VSIX projects; stays on 2.x, the major Visual Studio loads.
+      - dependency-name: MessagePack
+        update-types:
+          - version-update:semver-major
+      # Taken on deliberately, with an install test, not through a grouped update.
+      - dependency-name: Microsoft.VSSDK.BuildTools
+        update-types:
+          - version-update:semver-major
+      # Compile.Tests compiles generated code against CMS 12 and Commerce 14.
       - dependency-name: "EPiServer.*"
         update-types:
           - version-update:semver-major
+      # Security pins. 11.0 and later don't support net8.0, which the test projects target.
       - dependency-name: System.Text.Json
         update-types:
           - version-update:semver-major
@@ -78,7 +58,7 @@ updates:
         update-types:
           - version-update:semver-major
     groups:
-      nuget-tests:
+      nuget:
         patterns:
           - "*"
 

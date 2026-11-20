@@ -9,7 +9,10 @@ Both extensions, Scaffolder for Optimizely and Scaffolder for Optimizely Commerc
 - Builds now fail when a NuGet package, direct or transitive, has a known moderate, high or critical vulnerability. CI also lists every such package and reviews each pull request's dependency changes.
 
 ### Security
-- Pinned patched versions of transitive packages with known vulnerabilities: MessagePack 2.5.303 in both extensions (compile-time only, so not shipped), and System.Net.Http 4.3.4, System.Text.RegularExpressions 4.3.1 and System.Security.Cryptography.Pkcs 8.0.2 and System.Text.Json 8.0.6 in the compile tests.
+- Pinned patched versions of transitive packages with known vulnerabilities: MessagePack 2.5.303 in both extensions (compile-time only, so not shipped), and System.Net.Http 4.3.4, System.Text.RegularExpressions 4.3.1 and System.Security.Cryptography.Pkcs 8.0.2 and System.Text.Json 10.0.15 in the compile tests.
+
+### Changed
+- System.Text.Json and System.Text.Encodings.Web, used by Scriban, updated from 10.0.8 to 10.0.15. Scaffolder for Optimizely ships System.Text.Encodings.Web.
 
 ## [0.9.5] - 2026-11-18
 
