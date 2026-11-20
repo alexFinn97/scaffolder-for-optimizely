@@ -87,7 +87,7 @@
     <PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.549" ExcludeAssets="Runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.14.2094">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.14.2142">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -97,7 +97,7 @@
     <!-- Transitive pin: the toolkit's StreamJsonRpc 2.8.28 pulls in MessagePack 2.2.85, which has known
          advisories (fixed in 2.5.303). Visual Studio loads its own MessagePack, so nothing is copied into
          the VSIX. Remove once the toolkit resolves 2.5.303 or later on its own. -->
-    <PackageReference Include="MessagePack" Version="2.5.303" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="MessagePack" Version="2.5.307" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
