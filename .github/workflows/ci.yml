@@ -16,9 +16,9 @@ jobs:
       DiffEngine_Disabled: true
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
 
@@ -31,7 +31,7 @@ jobs:
       - name: Compile tests (generated code vs Optimizely CMS 12)
         run: dotnet test src/ScaffolderForOptimizely.Compile.Tests -c Release
 
-      - uses: microsoft/setup-msbuild@v2
+      - uses: microsoft/setup-msbuild@v3
 
       # Building the Commerce add-on builds the main extension first (project reference).
       - name: Build VSIXs
@@ -71,7 +71,7 @@ jobs:
           }
           Write-Host "No known moderate+ vulnerabilities."
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ScaffolderForOptimizely-vsix
           path: |
@@ -88,7 +88,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/dependency-review-action@v4
         with:
